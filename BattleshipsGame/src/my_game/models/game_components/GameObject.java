@@ -1,0 +1,25 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package my_game.models.game_components;
+
+/**
+ * Every object belonging to/shown onto the game map is 
+ * a game object.
+ */
+public abstract class GameObject {
+    public enum GameObjectType {
+        Ship, Weapon, Obstacle, Base
+    }
+    
+    /** The type of this game object. */
+    GameObjectType type;
+    
+    /**
+     * @return The type of this game object.
+     */
+    public GameObjectType getObjectType() {
+        return this.type;
+    }
+}
