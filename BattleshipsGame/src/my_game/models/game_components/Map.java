@@ -17,7 +17,8 @@ public class Map {
     private Ship[] player1Ships;
     private Ship[] player2Ships;
     
-    public Map() {
+    
+    public Map(CoralReef reef) {
         /* TODO when creating the mapGrid use a CoralReef to provide 
          * the positions of all obstacles. */
     }
