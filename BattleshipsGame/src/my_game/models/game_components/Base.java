@@ -7,10 +7,25 @@ package my_game.models.game_components;
 /**
  *
  */
-public class Base extends GameObject {
+public class Base {
     
-    public Base() {
-        this.type = GameObjectType.Base;
-        // TODO complete
+    private final int playerID;
+    private int sizeRemaining;
+    private BaseUnit[] baseUnits;
+    
+    public Base(int pid, int size, BaseUnit[] units) {
+        this.playerID = pid;
+        this.sizeRemaining = size;
+        this.baseUnits = units;
+    }
+    
+    public int getRemainingSize(){
+
+        for (BaseUnit unit: baseUnits){
+            if (unit.isDestroyed()){
+                sizeRemaining--;
+            }
+        }
+        return sizeRemaining;
     }
 }

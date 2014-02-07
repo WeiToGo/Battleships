@@ -7,7 +7,7 @@ package my_game.models.game_components;
 /**
  *
  */
-public abstract class Ship extends GameObject {
+public abstract class Ship {
     
     public enum ShipType {
         Cruiser, Destroyer, TorpedoBoat, MineLayer, RadarBoat
@@ -15,10 +15,19 @@ public abstract class Ship extends GameObject {
     
     /** The type of this ship. */
     private ShipType shipType;
+    private final ShipUnit[] shipUnits;
+    private final int playerID;
+    private final int size;
+    private final int speed;
+    private int currentSize;
+    private int currentSpeed;
+    private final boolean heavyArmour;
+    private final int[] radarRange;
+    private final int[] canonRange;
+    private final Weapon[] availableWeapons;
     
-    public Ship() {
-        this.type = GameObjectType.Ship;
-        // TODO complete
+    public Ship(){
+    
     }
     
     /**
