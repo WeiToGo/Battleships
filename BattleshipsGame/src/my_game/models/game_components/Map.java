@@ -65,7 +65,7 @@ public class Map {
     }
     
     public boolean isObstacle(int x, int y){
-        boolean isObstacle = false; //set to false for now        
+        boolean isObstacle = false; //set to false for now, TO CHANGE    
         return isObstacle;
                 
     }

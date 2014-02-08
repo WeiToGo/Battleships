@@ -28,4 +28,17 @@ public class Base {
         }
         return sizeRemaining;
     }
+    
+    /** This method is called everytime a baseUnit is destroyed.*/
+    public void updateSize(){
+        if (!this.isDestroyed()){
+            sizeRemaining--;
+        }else{
+            // exception?
+        }
+    }
+    
+    public boolean isDestroyed(){
+        return false;
+    }
 }
