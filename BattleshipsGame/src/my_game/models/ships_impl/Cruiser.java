@@ -13,28 +13,16 @@ import my_game.models.game_components.Weapon;
  *
  */
 public class Cruiser extends Ship {
-    private ShipType shipType;
-    private final ShipUnit[] shipUnits;
-    private final int playerID;
-    private final int size;
-    private final int speed;
-    private int currentSize;
-    private int currentSpeed;
-    private final boolean heavyArmour;
-    private final int[] radarRange;
-    private final int[] canonRange;
- //   private final Weapon[] availableWeapons = new Weapon[1];
-    private final int[] availableWeapons;
     
     public Cruiser(int pid){
+        super(pid);
         this.shipType = ShipType.Cruiser;
         ShipUnit[] su = new ShipUnit[5];
         for (int i = 0; i < 5; i++){
-            ShipUnit sUnit = new ShipUnit();
+            ShipUnit sUnit = new ShipUnit(this);
             su[i] = sUnit;
         }
         this.shipUnits = su;
-        this.playerID = pid;
         this.size = 5;
         this.speed = 10;
         this.currentSize = 5;

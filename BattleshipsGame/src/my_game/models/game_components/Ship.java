@@ -14,25 +14,25 @@ public abstract class Ship {
     };
     
     /** The type of this ship. */
-    private ShipType shipType;
-    private final ShipUnit[] shipUnits;
-    private final int playerID;
-    private final int size;
-    private final int speed;
-    private int currentSize;
-    private int currentSpeed;
-    private final boolean heavyArmour;
-    private final int[] radarRange;
-    private final int[] canonRange;
-    private final Weapon[] availableWeapons;
+    protected ShipType shipType;
+    protected ShipUnit[] shipUnits;
+    protected final int playerID;
+    protected int size;
+    protected int speed;
+    protected int currentSize;
+    protected int currentSpeed;
+    protected boolean heavyArmour;
+    protected int[] radarRange;
+    protected int[] canonRange;
+    protected Weapon[] availableWeapons;
     //maybe use ints to represent weapons
     //1:heavy cannon, 2:canon, 3:torpedoes, 4: mines
     
 /*    public Ship(ShipType st, ShipUnit[] su, int pid, int size, int speed, int csize, int cspeed, 
                 boolean armour, int[] rRange, int[] cRange, Weapon[] w){
+        super(id);
         this.shipType = st;
         this.shipUnits = su;
-        this.playerID = pid;
         this.size = size;
         this.speed = speed;
         this.currentSize = csize;
@@ -45,7 +45,6 @@ public abstract class Ship {
     /** Constructs a ship given a player ID. */
     public Ship(int pid){
         this.playerID = pid;
-     
     }
     
     /**
