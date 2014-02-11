@@ -34,6 +34,8 @@ public class Map {
     
     
     public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships) {
+        //clear the grid (init all to null)
+        clearGrid();
         /* TODO when creating the mapGrid use a CoralReef to provide
         * the positions of all obstacles. */
         int x_start = X_OFFSET;
@@ -143,6 +145,17 @@ public class Map {
             return grid[x][y];
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Sets every cell of the grid to null.
+     */
+    protected void clearGrid() {
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                grid[i][j] = null;
+            }
         }
     }
 }

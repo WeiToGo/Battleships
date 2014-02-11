@@ -27,8 +27,8 @@ public class GameState {
     /** Identifier for the game. */
     //public final int gameID;    // TODO Is this necessary? Please clarify why. Also it will be unnecessarily comples to generate unique IDs
     
-    private ChatLog chatLog;
-    private Map map;
+    protected ChatLog chatLog;
+    protected Map map;
     
     //TODO accessors and mutators for chat log and map
 
@@ -46,6 +46,8 @@ public class GameState {
         Ship[] player2Ships = generateShips(player[1]);
         //init map
         map = new Map(reef, player1Ships, player2Ships);
+        //init chat
+        chatLog = new ChatLog();
     }
     
     public GameState(GameState copyState) {
