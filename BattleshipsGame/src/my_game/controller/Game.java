@@ -34,8 +34,8 @@ public class Game {
     
     
     
-    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType) {
-        this(player, opponent, reef, net, playerType, -1);
+    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
+        this(player, opponent, reef, net, playerType, name, -1);
     }
     
     /**
@@ -46,9 +46,10 @@ public class Game {
      * @param reef Coral reef used for the game.
      * @param net Network entity used for connection to the other player.
      * @param playerType Type of the player: host or client
+     * @param name The name of the game.
      * @param startingPlayer The player who starts first.
      */
-    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, int startingPlayer) {
+    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name, int startingPlayer) {
         //init local fields
         this.player = player;
         this.opponent = opponent;
@@ -62,7 +63,7 @@ public class Game {
                 firstPlayer = getRandomFirstPlayer();
             }
             //init game state
-            gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer);
+            gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
             //TODO Send generated game state to client!!!
             //startHostGame();

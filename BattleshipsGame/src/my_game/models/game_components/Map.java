@@ -4,6 +4,8 @@
 */
 package my_game.models.game_components;
 
+import my_game.networking.util.Vector2;
+
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -13,28 +15,31 @@ public class Map {
     
     private final int WIDTH = 30;
     private final int HEIGHT = 30;
+    /** X offset of the coral reef zone. */
     private final int X_OFFSET = 10;
+    /** Y offset of the coral reef zone. */
     private final int Y_OFFSET = 3;
-    
+    /** 2D array representing the cells of the map grid which contain game objects. */
     private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
-    private CoralReef reef;
     
+    
+    /* By Ivo: I don't think these arrays are necessary.
     private GameObject[][] availableMoves;//including turns
 // private GameObject[][] availableMovesP2;
     private GameObject[][] radarView;// all grids that can be seen by all its ships.
 // private GameObject[][] radarP2;
-    
+    */
     private Ship[] player1Ships;
     private Ship[] player2Ships;
     
     
-    public Map(CoralReef reef) {
-/* TODO when creating the mapGrid use a CoralReef to provide
-* the positions of all obstacles. */
+    public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships) {
+        /* TODO when creating the mapGrid use a CoralReef to provide
+        * the positions of all obstacles. */
         int x_start = X_OFFSET;
-        int x_end = X_OFFSET + 10;
+        int x_end = X_OFFSET + reef.WIDTH;
         int y_start = Y_OFFSET;
-        int y_end = Y_OFFSET + 24;
+        int y_end = Y_OFFSET + reef.HEIGHT;
         int i,j;
         for (i = x_start; i < x_end; i++){
             for (j = y_start; j < y_end; j++){
@@ -45,15 +50,24 @@ public class Map {
                 }
             }
         }
+        
+        //init players' ships
+        this.player1Ships = new Ship[player1Ships.length];
+        this.player1Ships = new Ship[player2Ships.length];
+        // copy the arrays by value to local arrays
+        System.arraycopy(player1Ships, 0, this.player1Ships, 0, player1Ships.length);
+        System.arraycopy(player2Ships, 0, this.player2Ships, 0, player2Ships.length);
     }
     
 /**
 * Gather infomation about the ship to calculate the
 * possible places that ship can move to.
 */
-    public GameObject[][] prepareMoveShip(Ship ship){
-        
-        return availableMoves;
+    public Vector2[][] prepareMoveShip(Ship ship){
+        //TODO generate an array of points where the ship can safely move
+        // NOTE: There is the Vector2 class which can be used to represent a point
+        //return availableMoves;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
     /**
@@ -69,9 +83,10 @@ public class Map {
 * Gather infomation about the ship to calculate the
 * possible places that ship can turn to.
 */
-    public GameObject[][] prepareTurnShip(Ship ship){
-        
-        return availableMoves;
+    public Vector2[][] prepareTurnShip(Ship ship){
+        // TODO same as in prepareMoveShip
+        //return availableMoves;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
     public void turnShip(Ship ship, int degree){
