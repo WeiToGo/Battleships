@@ -5,10 +5,34 @@
 package my_game.models.ships_impl;
 
 import my_game.models.game_components.Ship;
+import my_game.models.game_components.ShipUnit;
+import my_game.models.game_components.Weapon;
 
 /**
  *
  */
 public class MineLayer extends Ship {
+    
+    public MineLayer(int pid){
+        super(pid);
+        this.shipType = ShipType.MineLayer;
+        this.size = 2;
+        ShipUnit[] su = new ShipUnit[this.size];
+        for (int i = 0; i < this.size; i++){
+            ShipUnit sUnit = new ShipUnit(this);
+            su[i] = sUnit;
+        }
+        this.shipUnits = su;
+        this.speed = 6;
+        this.currentSize = size;
+        this.currentSpeed = speed;
+        this.heavyArmour = true;
+        //to be set
+        this.radarRange = new int[] {0,0,0};
+        this.canonRange = new int[] {0,0,0};
+  // needs to see how specific weapon is implemented.  
+  //    this.availableWeapons = new Weapons[] ;
+       
+    }
     
 }

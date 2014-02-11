@@ -6,31 +6,80 @@ package my_game.controller;
 
 import my_game.models.GameState;
 import my_game.models.game_components.CoralReef;
+import my_game.networking.NetworkEntity;
 import my_game.networking.server.entities.Player;
 
 /**
- * This class represents a game session which involves two players and a
- * game state (map + chat log). A game is created every time a user loads or 
- * hosts a new game.
+ * This class is a controller of the game. One instance
+ * of this class runs at the host and one at the client, 
+ * both of these communicating amongst them via networking
+ * entities (GameServer and GameClient).
  */
 public class Game {
+    public enum PlayerType {
+        Host, Client
+    };
     
-    private final Player player1;
-    private final Player player2;
-    
+    /** The Player who is running this instance of the Game controller. */
+    private final Player player;
+    /** The opponent of the player who is running this instance of the Game controller. */
+    private final Player opponent;
+    /** Network object used for communication with the opponent. */
+    private final NetworkEntity net;
+    /** The game state contains a full description of the game that is currently being played. */
     private GameState gameState;
+    /** The player type is a flag indicating whether the player running the instance
+     * of this Game object is the host of the game, or a client connected to the host. */
+    private final Game.PlayerType playerType;
+    
+    
+    
+    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
+        this(player, opponent, reef, net, playerType, name, -1);
+    }
     
     /**
      * When a new game is constructed, this constructor also initializes all
      * data structures necessary for the new game.
-     * @param players An array containing the two players participating in this game.
-     * @param reef The reef which the two players agreed upon, and which will be
-     * used in creating the game map.
+     * @param player Player who is creating this object.
+     * @param opponent Player who is connected to this game via the network.
+     * @param reef Coral reef used for the game.
+     * @param net Network entity used for connection to the other player.
+     * @param playerType Type of the player: host or client
+     * @param name The name of the game.
+     * @param startingPlayer The player who starts first.
      */
-    public Game(Player[] players, CoralReef reef) {
-        // TODO implement constructor(s)
-        player1 = player2 = null;
+    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name, int startingPlayer) {
+        //init local fields
+        this.player = player;
+        this.opponent = opponent;
+        this.net = net;
+        this.playerType = playerType;
+        
+        if(playerType == Game.PlayerType.Host) {
+            //generate the index of the first player if an invalid index is passed.
+            int firstPlayer = startingPlayer;
+            if(startingPlayer < 0 || startingPlayer > 1) {
+                firstPlayer = getRandomFirstPlayer();
+            }
+            //init game state
+            gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
+            
+            //TODO Send generated game state to client!!!
+            //startHostGame();
+        } else {
+            //You are a client. Wait to receive a game state from server
+            GameState receivedGameState = null; //receive game state from server
+            gameState = new GameState(receivedGameState);
+            //startClientGame();
+        }
+        
     } 
+    
+    
+    private int getRandomFirstPlayer() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     // TODO Different methods to modify and control the game satate
 }

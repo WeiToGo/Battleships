@@ -16,7 +16,9 @@ public class CoralReef {
     
     /** A grid of booleans. True means an obstacle is in the grid. */
     private boolean[][] reef;
-    
+ 
+    //needs a constructor?    
+  
     /**
      * @param x Positive and within bounds x-coordinate on the reef.
      * @param y Positive and within bounds y-coordinate on the reef.
@@ -24,5 +26,12 @@ public class CoralReef {
      */
     public boolean hasObstacleIn(int x, int y) {
         return reef[x][y];
+    }
+    
+    /**
+     * Generate random coral reef positions and set it to the reef variable.
+     */
+    public void setNewPositions(){
+        
     }
 }
