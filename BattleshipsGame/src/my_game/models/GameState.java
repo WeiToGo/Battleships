@@ -14,22 +14,20 @@ import my_game.networking.server.entities.Player;
  */
 public class GameState {
     
-    /** Whose turn is it? */
-    private Player turn;
+    /** An array of two players who are playing the game. */
+    private Player[] players;
+    
+    /** Index of the players array pointing to the player whose turn it currently is. */
+    private int playerTurn;
     
     /** The name of the game given to it when it is created for the first time. */
     public final String name;
     
     /** Identifier for the game. */
-    public final int gameID;    // TODO Is this necessary? Please clarify why. 
+    public final int gameID;    // TODO Is this necessary? Please clarify why. Also it will be unnecessarily comples to generate unique IDs
     
     private ChatLog chatLog;
     private Map map;
-    
-    public GameState() {
-        name = null;
-        gameID = 0;
-    }
     
     //TODO accessors and mutators for chat log and map
 
