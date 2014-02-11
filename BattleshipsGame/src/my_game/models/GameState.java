@@ -4,6 +4,7 @@
  */
 package my_game.models;
 
+import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Map;
 import my_game.models.player_components.ChatLog;
 import my_game.networking.server.entities.Player;
@@ -31,4 +32,12 @@ public class GameState {
     }
     
     //TODO accessors and mutators for chat log and map
+
+    public GameState(Player[] player, CoralReef reef, int firstPlayer) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    public GameState(GameState copyState) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }
