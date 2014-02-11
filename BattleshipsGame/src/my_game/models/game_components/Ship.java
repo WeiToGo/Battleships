@@ -25,23 +25,8 @@ public abstract class Ship {
     protected int[] radarRange;
     protected int[] canonRange;
     protected Weapon[] availableWeapons;
-    //maybe use ints to represent weapons
-    //1:heavy cannon, 2:canon, 3:torpedoes, 4: mines
+
     
-/*    public Ship(ShipType st, ShipUnit[] su, int pid, int size, int speed, int csize, int cspeed, 
-                boolean armour, int[] rRange, int[] cRange, Weapon[] w){
-        super(id);
-        this.shipType = st;
-        this.shipUnits = su;
-        this.size = size;
-        this.speed = speed;
-        this.currentSize = csize;
-        this.currentSpeed = cspeed;
-        this.heavyArmour = armour;
-        this.radarRange = rRange;
-        this.canonRange = cRange;
-        this.availableWeapons = w;
-  */
     /** Constructs a ship given a player ID. */
     public Ship(int pid){
         this.playerID = pid;
@@ -53,9 +38,21 @@ public abstract class Ship {
     public ShipType getShipType() {
         return this.shipType;
     }
-    
+    /**
+     * This method is called so Map can calculate all the legal moves for this 
+     * ship.
+     * @return 
+     */
     public int getCurrentSpeed(){
         return currentSpeed;
+    }
+    /**
+     * This method updates each ShipUnit to the new position.
+     * @param x The x-coordinate of the final position of the bow of the ship.
+     * @param y The y-coordinate of the final position of the bow of the ship.
+     */
+    public void moveTo(int x, int y){
+        
     }
     
     /**
@@ -66,6 +63,15 @@ public abstract class Ship {
      */
     public boolean hasFlexibleTurn(){
         return false;
+    }
+    
+    /**
+     * This method updates each ShipUnit to the new position.
+     * @param x The x-coordinate of the final position of the bow of the ship.
+     * @param y The y-coordinate of the final position of the bow of the ship.
+     */
+    public void turnTo(int x, int y) {
+        
     }
     
     /**

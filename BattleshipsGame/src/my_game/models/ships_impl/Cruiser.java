@@ -17,20 +17,21 @@ public class Cruiser extends Ship {
     public Cruiser(int pid){
         super(pid);
         this.shipType = ShipType.Cruiser;
-        ShipUnit[] su = new ShipUnit[5];
-        for (int i = 0; i < 5; i++){
+        this.size = 5;
+        ShipUnit[] su = new ShipUnit[this.size];
+        for (int i = 0; i < this.size; i++){
             ShipUnit sUnit = new ShipUnit(this);
             su[i] = sUnit;
         }
         this.shipUnits = su;
-        this.size = 5;
         this.speed = 10;
-        this.currentSize = 5;
-        this.currentSpeed = 10;
+        this.currentSize = this.size;
+        this.currentSpeed = this.speed;
         this.heavyArmour = true;
         this.radarRange = new int[] {0,0,0};
         this.canonRange = new int[] {0,0,0}; //heavy canon
-        this.availableWeapons = new int[] {1};
+  // needs to see how specific weapon is implemented.  
+  //    this.availableWeapons = new Weapons[] ;
        
     }
 }

@@ -10,7 +10,7 @@ package my_game.models.game_components;
  */
 public class ShipUnit extends GameObject {
     private int damageLevel; // (0: healthy, 1: damaged, 2: destroyed)
-    
+    private int[] position;
     private Ship ship;
     
     public ShipUnit(Ship ship){
@@ -22,6 +22,16 @@ public class ShipUnit extends GameObject {
     
     public Ship getShip() {
         return ship;
+    }
+    
+    public int[] getPosition(){
+        return position;
+    }
+    
+    public void setPosition(int x, int y){
+       // error checking?
+        position[0] = x;
+        position[1] = y;
     }
     
     public int getDamageLevel(){
