@@ -4,13 +4,15 @@
  */
 package my_game.models.game_components;
 
+import my_game.networking.util.Vector2;
+
 /**
  *
  * @author wei
  */
 public class ShipUnit extends GameObject {
     private int damageLevel; // (0: healthy, 1: damaged, 2: destroyed)
-    private int[] position;
+    private Vector2 position;
     private Ship ship;
     
     public ShipUnit(Ship ship){
@@ -24,14 +26,15 @@ public class ShipUnit extends GameObject {
         return ship;
     }
     
-    public int[] getPosition(){
-        return position;
+    public Vector2 getPosition(){
+        Vector2 posCopy = new Vector2(this.position);
+        return posCopy;
     }
     
     public void setPosition(int x, int y){
        // error checking?
-        position[0] = x;
-        position[1] = y;
+        position.x = x;
+        position.y = y;
     }
     
     public int getDamageLevel(){

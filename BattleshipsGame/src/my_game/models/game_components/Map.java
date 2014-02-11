@@ -59,6 +59,9 @@ public class Map {
         // copy the arrays by value to local arrays
         System.arraycopy(player1Ships, 0, this.player1Ships, 0, player1Ships.length);
         System.arraycopy(player2Ships, 0, this.player2Ships, 0, player2Ships.length);
+        //Position ships on the map grid as well.
+        initShips(player1Ships);
+        initShips(player2Ships);
     }
     
 /**
@@ -73,13 +76,30 @@ public class Map {
     }
     
     /**
-* This method is called after the user selects a move.
-* @param x
-* @param y
-*/
+     * This method is called after the user selects a move.
+     * @param x
+     * @param y
+     */
     public void moveShip(Ship ship, int x, int y){
         
     }
+    
+    /**
+     * Inserts the ships in the shipsArray provided into the grid
+     * of this map.
+     * @param shipsArray 
+     */
+    private void initShips(Ship[] shipsArray) {
+        //go through the array
+        for(Ship s: shipsArray) {
+            //and for insert every ship unit of every ship into the grid
+            for(ShipUnit su: s.shipUnits) {
+                Vector2 position = su.getPosition();
+                grid[position.x][position.y] = su;
+            }
+        }
+    }
+    
     
      /**
 * Gather infomation about the ship to calculate the
