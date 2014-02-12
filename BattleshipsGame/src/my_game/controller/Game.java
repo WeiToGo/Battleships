@@ -4,10 +4,14 @@
  */
 package my_game.controller;
 
-import my_game.models.GameState;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import my_game.models.game_components.GameState;
 import my_game.models.game_components.CoralReef;
+import my_game.models.game_components.Ship;
 import my_game.networking.NetworkEntity;
 import my_game.networking.server.entities.Player;
+import my_game.util.GameException;
 
 /**
  * This class is a controller of the game. One instance
@@ -49,7 +53,8 @@ public class Game {
      * @param name The name of the game.
      * @param startingPlayer The player who starts first.
      */
-    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name, int startingPlayer) {
+    public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, 
+            Game.PlayerType playerType, String name, int startingPlayer) {
         //init local fields
         this.player = player;
         this.opponent = opponent;
@@ -73,9 +78,21 @@ public class Game {
             gameState = new GameState(receivedGameState);
             //startClientGame();
         }
-        
     } 
     
+    /**
+     * Places the provided ship at the specified coordinates of the map.
+     * @param s
+     * @param x
+     * @param y 
+     */
+    private void positionShip(Ship s, int x, int y) {
+        try {
+            gameState.getMap().moveShip(s, x, y);
+        } catch (GameException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
     
     private int getRandomFirstPlayer() {
         throw new UnsupportedOperationException("Not yet implemented");

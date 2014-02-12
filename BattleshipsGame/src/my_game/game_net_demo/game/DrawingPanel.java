@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JPanel;
 
-import my_game.networking.util.Misc;
+import my_game.util.Misc;
 
 /**
  * A JPanel which upon mouse click draws a circle of

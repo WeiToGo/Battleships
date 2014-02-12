@@ -18,7 +18,7 @@ import my_game.networking.packets.PacketHandler;
 import my_game.networking.server.entities.Player;
 import my_game.networking.server.packets.impl.GameStatePacket;
 import my_game.networking.server.packets.impl.HelloPacket;
-import my_game.networking.util.Misc;
+import my_game.util.Misc;
 
 /**
  * This is the server code ran by the host of a game.

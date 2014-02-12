@@ -1,4 +1,4 @@
-package my_game.networking.util;
+package my_game.util;
 
 public class Misc {
 

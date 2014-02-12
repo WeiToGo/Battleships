@@ -4,7 +4,8 @@
 */
 package my_game.models.game_components;
 
-import my_game.networking.util.Vector2;
+import my_game.util.GameException;
+import my_game.util.Vector2;
 
 
 /**
@@ -29,8 +30,8 @@ public class Map {
     private GameObject[][] radarView;// all grids that can be seen by all its ships.
 // private GameObject[][] radarP2;
     */
-    private Ship[] player1Ships;
-    private Ship[] player2Ships;
+    protected Ship[] player1Ships;
+    protected Ship[] player2Ships;
     
     
     public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships) {
@@ -76,12 +77,14 @@ public class Map {
     }
     
     /**
-     * This method is called after the user selects a move.
+     * This method moves a ship to a selected new position by taking all of its
+     * parts to that new position. If no such ship exists or the position is
+     * invalid a GameException will be thrown.
      * @param x
      * @param y
      */
-    public void moveShip(Ship ship, int x, int y){
-        
+    public void moveShip(Ship ship, int x, int y) throws GameException {
+        //TODO: Implement
     }
     
     /**

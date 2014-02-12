@@ -4,7 +4,7 @@
  */
 package my_game.models.game_components;
 
-import my_game.networking.util.Vector2;
+import my_game.util.Vector2;
 
 /**
  *

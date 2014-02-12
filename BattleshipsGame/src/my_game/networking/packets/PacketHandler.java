@@ -3,7 +3,7 @@ package my_game.networking.packets;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.Packet.PacketTypes;
 import my_game.networking.server.packets.impl.GameStatePacket;
-import my_game.networking.util.Misc;
+import my_game.util.Misc;
 
 /**
  * A handler for different types of packets.

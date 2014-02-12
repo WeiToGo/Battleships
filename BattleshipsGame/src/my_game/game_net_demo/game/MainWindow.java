@@ -21,7 +21,7 @@ import my_game.networking.server.GameServer;
 import my_game.networking.server.entities.Player;
 import my_game.networking.server.packets.impl.GameStatePacket;
 import my_game.networking.server.packets.impl.HelloPacket;
-import my_game.networking.util.Misc;
+import my_game.util.Misc;
 
 public class MainWindow extends JFrame implements DrawingPanelListener {
 
