@@ -7,6 +7,8 @@ package my_game.models.ships_impl;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Weapon;
+import my_game.util.Vector2;
+
 
 /**
  *
@@ -28,11 +30,14 @@ public class MineLayer extends Ship {
         this.currentSpeed = speed;
         this.heavyArmour = true;
         //to be set
-        this.radarRange = new int[] {0,0,0};
-        this.canonRange = new int[] {0,0,0};
-  // needs to see how specific weapon is implemented.  
-  //    this.availableWeapons = new Weapons[] ;
-       
+     }
+
+    public Vector2[] getRadarRange(){
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public Vector2[] getCanonRange(){
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     
 }
