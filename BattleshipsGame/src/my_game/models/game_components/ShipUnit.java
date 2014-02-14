@@ -31,10 +31,10 @@ public class ShipUnit extends GameObject {
         return posCopy;
     }
     
-    public void setPosition(int x, int y){
+    public void setPosition(Vector2 newPosition){
        // error checking?
-        position.x = x;
-        position.y = y;
+        position.x = newPosition.x;
+        position.y = newPosition.y;
     }
     
     public int getDamageLevel(){

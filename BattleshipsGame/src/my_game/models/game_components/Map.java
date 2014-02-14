@@ -23,13 +23,6 @@ public class Map {
     /** 2D array representing the cells of the map grid which contain game objects. */
     private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     
-    
-    /* By Ivo: I don't think these arrays are necessary.
-    private GameObject[][] availableMoves;//including turns
-// private GameObject[][] availableMovesP2;
-    private GameObject[][] radarView;// all grids that can be seen by all its ships.
-// private GameObject[][] radarP2;
-    */
     protected Ship[] player1Ships;
     protected Ship[] player2Ships;
     
@@ -83,7 +76,7 @@ public class Map {
      * @param x
      * @param y
      */
-    public void moveShip(Ship ship, int x, int y) throws GameException {
+    public void moveShip(Ship ship,Vector2 newPosition) throws GameException {
         //TODO: Implement
     }
     
@@ -103,8 +96,7 @@ public class Map {
         }
     }
     
-    
-     /**
+/**
 * Gather infomation about the ship to calculate the
 * possible places that ship can turn to.
 */

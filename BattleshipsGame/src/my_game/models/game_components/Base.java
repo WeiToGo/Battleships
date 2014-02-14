@@ -10,13 +10,19 @@ package my_game.models.game_components;
 public class Base {
     
     private final int playerID;
+    private final int size = 10;
     private int sizeRemaining;
     private BaseUnit[] baseUnits;
     
-    public Base(int pid, int size, BaseUnit[] units) {
+    public Base(int pid) {
         this.playerID = pid;
         this.sizeRemaining = size;
-        this.baseUnits = units;
+        BaseUnit[] bu = new BaseUnit[this.size];
+        for (int i = 0; i < this.size; i++){
+            BaseUnit bUnit = new BaseUnit(this);
+            bu[i] = bUnit;
+        }
+        this.baseUnits = bu;
     }
     
     public int getRemainingSize(){

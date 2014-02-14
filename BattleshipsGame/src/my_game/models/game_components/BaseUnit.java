@@ -11,15 +11,18 @@ package my_game.models.game_components;
 public class BaseUnit extends GameObject{
 
     private boolean isDestroyed;
+    private Base base;
     
     
-    public BaseUnit() {
+    public BaseUnit(Base b) {
+        this.base = b;
         this.type = GameObjectType.Base;
+        this.isDestroyed = false;
         // TODO complete
     }
     
     public void setDestroyed(){
-        
+        this.isDestroyed = true;
     }
     
     public boolean isDestroyed(){

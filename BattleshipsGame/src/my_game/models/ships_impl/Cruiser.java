@@ -7,6 +7,7 @@ package my_game.models.ships_impl;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Weapon;
+import my_game.util.Vector2;
 
 
 /**
@@ -28,10 +29,30 @@ public class Cruiser extends Ship {
         this.currentSize = this.size;
         this.currentSpeed = this.speed;
         this.heavyArmour = true;
-        this.radarRange = new int[] {0,0,0};
-        this.canonRange = new int[] {0,0,0}; //heavy canon
-  // needs to see how specific weapon is implemented.  
-  //    this.availableWeapons = new Weapons[] ;
-       
+        // TO DO:
+        //Weapon[] w = new Weapon();
+        //this.availableWeapons = new Weapons[] ;       
     }
+    
+/*    public Vector2[] availableMoves(){
+        ShipUnit[] shipUnits = this.getShipUnits();
+        //assuming the the 1st square of the ship is the 1st element 
+        //in this array.
+        Vector2 tipPosition = shipUnits[0].getPosition();
+        for (ShipUnit s: shipUnits){
+        
+    }
+
+    public abstract Vector2[] availableTurns(){
+    
+    }
+    
+    public abstract Vector2[] getRadarRange(){
+        
+    }
+
+    public abstract Vector2[] getCanonRange(){
+        
+    }
+*/
 }

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 package my_game.models.game_components;
-
+import my_game.util.Vector2;
 /**
  *
  */
@@ -22,8 +22,8 @@ public abstract class Ship {
     protected int currentSize;
     protected int currentSpeed;
     protected boolean heavyArmour;
-    protected int[] radarRange;
-    protected int[] canonRange;
+    protected Vector2[] radarRange;
+    protected Vector2[] canonRange;
     protected Weapon[] availableWeapons;
 
     
@@ -46,49 +46,65 @@ public abstract class Ship {
     public int getCurrentSpeed(){
         return currentSpeed;
     }
+    
+    public ShipUnit[] getShipUnits(){
+        return this.shipUnits;
+    }
+    
     /**
-     * This method updates each ShipUnit to the new position.
-     * @param x The x-coordinate of the final position of the bow of the ship.
-     * @param y The y-coordinate of the final position of the bow of the ship.
+     * This method updates each ShipUnit to the new position, and it's called for
+     * both move and turn actions.
+     * @param An array of Vector2 indicating the new potions starting at the bow
+     * of the ship.
      */
-    public void moveTo(int x, int y){
-        
+    public void moveTo(Vector2[] newPosition){
+        // assert newPosition.length == shipUnits.length
+        // and assuming it's the right order.
+        ShipUnit[] shipUnits = this.getShipUnits();
+        for (ShipUnit s: shipUnits){
+            for (Vector2 v: newPosition){
+                s.setPosition(v);
+            }
+        }
     }
     
     /**
      * This method return true if the ship can turn 180 degree in one turn
-     * (Torpedoand radar boat)
+     * (Torpedo and radar boat)
      * 
      * @return 
      */
     public boolean hasFlexibleTurn(){
-        return false;
+        if (this.shipType.equals(ShipType.TorpedoBoat)){
+            return true;
+        }else if (this.shipType.equals(ShipType.RadarBoat)){
+            return true; 
+        }else{
+            return false;
+        }
     }
     
+ 
     /**
-     * This method updates each ShipUnit to the new position.
-     * @param x The x-coordinate of the final position of the bow of the ship.
-     * @param y The y-coordinate of the final position of the bow of the ship.
+     *@return array of positons on the map that is within the range of this 
+     * ship's radar.
      */
-    public void turnTo(int x, int y) {
-        
-    }
+    public abstract Vector2[] getRadarRange();
     
     /**
-     * 
-     * @return array of 3 ints, indicating the number of square to the left/right,
-     * front, and back??
+     *@return array of positons on the map that is within the range of this 
+     * ship's canon.
      */
-    public int[] getRadarRange(){
-        return radarRange;       
-    }
+    public abstract Vector2[] getCanonRange();
     
     /**
-     * 
-     *@return array of 3 ints, indicating the number of square to the left/right,
-     * front, and back. 
+     *@return array of positons on the map that this ship can move to.
      */
-    public int[] getCanonRange(){
-        return canonRange;
-    }
+    public abstract Vector2[] availableMoves();
+    
+    /**
+     *@return array of positons on the map that this ship can turn to.
+     */
+    public abstract Vector2[] availableTurns();  
+          
 }
