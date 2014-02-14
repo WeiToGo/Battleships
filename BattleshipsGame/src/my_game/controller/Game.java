@@ -10,7 +10,8 @@ import my_game.models.game_components.GameState;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
 import my_game.networking.NetworkEntity;
-import my_game.networking.server.entities.Player;
+import my_game.models.player_components.Player;
+import my_game.util.Vector2;
 import my_game.util.GameException;
 
 /**
@@ -86,9 +87,9 @@ public class Game {
      * @param x
      * @param y 
      */
-    private void positionShip(Ship s, int x, int y) {
+    private void positionShip(Ship s, Vector2 position) {
         try {
-            gameState.getMap().moveShip(s, x, y);
+            gameState.getMap().moveShip(s,position);
         } catch (GameException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
