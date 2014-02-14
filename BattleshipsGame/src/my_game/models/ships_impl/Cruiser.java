@@ -33,26 +33,14 @@ public class Cruiser extends Ship {
         //Weapon[] w = new Weapon();
         //this.availableWeapons = new Weapons[] ;       
     }
-    
-/*    public Vector2[] availableMoves(){
-        ShipUnit[] shipUnits = this.getShipUnits();
-        //assuming the the 1st square of the ship is the 1st element 
-        //in this array.
-        Vector2 tipPosition = shipUnits[0].getPosition();
-        for (ShipUnit s: shipUnits){
-        
+
+   
+    public Vector2[] getRadarRange(){
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public abstract Vector2[] availableTurns(){
-    
-    }
-    
-    public abstract Vector2[] getRadarRange(){
-        
+    public Vector2[] getCanonRange(){
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public abstract Vector2[] getCanonRange(){
-        
-    }
-*/
 }

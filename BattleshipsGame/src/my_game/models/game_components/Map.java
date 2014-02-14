@@ -25,9 +25,11 @@ public class Map {
     
     protected Ship[] player1Ships;
     protected Ship[] player2Ships;
+    private Base p1Base;
+    private Base p2Base;
     
     
-    public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships) {
+    public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships, Base b1, Base b2) {
         //clear the grid (init all to null)
         clearGrid();
         /* TODO when creating the mapGrid use a CoralReef to provide
@@ -56,13 +58,19 @@ public class Map {
         //Position ships on the map grid as well.
         initShips(player1Ships);
         initShips(player2Ships);
+        
+        this.p1Base = b1;
+        this.p2Base = b2;
+        
+        initBase(b1);
+        initBase(b2);
     }
     
 /**
 * Gather infomation about the ship to calculate the
 * possible places that ship can move to.
 */
-    public Vector2[][] prepareMoveShip(Ship ship){
+    public Vector2[] prepareMoveShip(Ship ship){
         //TODO generate an array of points where the ship can safely move
         // NOTE: There is the Vector2 class which can be used to represent a point
         //return availableMoves;
@@ -96,11 +104,16 @@ public class Map {
         }
     }
     
+    private void initBase(Base b) {
+        // TO DO: position the baseunits on the map. Location should be fixed
+        // and the Base doesn't need to know its location.
+     }
+    
 /**
 * Gather infomation about the ship to calculate the
 * possible places that ship can turn to.
 */
-    public Vector2[][] prepareTurnShip(Ship ship){
+    public Vector2[] prepareTurnShip(Ship ship){
         // TODO same as in prepareMoveShip
         //return availableMoves;
         throw new UnsupportedOperationException("Not yet implemented");

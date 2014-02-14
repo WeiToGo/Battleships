@@ -8,7 +8,7 @@ import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.Ship;
 import my_game.models.player_components.ChatLog;
-import my_game.networking.server.entities.Player;
+import my_game.models.player_components.Player;
 
 /**
  * The state of a game describes a game fully.
@@ -39,6 +39,7 @@ public class GameState {
     protected ChatLog chatLog;
     protected Map map;
     
+    
     //TODO accessors and mutators for chat log and map
 
     public GameState(Player[] player, CoralReef reef, int firstPlayer, String name) {
@@ -55,8 +56,10 @@ public class GameState {
         //init each player's ships
         Ship[] player1Ships = generateShips(player[0]);
         Ship[] player2Ships = generateShips(player[1]);
+        Base player1Base = new Base(player[0].getID());
+        Base player2Base = new Base(player[1].getID());
         //init map
-        map = new Map(reef, player1Ships, player2Ships);
+        map = new Map(reef, player1Ships, player2Ships, player1Base, player2Base);
         //init chat
         chatLog = new ChatLog();
     }
@@ -77,4 +80,5 @@ public class GameState {
     private Ship[] generateShips(Player player) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
+    
 }
