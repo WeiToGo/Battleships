@@ -54,12 +54,12 @@ public class GameState {
         //set game name
         this.name = name;
         //init each player's ships
-        Ship[] player1Ships = generateShips(player[0]);
-        Ship[] player2Ships = generateShips(player[1]);
-        Base player1Base = new Base(player[0].getID());
-        Base player2Base = new Base(player[1].getID());
+        Ship[] player0Ships = generateShips(player[0]);
+        Ship[] player1Ships = generateShips(player[1]);
+        Base player0Base = new Base(player[0].getID());
+        Base player1Base = new Base(player[1].getID());
         //init map
-        map = new Map(reef, player1Ships, player2Ships, player1Base, player2Base);
+        map = new Map(reef, player0Ships, player1Ships, player0Base, player1Base);
         //init chat
         chatLog = new ChatLog();
     }
