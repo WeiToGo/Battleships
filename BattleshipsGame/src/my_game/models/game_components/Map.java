@@ -23,13 +23,13 @@ public class Map {
     /** 2D array representing the cells of the map grid which contain game objects. */
     private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     
+    protected Ship[] player0Ships;
     protected Ship[] player1Ships;
-    protected Ship[] player2Ships;
     private Base p1Base;
     private Base p2Base;
     
     
-    public Map(CoralReef reef, Ship[] player1Ships, Ship[] player2Ships, Base b1, Base b2) {
+    public Map(CoralReef reef, Ship[] player0Ships, Ship[] player1Ships, Base b0, Base b1) {
         //clear the grid (init all to null)
         clearGrid();
         /* TODO when creating the mapGrid use a CoralReef to provide
@@ -50,20 +50,20 @@ public class Map {
         }
         
         //init players' ships
+        this.player0Ships = new Ship[player0Ships.length];
         this.player1Ships = new Ship[player1Ships.length];
-        this.player1Ships = new Ship[player2Ships.length];
         // copy the arrays by value to local arrays
+        System.arraycopy(player0Ships, 0, this.player0Ships, 0, player0Ships.length);
         System.arraycopy(player1Ships, 0, this.player1Ships, 0, player1Ships.length);
-        System.arraycopy(player2Ships, 0, this.player2Ships, 0, player2Ships.length);
         //Position ships on the map grid as well.
+        initShips(player0Ships);
         initShips(player1Ships);
-        initShips(player2Ships);
         
-        this.p1Base = b1;
-        this.p2Base = b2;
+        this.p1Base = b0;
+        this.p2Base = b1;
         
+        initBase(b0);
         initBase(b1);
-        initBase(b2);
     }
     
 /**
