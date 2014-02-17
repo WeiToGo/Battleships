@@ -86,6 +86,32 @@ public class Map {
      */
     public void moveShip(Ship ship,Vector2 newPosition) throws GameException {
         //TODO: Implement
+        
+        Vector2[] validePositions = validateMove(ship,newPosition);
+        ship.moveTo(validePositions);
+        
+    }
+    
+    /**
+     * This method checks if there are ships, coral reef in positions that the 
+     * player wants to move to. It's called by moveShip.
+     * @param p The desired position of the bow of the ship.
+     * @return The valide positions that the ship can move.
+     */
+    public Vector2[] validateMove(Ship s, Vector2 p){
+        throw new UnsupportedOperationException("Not yet implemented");
+        //Vectors2[] shipPositions = getShipPositions(s,p);
+        //calls isClear, isObstacle, isMine for each positions. 
+    }
+    /**
+     * This method may need to be static?
+     * @param s
+     * @param p The desired position of the bow of this ship.
+     * @return An array of positions corresponding to each ship unit.
+     */
+    public Vector2[] getShipPositions(Ship s, Vector2 p){
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
     
     /**
@@ -122,6 +148,27 @@ public class Map {
     public void turnShip(Ship ship, int degree){
         // check if degree is valid (+-90, +-180)
         
+    }
+     /**
+     * This method checks if there are ships, coral reef in positions that the 
+     * player wants to turn to. It's called by turnShip.
+     * @param p The desired position of the bow of the ship.
+     * @return The valide positions that the ship can move.
+     */
+    public Vector2[] validateTurn(Ship s, Vector2 p){
+        throw new UnsupportedOperationException("Not yet implemented");
+        //Vectors2[] shipPositions = getShipPositions(s,p);
+        //calls isClear, isObstacle, isMine for each positions. 
+    }
+    /**
+     * This method may need to be static?
+     * @param s
+     * @param p The desired position of the bow of this ship.
+     * @return An array of positions corresponding to each ship unit.
+     */
+    public Vector2[] getShipTurnPositions(Ship s, Vector2 p){
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
     
     public boolean isObstacle(int x, int y){

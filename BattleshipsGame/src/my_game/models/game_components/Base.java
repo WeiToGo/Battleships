@@ -28,7 +28,7 @@ public class Base {
     public int getRemainingSize(){
 
         for (BaseUnit unit: baseUnits){
-            if (unit.isDestroyed()){
+            if (unit.getDamageLevel() == 1){
                 sizeRemaining--;
             }
         }

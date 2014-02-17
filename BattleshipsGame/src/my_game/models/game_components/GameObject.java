@@ -22,4 +22,10 @@ public abstract class GameObject {
     public GameObjectType getObjectType() {
         return this.type;
     }
+    
+    // may not be necessary if each gameobject implement it differently. 
+ /*   public abstract void setDamage();
+    
+    public abstract int getDamageLevel();
+ */   
 }

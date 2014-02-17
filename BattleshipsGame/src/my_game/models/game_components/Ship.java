@@ -59,6 +59,16 @@ public abstract class Ship {
         return this.direction;
     }
     
+    public void reduceCurentSize(){
+        currentSize--;    
+        //calculate the reduce speed accordingly.
+        int reducedSpeed = 0;
+        setCurrentSpeed(reducedSpeed);
+    }
+    
+    public void setCurrentSpeed(int speed){
+        currentSpeed = speed;
+    }
     /**
      * This method is called after every turn to reflect the current direction
      * the ship is facing.

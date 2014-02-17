@@ -10,22 +10,29 @@ package my_game.models.game_components;
  */
 public class BaseUnit extends GameObject{
 
-    private boolean isDestroyed;
+    private int damage;
     private Base base;
     
     
     public BaseUnit(Base b) {
         this.base = b;
         this.type = GameObjectType.Base;
-        this.isDestroyed = false;
+        this.damage = 0;
         // TODO complete
     }
     
-    public void setDestroyed(){
+ /*   public void setDestroyed(){
         this.isDestroyed = true;
     }
-    
-    public boolean isDestroyed(){
-        return isDestroyed;
+ */
+    public void setDamage(){
+        if (damage == 0){
+            damage++;
+        }else{
+            //already destroyed;
+        }
+    }
+    public int getDamageLevel(){
+        return damage;
     }
 }
