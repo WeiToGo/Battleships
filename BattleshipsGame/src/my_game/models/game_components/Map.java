@@ -44,7 +44,8 @@ public class Map {
                 if (reef.hasObstacleIn(i, j)){
                     CoralUnit coralUnit = new CoralUnit();
                     //maybe setObjectAt should return void?
-                    this.setObjectAt(i, j, coralUnit);
+                    Vector2 position = new Vector2(i,j);
+                    this.setObjectAt(position, coralUnit);
                 }
             }
         }
@@ -100,19 +101,51 @@ public class Map {
      */
     public Vector2[] validateMove(Ship s, Vector2 p){
         throw new UnsupportedOperationException("Not yet implemented");
-        //Vectors2[] shipPositions = getShipPositions(s,p);
-        //calls isClear, isObstacle, isMine for each positions. 
+        
+        //Vectors2[] shipPositions = getPositions(s,p);
+        
+        //calls validateMovePositions(shipPositions); 
     }
     /**
      * This method may need to be static?
-     * @param s
-     * @param p The desired position of the bow of this ship.
-     * @return An array of positions corresponding to each ship unit.
+     * @param p1 The current position of the bow of the ship.
+     * @param p2 The desired position of the bow of this ship.
+     * @return An array of positions in between p1 and p2. (should handle the 
+     * cases of left, right, and back move as well. 
      */
-    public Vector2[] getShipPositions(Ship s, Vector2 p){
+    public Vector2[] getMovePositions(Vector2 p1, Vector2 p2){
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
+    
+    /**
+     * This method checks if there are obstacles or mines in the positions,
+     * if there are obstacles, the move should stop right before the obstacle,
+     * if there is a mine, touchedMine is called. 
+     * @param p The array of positions to validate.
+     * @return The new positions that the ship will be moved to. It would be the 
+     * same than the input is all positions are clear.
+     */
+    public Vector2[] validateMovePositions(Vector2[] p){
+     //   throw new UnsupportedOperationException("Not yet implemented"); 
+        // to remember the position where an obstacle or mine is encountered.
+        Vector2 obstacle, mine; 
+        for (Vector2 v: p){
+            if (isObstacle(v)){
+                obstacle = v;
+                break;
+            }else if (isMine(v)){
+                obstacle = v;
+                break;
+            }else{
+               return p;
+            }
+        }
+        // need generate new valid positions.
+        return null; // TO CHANGE.
+     
+    }
+    
     
     /**
      * Inserts the ships in the shipsArray provided into the grid
@@ -148,6 +181,8 @@ public class Map {
     public void turnShip(Ship ship, int degree){
         // check if degree is valid (+-90, +-180)
         
+        // calls validateTurn(), if returns null, does nothing.
+        
     }
      /**
      * This method checks if there are ships, coral reef in positions that the 
@@ -157,48 +192,80 @@ public class Map {
      */
     public Vector2[] validateTurn(Ship s, Vector2 p){
         throw new UnsupportedOperationException("Not yet implemented");
-        //Vectors2[] shipPositions = getShipPositions(s,p);
-        //calls isClear, isObstacle, isMine for each positions. 
+        // needs to know which ship unit is the pivot for the turn.
+        
+        //Vectors2[] shipPositions = getTurnPositions(p1,p2,pivot);
+        
+        //calls validateTurnPositions(shipPositions), if returns false, return
+        //null
     }
+    
     /**
      * This method may need to be static?
-     * @param s
-     * @param p The desired position of the bow of this ship.
-     * @return An array of positions corresponding to each ship unit.
+     * @param p1 The current position of the bow of the ship.
+     * @param p2 The desired position of the bow of this ship.
+     * @return An array of positions corresponding to positions in between s 
+     * and p.
      */
-    public Vector2[] getShipTurnPositions(Ship s, Vector2 p){
+    public Vector2[] getTurnPositions(Vector2 p1, Vector2 p2, Vector2 pivot){
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
     
-    public boolean isObstacle(int x, int y){
+    /**
+     * This method checks if there are obstacles or mines in the positions,
+     * if there are obstacles, the move should stop right before the obstacle,
+     * if there is a mine, touchedMine is called. 
+     * @param p The array of positions to validate.
+     * @return The new positions that the ship will be moved to. It would be the 
+     * same than the input is all positions are clear.
+     */
+    public boolean validateTurnPositions(Vector2[] p){
+  //      throw new UnsupportedOperationException("Not yet implemented"); 
+        // to remember the position where an obstacle or mine is encountered.
+        boolean turn = true;
+        for (Vector2 v: p){
+            if (isObstacle(v)){
+                turn = false;
+                break; // don't turn if there is an obstacle.
+            }else if (isMine(v)){
+                //call touchedMine
+                turn = false;
+                break;
+            }
+        }
+        
+        return turn;
+    }
+    
+   
+    public boolean isObstacle(Vector2 position){
         boolean isObstacle = false; //set to false for now, TO CHANGE
         return isObstacle;
                 
     }
     
-    public boolean isMine(int x, int y){
+    public boolean isMine(Vector2 position){
         boolean isMine = false;
         return isMine;
     }
     
-    public boolean isClear(int x, int y){
+    public boolean isClear(Vector2 position){
         boolean isClear = false;
         return isClear;
     }
     
     /**
 * Accessor method for game objects in the grid.
-* @param x Positive and within bounds x-coordinate on the grid.
-* @param y Positive and within bounds y-coordinate on the grid.
+* @param position Positive and within bounds on the grid.
 * @return Game object at the specified coordinates in the grid, or null
 * if invalid coordinate.
 */
       
-    public GameObject getObjectAt(int x, int y) {
-        if(x >= 0 && x < WIDTH &&
-           y >= 0 && y < HEIGHT) {
-            return grid[x][y];
+    public GameObject getObjectAt(Vector2 position) {
+        if(position.x >= 0 && position.x < WIDTH &&
+           position.y >= 0 && position.y < HEIGHT) {
+            return grid[position.x][position.y];
         } else {
             return null;
         }
@@ -207,17 +274,16 @@ public class Map {
     
     /**
 * Mutator method for inserting game objects into the grid.
-* @param x Positive and within bounds x-coordinate on the grid.
-* @param y Positive and within bounds y-coordinate on the grid.
+* @param position Positive and within bounds on the grid.
 * @param object Game object to insert.
 * @return The game object which was successfully inserted, or null if
 * the coordinates are invalid, or the object is null.
 */
-    public GameObject setObjectAt(int x, int y, GameObject object) {
-        if(x >= 0 && x < WIDTH &&
-           y >= 0 && y < HEIGHT && object != null) {
-            grid[x][y] = object;
-            return grid[x][y];
+    public GameObject setObjectAt(Vector2 position, GameObject object) {
+        if(position.x >= 0 && position.x < WIDTH &&
+           position.y >= 0 && position.y < HEIGHT && object != null) {
+            grid[position.x][position.y] = object;
+            return grid[position.x][position.y];
         } else {
             return null;
         }
