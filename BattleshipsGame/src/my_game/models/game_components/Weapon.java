@@ -4,13 +4,22 @@
  */
 package my_game.models.game_components;
 
+import my_game.util.Vector2;
+
 /**
  *
  */
-public class Weapon extends GameObject {
+public abstract class Weapon {
     
-    public Weapon() {
-        this.type = GameObjectType.Weapon;
-        // TODO complete
-    }
+    protected int damageLevel;
+	
+	public int getDamageLevel() {
+		return damageLevel;
+	}
+	public void setDamageLevel(int damageLevel) {
+		this.damageLevel = damageLevel;
+	}
+    
+    
+    
 }
