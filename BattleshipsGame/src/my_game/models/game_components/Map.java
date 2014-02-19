@@ -22,6 +22,8 @@ public class Map {
     private final int Y_OFFSET = 3;
     /** 2D array representing the cells of the map grid which contain game objects. */
     private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
+    /** 2D array giving the radar visibility for every grid cell of the map. */
+    private boolean[][] player0Visibility, player1Visibility;   //TODO implement
     
     protected Ship[] player0Ships;
     protected Ship[] player1Ships;
