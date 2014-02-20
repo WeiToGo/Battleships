@@ -33,7 +33,15 @@ public class ChatLog {
      * @param p The player whose messages subset will be returned.
      * @return 
      */
-    public List<String> getMessages(Player p) {
+    public List<Message> getMessages(Player p) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    /**
+     * 
+     * @param m 
+     */
+    public void addMessage(Message m) {
+        
     }
 }
