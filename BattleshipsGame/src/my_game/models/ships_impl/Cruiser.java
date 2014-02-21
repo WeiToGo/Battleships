@@ -4,6 +4,8 @@
  */
 package my_game.models.ships_impl;
 
+import java.util.ArrayList;
+
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Weapon;
@@ -15,6 +17,9 @@ import my_game.util.Vector2;
  */
 public class Cruiser extends Ship {
     
+	private ArrayList<String> weapons;
+	private ShipUnit[] shipUnit;
+	
     public Cruiser(int pid){
         super(pid);
         this.shipType = ShipType.Cruiser;
@@ -29,9 +34,9 @@ public class Cruiser extends Ship {
         this.currentSize = this.size;
         this.currentSpeed = this.speed;
         this.heavyArmour = true;
-        // TO DO:
-        //Weapon[] w = new Weapon();
-        //this.availableWeapons = new Weapons[] ;       
+        
+        weapons.add("cannon");
+        
     }
 
    
