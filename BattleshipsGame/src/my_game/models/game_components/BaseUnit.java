@@ -13,8 +13,11 @@ public class BaseUnit extends GameObject{
     private int damageLevel; //0: healthy, 1: destroyed
     private Base base;
     
-    
-    public BaseUnit(Base b) {
+    public BaseUnit() {
+		super();
+	}
+
+	public BaseUnit(Base b) {
         this.base = b;
         this.type = GameObjectType.Base;
         this.damageLevel = 0;
@@ -33,7 +36,7 @@ public class BaseUnit extends GameObject{
         return damageLevel;
     }
     
-    public boolean isHealth() {
+    public boolean isHealthy() {
     	return damageLevel == 0;
     }
     

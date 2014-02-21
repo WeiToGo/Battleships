@@ -1,12 +1,9 @@
-package my_game.models.weapons_impl;
+package my_game.models.game_components;
 
-import my_game.models.game_components.GameObject;
 import my_game.models.game_components.Ship.ShipDirection;
 import my_game.util.Vector2;
 
 public class Mine extends GameObject {
-	
-	int amount;
 	
 	public Vector2[] getMineZone(Vector2 pos, ShipDirection direction) {
 		int x = pos.x;
@@ -44,18 +41,5 @@ public class Mine extends GameObject {
 
 	public Mine() {
 		super();
-		this.amount = 5;
-	}
-
-	public int getAmount() {
-		return amount;
-	}
-
-	public void increaseAmount() {
-		amount++;
-	}
-	
-	public void decreaseAmount() {
-		amount--;
 	}
 }

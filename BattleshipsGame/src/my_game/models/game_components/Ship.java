@@ -21,16 +21,15 @@ public abstract class Ship {
     };
     
     /** The attributes of Ship class. */
-    protected ShipType shipType;
-    protected ShipUnit[] shipUnits;
-    protected final int playerID;
-    protected int size;
-    protected int speed;
-    protected int currentSize;
-    protected int currentSpeed;
-    protected int armour;
-    protected ShipDirection direction; 
-    protected Range radarRange;
+    private ShipType shipType;
+    private ShipUnit[] shipUnits;
+    private final int playerID;
+    private int size;
+    private int speed;
+    private int currentSize;
+    private int currentSpeed;
+    private int armour;
+    private ShipDirection direction; 
     protected ArrayList<String> weapons;
 
     
@@ -83,28 +82,29 @@ public abstract class Ship {
 		return playerID;
 	}
 
-	public void setShipType(ShipType shipType) {
-		this.shipType = shipType;
-	}
-
-	public void setShipUnits(ShipUnit[] shipUnits) {
-		this.shipUnits = shipUnits;
-	}
-
-	public void setRadarRange(Range radarRange) {
-		this.radarRange = radarRange;
-	}
-	
-	public Range getRadarRange() {
-		return radarRange;
-	}
-
 	/**
      * @return The type of this ship.
      */
     public ShipType getShipType() {
         return this.shipType;
     }
+	
+	public void setShipType(ShipType shipType) {
+		this.shipType = shipType;
+	}
+	
+    public ShipUnit[] getShipUnits(){
+        return this.shipUnits;
+    }
+
+	public void setShipUnits(ShipUnit[] shipUnits) {
+		this.shipUnits = shipUnits;
+	}
+	
+	public void setRadarRange(Range radarRange) {
+		this.radarRange = radarRange;
+	}
+
     
     /**
      * This method is called so Map can calculate all the legal moves for this 
@@ -115,12 +115,22 @@ public abstract class Ship {
         return currentSpeed;
     }
     
-    public ShipUnit[] getShipUnits(){
-        return this.shipUnits;
+    public void setCurrentSpeed(int speed){
+        currentSpeed = speed;
     }
+   
     
     public ShipDirection getDirection(){
         return this.direction;
+    }
+    
+    /**
+     * This method is called after every turn to reflect the current direction
+     * the ship is facing.
+     * @param d The new direction. 
+     */
+    public void setDirection(ShipDirection d){
+        this.direction = d;
     }
     
     public void reduceCurentSize(){
@@ -130,17 +140,7 @@ public abstract class Ship {
         setCurrentSpeed(reducedSpeed);
     }
     
-    public void setCurrentSpeed(int speed){
-        currentSpeed = speed;
-    }
-    /**
-     * This method is called after every turn to reflect the current direction
-     * the ship is facing.
-     * @param d The new direction. 
-     */
-    public void setDirection(ShipDirection d){
-        this.direction = d;
-    }
+    
     /**
      * This method updates each ShipUnit to the new position, and it's called for
      * both move and turn actions.

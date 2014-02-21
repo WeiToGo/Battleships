@@ -158,7 +158,7 @@ public class Map {
         //go through the array
         for(Ship s: shipsArray) {
             //and for insert every ship unit of every ship into the grid
-            for(ShipUnit su: s.shipUnits) {
+            for(ShipUnit su: s.getShipUnits()) {
                 Vector2 position = su.getPosition();
                 grid[position.x][position.y] = su;
             }

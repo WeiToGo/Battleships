@@ -16,7 +16,11 @@ public class ShipUnit extends GameObject {
     private Vector2 position;
     private Ship ship;
     
-    public ShipUnit(Ship ship){
+    public ShipUnit() {
+		super();
+	}
+
+	public ShipUnit(Ship ship){
         
           this.ship = ship;
           this.type = GameObjectType.Ship;
@@ -46,7 +50,7 @@ public class ShipUnit extends GameObject {
             damageLevel =+ damage;
     }
     
-    public boolean isHealth() {
+    public boolean isHealthy() {
     	return damageLevel == 0;
     }
     
