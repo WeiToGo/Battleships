@@ -16,36 +16,32 @@ import my_game.util.Vector2;
  *
  */
 public class Cruiser extends Ship {
-    
-	private ArrayList<String> weapons;
-	private ShipUnit[] shipUnit;
 	
-    public Cruiser(int pid){
+    public Cruiser(int pid, Vector2[] position, ShipDirection direction){
         super(pid);
-        this.shipType = ShipType.Cruiser;
-        this.size = 5;
-        ShipUnit[] su = new ShipUnit[this.size];
+        setShipType(ShipType.Cruiser);
+        setSize(5);
+        
+        ShipUnit[] tempShipUnits = new ShipUnit[this.size];
         for (int i = 0; i < this.size; i++){
-            ShipUnit sUnit = new ShipUnit(this);
-            su[i] = sUnit;
+            tempShipUnits[i] = new ShipUnit(this);
         }
-        this.shipUnits = su;
-        this.speed = 10;
-        this.currentSize = this.size;
-        this.currentSpeed = this.speed;
-        this.heavyArmour = true;
+        setShipUnits(tempShipUnits);
+        
+        setSpeed(10);
+        setCurrentSize(size);
+        setCurrentSpeed(speed);
+        setArmour(2);
+        setDirection(direction);
+        moveTo(position);
         
         weapons.add("cannon");
         
     }
+    
+    
 
    
-    public Vector2[] getRadarRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public Vector2[] getCanonRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    
 
 }

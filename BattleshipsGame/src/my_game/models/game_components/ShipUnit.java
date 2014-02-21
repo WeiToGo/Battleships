@@ -11,8 +11,8 @@ import my_game.util.Vector2;
  * @author wei
  */
 public class ShipUnit extends GameObject {
-    private int damageLevel; // (0: healthy, 1: damaged, 2: destroyed)
-
+    private int damageLevel;
+    private int unitArmour;
     private Vector2 position;
     private Ship ship;
     
@@ -21,6 +21,7 @@ public class ShipUnit extends GameObject {
           this.ship = ship;
           this.type = GameObjectType.Ship;
           this.damageLevel = 0;
+          this.unitArmour =ship.getArmour(); 
     }
     
     public Ship getShip() {
@@ -33,7 +34,6 @@ public class ShipUnit extends GameObject {
     }
     
     public void setPosition(Vector2 newPosition){
-       // error checking?
         position.x = newPosition.x;
         position.y = newPosition.y;
     }
@@ -43,9 +43,18 @@ public class ShipUnit extends GameObject {
     }
     
     public void setDamage(int damage){
-        if (damageLevel < 2){
-            damageLevel = damageLevel + damage;
-        }// may need to set as destroyed immediately;
-        
+            damageLevel =+ damage;
+    }
+    
+    public boolean isHealth() {
+    	return damageLevel == 0;
+    }
+    
+    public boolean isDamaged() {
+    	return (unitArmour - damageLevel) == 1;
+    }
+    
+    public boolean isDestoryed() {
+    	return unitArmour <= damageLevel;
     }
 }

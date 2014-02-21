@@ -3,6 +3,9 @@
  * and open the template in the editor.
  */
 package my_game.models.game_components;
+import java.util.ArrayList;
+
+import my_game.util.Range;
 import my_game.util.Vector2;
 /**
  *
@@ -16,7 +19,8 @@ public abstract class Ship {
     public enum ShipDirection {
         North, South, East, West
     };
-    /** The type of this ship. */
+    
+    /** The attributes of Ship class. */
     protected ShipType shipType;
     protected ShipUnit[] shipUnits;
     protected final int playerID;
@@ -24,11 +28,10 @@ public abstract class Ship {
     protected int speed;
     protected int currentSize;
     protected int currentSpeed;
-    protected boolean heavyArmour;
+    protected int armour;
     protected ShipDirection direction; 
-    protected Vector2[] radarRange;
-    protected Vector2[] canonRange;
-    protected Weapon[] availableWeapons;
+    protected Range radarRange;
+    protected ArrayList<String> weapons;
 
     
     /** Constructs a ship given a player ID. */
@@ -36,12 +39,73 @@ public abstract class Ship {
         this.playerID = pid;
     }
     
-    /**
+    public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public int getCurrentSize() {
+		return currentSize;
+	}
+
+	public void setCurrentSize(int currentSize) {
+		this.currentSize = currentSize;
+	}
+
+	public int getArmour() {
+		return armour;
+	}
+
+	public void setArmour(int armour) {
+		this.armour = armour;
+	}
+
+	public ArrayList<String> getWeapons() {
+		return weapons;
+	}
+
+	public void setWeapons(ArrayList<String> weapons) {
+		this.weapons = weapons;
+	}
+
+	public int getPlayerID() {
+		return playerID;
+	}
+
+	public void setShipType(ShipType shipType) {
+		this.shipType = shipType;
+	}
+
+	public void setShipUnits(ShipUnit[] shipUnits) {
+		this.shipUnits = shipUnits;
+	}
+
+	public void setRadarRange(Range radarRange) {
+		this.radarRange = radarRange;
+	}
+	
+	public Range getRadarRange() {
+		return radarRange;
+	}
+
+	/**
      * @return The type of this ship.
      */
     public ShipType getShipType() {
         return this.shipType;
     }
+    
     /**
      * This method is called so Map can calculate all the legal moves for this 
      * ship.
@@ -131,19 +195,7 @@ public abstract class Ship {
     
  
     /**
-     *@return array of positons on the map that is within the range of this 
-     * ship's radar.
-     */
-    public abstract Vector2[] getRadarRange();
-    
-    /**
-     *@return array of positons on the map that is within the range of this 
-     * ship's canon.
-     */
-    public abstract Vector2[] getCanonRange();
-    
-    /**
-     *@return array of positons on the map that this ship can move to.
+     *@return array of positions on the map that this ship can move to.
      */
 //    public abstract Vector2[] availableMoves(){
     public Vector2[] availableMoves(){

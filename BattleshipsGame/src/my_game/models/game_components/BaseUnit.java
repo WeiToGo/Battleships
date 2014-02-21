@@ -10,14 +10,14 @@ package my_game.models.game_components;
  */
 public class BaseUnit extends GameObject{
 
-    private int damage;
+    private int damageLevel; //0: healthy, 1: destroyed
     private Base base;
     
     
     public BaseUnit(Base b) {
         this.base = b;
         this.type = GameObjectType.Base;
-        this.damage = 0;
+        this.damageLevel = 0;
         // TODO complete
     }
     
@@ -26,13 +26,18 @@ public class BaseUnit extends GameObject{
     }
  */
     public void setDamage(){
-        if (damage == 0){
-            damage++;
-        }else{
-            //already destroyed;
-        }
+        if (damageLevel == 0)
+        	damageLevel++;
     }
     public int getDamageLevel(){
-        return damage;
+        return damageLevel;
+    }
+    
+    public boolean isHealth() {
+    	return damageLevel == 0;
+    }
+    
+    public boolean isDestoryed() {
+    	return damageLevel == 1;
     }
 }
