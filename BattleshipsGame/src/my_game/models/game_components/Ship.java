@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import my_game.util.Range;
 import my_game.util.Vector2;
+import my_game.util.Positions;
 /**
  *
  */
@@ -147,7 +148,7 @@ public abstract class Ship {
      * @param An array of Vector2 indicating the new potions starting at the bow
      * of the ship.
      */
-    public void moveTo(Vector2[] newPosition){
+    public void moveTo(ArrayList<Vector2> newPosition){
         // assert newPosition.length == shipUnits.length
         // and assuming it's the right order.
         ShipUnit[] shipUnits = this.getShipUnits();
@@ -197,14 +198,19 @@ public abstract class Ship {
     /**
      *@return array of positions on the map that this ship can move to.
      */
-    public ArrayList<Vector2> availableMoves(){
+    public Positions availableMoves(){
     
         ShipUnit[] shipUnits = this.getShipUnits();
         ShipDirection direction = this.getDirection();
         int speed = this.getCurrentSpeed();
         int size = this.getCurrentSize();
         Vector2 shipBow = shipUnits[0].getPosition();
-        ArrayList<Vector2> availableMoves = new ArrayList<Vector2>();
+        // I get an error if I don't add this part.
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
+        Positions availableMoves = new Positions(back, forward, left, right);
         switch (direction){
             case North: availableMoves = this.availableNorth(shipBow, size, speed);
                 break;
@@ -219,174 +225,191 @@ public abstract class Ship {
         return availableMoves;
     }
     
-    private ArrayList<Vector2> availableNorth(Vector2 bow, int size, int speed){
+    private Positions availableNorth(Vector2 bow, int size, int speed){
     	int x = bow.x;
         int y = bow.y;
         int i, j = 0;
-        ArrayList<Vector2> positions = new ArrayList<Vector2>();
-
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
         //move backward.
         if (y+size < 30){
-        	Vector2 backPosition = new Vector2(x,y+size);
-        	positions.add(backPosition);
+            Vector2 backPosition = new Vector2(x,y+size);
+            back.add(backPosition);
         }
         
         //move sideways.
         if (x-1 >= 0){
-        	int leftX = x-1;
-        	for (i = y; i < y+size; i++){
-    			Vector2 p = new Vector2(leftX,i);
-    			positions.add(p);
-        	}
+            int leftX = x-1;
+            for (i = y; i < y+size; i++){
+                Vector2 p = new Vector2(leftX,i);
+    		left.add(p);
+            }
         }
         if (x+1 < 30){
-        	int rightX = x+1;
-       		for (i = y; i < y+size; i++){
-       			Vector2 p = new Vector2(rightX,i);
-       			positions.add(p);
-        	}
+            int rightX = x+1;
+            for (i = y; i < y+size; i++){
+                Vector2 p = new Vector2(rightX,i);
+       		right.add(p);
+            }
         }        
         
         // move forward.
         if (y < speed){
-       		for (i = y-1; i >= 0; i--){
-       			Vector2 p = new Vector2(x,i);
-       			positions.add(p);
-       		}
+            for (i = y-1; i >= 0; i--){
+                Vector2 p = new Vector2(x,i);
+       		forward.add(p);
+            }
         }else{
-        	for (i = y-1; i >= y-speed; i--){
-        		Vector2 p = new Vector2(x,i);
-                positions.add(p);
+            for (i = y-1; i >= y-speed; i--){
+        	Vector2 p = new Vector2(x,i);
+                forward.add(p);
             }
         }
+        
+        Positions positions = new Positions(back, forward, left, right);
         return positions; 
     }     
         
-    private ArrayList<Vector2> availableSouth(Vector2 bow, int size, int speed){
+    private Positions availableSouth(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
         int i, j = 0;
-        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
         // move backward.
         if (y-size >= 0){
-        	Vector2 backPosition = new Vector2(x,y-size);
-        	positions.add(backPosition);
+            Vector2 backPosition = new Vector2(x,y-size);
+            back.add(backPosition);
         }
         
         // move sideways.
         if (x-1 >= 0){
-        	int leftX = x-1;
-        	for (i = y; i > y-size; i--){
-    			Vector2 p = new Vector2(leftX,i);
-    			positions.add(p);
-        	}
+            int leftX = x-1;
+            for (i = y; i > y-size; i--){
+                Vector2 p = new Vector2(leftX,i);
+                left.add(p);
+            }
         }
         if (x+1 < 30){
-        	int rightX = x+1;
-       		for (i = y; i > y-size; i--){
-       			Vector2 p = new Vector2(rightX,i);
-       			positions.add(p);
-        	}
+            int rightX = x+1;
+            for (i = y; i > y-size; i--){
+                Vector2 p = new Vector2(rightX,i);
+       		right.add(p);
+            }
         }        
         // move forward.
         if (y + speed > 29){
-        	for (i = y+1; i < 30; i++){
-        		Vector2 p = new Vector2(x,i);
-                positions.add(p);
-        	}
+            for (i = y+1; i < 30; i++){
+        	Vector2 p = new Vector2(x,i);
+                forward.add(p);
+            }
             
         }else{
             for (i = y+1; i <= y+speed; i++){
                 Vector2 p = new Vector2(x,i);
-                positions.add(p);
+                forward.add(p);
             }
         }
+        Positions positions = new Positions(back, forward, left, right);
         return positions;
 
     }
     
-    private ArrayList<Vector2> availableEast(Vector2 bow, int size, int speed){
+    private Positions availableEast(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
         int i, j = 0;
-        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
 
         // move backward.
         if (x-size >= 0){
-        	Vector2 backPosition = new Vector2(x-size, y);
-        	positions.add(backPosition);
+            Vector2 backPosition = new Vector2(x-size, y);
+            back.add(backPosition);
         }
         
         // move sideways.
         if (y-1 >= 0){
-        	int leftY = y-1;
-        	for (i = x; i > x-size; i--){
-    			Vector2 p = new Vector2(i,leftY);
-    			positions.add(p);
-        	}
+            int leftY = y-1;
+            for (i = x; i > x-size; i--){
+                Vector2 p = new Vector2(i,leftY);
+    		left.add(p);
+            }
         }
         if (y+1 < 30){
-        	int rightY = y+1;
-       		for (i = x; i > x-size; i--){
-       			Vector2 p = new Vector2(i,rightY);
-       			positions.add(p);
-        	}
+            int rightY = y+1;
+            for (i = x; i > x-size; i--){
+       		Vector2 p = new Vector2(i,rightY);
+       		right.add(p);
+            }
         }    
         
         // move forward.
         if (x + speed > 29){
             for (i = x+1; i < 30; i++){
                 Vector2 p = new Vector2(i,y);
-                positions.add(p);
+                forward.add(p);
             }
         }else{
             for (i = x+1; i <= x+speed; i++){
                 Vector2 p = new Vector2(i,y);
-                positions.add(p);
+                forward.add(p);
             }
         }
+        Positions positions = new Positions(back, forward, left, right);       
         return positions;
     }
     
-    private  ArrayList<Vector2> availableWest(Vector2 bow, int size, int speed){
+    private  Positions availableWest(Vector2 bow, int size, int speed){
 
     	int x = bow.x;
         int y = bow.y;
         int i, j = 0;
-        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
 
         // move backward.
         if (x+size < 30){
-        	Vector2 backPosition = new Vector2(x+size,y);
-        	positions.add(backPosition);
+            Vector2 backPosition = new Vector2(x+size,y);
+            back.add(backPosition);
         }
         // move sideways.
         if (y-1 >= 0){
-        	int leftY = y-1;
-        	for (i = x; i < x+size; i++){
-    			Vector2 p = new Vector2(i,leftY);
-    			positions.add(p);
-        	}
+            int leftY = y-1;
+            for (i = x; i < x+size; i++){
+    		Vector2 p = new Vector2(i,leftY);
+    		left.add(p);
+            }
         }
         if (y+1 < 30){
-        	int rightY = y+1;
-       		for (i = x; i < x+size; i++){
-       			Vector2 p = new Vector2(i,rightY);
-       			positions.add(p);
-        	}
+            int rightY = y+1;
+            for (i = x; i < x+size; i++){
+       		Vector2 p = new Vector2(i,rightY);
+       		right.add(p);
+            }
         }  
         // move forward.
         if (x < speed){
-    		for (i = x-1; i >= 0; i--){
+            for (i = x-1; i >= 0; i--){
                 Vector2 p = new Vector2(i,y);
-                positions.add(p);
-             }
+                forward.add(p);
+            }
         }else{
             for (i = x-1; i >= x-speed; i--){
                 Vector2 p = new Vector2(i,y);
-                positions.add(p);              
+                forward.add(p);              
             }
         }
+        
+        Positions positions = new Positions(back, forward, left, right);
         return positions; 
     }
         
