@@ -22,17 +22,17 @@ import my_game.util.Vector2;
  */
 public class Cruiser extends Ship {
 	
-	int cannonDamage;
+    int cannonDamage;
 	
     public int getCannonDamage() {
-		return cannonDamage;
-	}
+	return cannonDamage;
+    }
 
-	public void setCannonDamage(int cannonDamage) {
-		this.cannonDamage = cannonDamage;
-	}
+    public void setCannonDamage(int cannonDamage) {
+	this.cannonDamage = cannonDamage;
+    }
 
-	public Cruiser(int pid, Vector2[] position, ShipDirection direction){
+    public Cruiser(int pid, Vector2[] position, ShipDirection direction){
         super(pid);
         setShipType(ShipType.Cruiser);
         setSize(5);
@@ -53,29 +53,28 @@ public class Cruiser extends Ship {
         weapons.add("cannon");
     }
     
-	public Range getRadarRange() {
-		return new Range(3, 10, new Vector2(1, 3), getDirection());
-	}
+    public Range getRadarRange() {
+	return new Range(3, 10, new Vector2(1, 3), getDirection());
+    }
 	
     public Range getCannonRange() {
     	return new Range(11, 15, new Vector2(5, 9), getDirection());
     }
 
-   public boolean fireCannon(GameObject target) {
-	   boolean result = false;
+    public boolean fireCannon(GameObject target) {
+        boolean result = false;
 	   
-	   if(target.getClass() == new CoralUnit().getClass()) {
-		   result = false;
-	   }
+        if(target.getClass() == new CoralUnit().getClass()) {
+            result = false;
+        }
+	
+        if(target.getClass() == new ShipUnit().getClass() ||
+            target.getClass() == new BaseUnit().getClass() ||
+            target.getClass() == new Mine().getClass()) {
+                result = true;
+        }
 	   
-	   if(target.getClass() == new ShipUnit().getClass() ||
-		  target.getClass() == new BaseUnit().getClass() ||
-		  target.getClass() == new Mine().getClass()) {
-		   result = true;
-	   }
-	   
-	   return result;
-   }
+        return result;
+    }
     
-
 }

@@ -6,6 +6,7 @@ package my_game.models.game_components;
 
 import my_game.util.GameException;
 import my_game.util.Vector2;
+import java.util.ArrayList;
 
 
 /**
@@ -73,7 +74,7 @@ public class Map {
 * Gather infomation about the ship to calculate the
 * possible places that ship can move to.
 */
-    public Vector2[] prepareMoveShip(Ship ship){
+    public ArrayList<Vector2> prepareMoveShip(Ship ship){
         //TODO generate an array of points where the ship can safely move
         // NOTE: There is the Vector2 class which can be used to represent a point
         //return availableMoves;

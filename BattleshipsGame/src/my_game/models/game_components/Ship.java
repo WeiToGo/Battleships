@@ -39,73 +39,30 @@ public abstract class Ship {
     }
     
     public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
-	public int getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
-
-	public int getCurrentSize() {
-		return currentSize;
-	}
-
-	public void setCurrentSize(int currentSize) {
-		this.currentSize = currentSize;
-	}
-
-	public int getArmour() {
-		return armour;
-	}
-
-	public void setArmour(int armour) {
-		this.armour = armour;
-	}
-
-	public ArrayList<String> getWeapons() {
-		return weapons;
-	}
-
-	public void setWeapons(ArrayList<String> weapons) {
-		this.weapons = weapons;
-	}
-
-	public int getPlayerID() {
-		return playerID;
-	}
-
-	/**
-     * @return The type of this ship.
-     */
-    public ShipType getShipType() {
-        return this.shipType;
-    }
-	
-	public void setShipType(ShipType shipType) {
-		this.shipType = shipType;
-	}
-	
-    public ShipUnit[] getShipUnits(){
-        return this.shipUnits;
+        return size;
     }
 
-	public void setShipUnits(ShipUnit[] shipUnits) {
-		this.shipUnits = shipUnits;
-	}
-	
-	public void setRadarRange(Range radarRange) {
-		this.radarRange = radarRange;
-	}
+    public void setSize(int size) {
+        this.size = size;
+    }
 
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getCurrentSize() {
+	return currentSize;
+    }
+
+    public void setCurrentSize(int currentSize) {
+        this.currentSize = currentSize;
+    }
     
+      
     /**
      * This method is called so Map can calculate all the legal moves for this 
      * ship.
@@ -132,10 +89,53 @@ public abstract class Ship {
     public void setDirection(ShipDirection d){
         this.direction = d;
     }
-    
+
+    public int getArmour() {
+	return armour;
+    }
+
+    public void setArmour(int armour) {
+	this.armour = armour;
+    }
+
+    public ArrayList<String> getWeapons() {
+        return weapons;
+    }
+
+    public void setWeapons(ArrayList<String> weapons) {
+	this.weapons = weapons;
+    }
+
+    public int getPlayerID() {
+	return playerID;
+    }
+
+    /**
+    * @return The type of this ship.
+    */
+    public ShipType getShipType() {
+        return this.shipType;
+    }
+	
+    public void setShipType(ShipType shipType) {
+	this.shipType = shipType;
+    }
+	
+    public ShipUnit[] getShipUnits(){
+        return this.shipUnits;
+    }
+
+    public void setShipUnits(ShipUnit[] shipUnits) {
+	this.shipUnits = shipUnits;
+    }
+
+
+    /**
+     * This method should be called after each attack on the ship.
+     */
     public void reduceCurentSize(){
         currentSize--;    
-        //calculate the reduce speed accordingly.
+        //TO DO : calculate the reduce speed accordingly.
         int reducedSpeed = 0;
         setCurrentSpeed(reducedSpeed);
     }
@@ -197,53 +197,199 @@ public abstract class Ship {
     /**
      *@return array of positions on the map that this ship can move to.
      */
-//    public abstract Vector2[] availableMoves(){
-    public Vector2[] availableMoves(){
+    public ArrayList<Vector2> availableMoves(){
     
         ShipUnit[] shipUnits = this.getShipUnits();
         ShipDirection direction = this.getDirection();
         int speed = this.getCurrentSpeed();
-        Vector2 square1 = shipUnits[0].getPosition();
-        int x = square1.x;
-        int y = square1.y;
-        Vector2[] advanceSquares;
-        Vector2[] results = null; // TO CHANGE
-        //assuming the the 1st square of the ship is the 1st element 
-        //in this array.
+        int size = this.getCurrentSize();
+        Vector2 shipBow = shipUnits[0].getPosition();
+        ArrayList<Vector2> availableMoves = new ArrayList<Vector2>();
         switch (direction){
-            case North: advanceSquares = this.availableNorth();
+            case North: availableMoves = this.availableNorth(shipBow, size, speed);
                 break;
-            case South: advanceSquares = this.availableSouth();
+            case South: availableMoves = this.availableSouth(shipBow, size, speed);
                 break;
-            case East: advanceSquares = this.availableEast();
+            case East: availableMoves = this.availableEast(shipBow, size, speed);
                 break;
-            case West: advanceSquares = this.availableWest();
+            case West: availableMoves = this.availableWest(shipBow, size, speed);
                 break;
         }
-        // maybe check here if the returned position is inside the map?
+  
+        return availableMoves;
+    }
+    
+    private ArrayList<Vector2> availableNorth(Vector2 bow, int size, int speed){
+    	int x = bow.x;
+        int y = bow.y;
+        int i, j = 0;
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+
+        //move backward.
+        if (y+size < 30){
+        	Vector2 backPosition = new Vector2(x,y+size);
+        	positions.add(backPosition);
+        }
         
-        for (ShipUnit s: shipUnits){
-        // get left, right and back squares.
+        //move sideways.
+        if (x-1 >= 0){
+        	int leftX = x-1;
+        	for (i = y; i < y+size; i++){
+    			Vector2 p = new Vector2(leftX,i);
+    			positions.add(p);
+        	}
         }
-        return results;
+        if (x+1 < 30){
+        	int rightX = x+1;
+       		for (i = y; i < y+size; i++){
+       			Vector2 p = new Vector2(rightX,i);
+       			positions.add(p);
+        	}
+        }        
+        
+        // move forward.
+        if (y < speed){
+       		for (i = y-1; i >= 0; i--){
+       			Vector2 p = new Vector2(x,i);
+       			positions.add(p);
+       		}
+        }else{
+        	for (i = y-1; i >= y-speed; i--){
+        		Vector2 p = new Vector2(x,i);
+                positions.add(p);
+            }
+        }
+        return positions; 
+    }     
+        
+    private ArrayList<Vector2> availableSouth(Vector2 bow, int size, int speed){
+        int x = bow.x;
+        int y = bow.y;
+        int i, j = 0;
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        // move backward.
+        if (y-size >= 0){
+        	Vector2 backPosition = new Vector2(x,y-size);
+        	positions.add(backPosition);
+        }
+        
+        // move sideways.
+        if (x-1 >= 0){
+        	int leftX = x-1;
+        	for (i = y; i > y-size; i--){
+    			Vector2 p = new Vector2(leftX,i);
+    			positions.add(p);
+        	}
+        }
+        if (x+1 < 30){
+        	int rightX = x+1;
+       		for (i = y; i > y-size; i--){
+       			Vector2 p = new Vector2(rightX,i);
+       			positions.add(p);
+        	}
+        }        
+        // move forward.
+        if (y + speed > 29){
+        	for (i = y+1; i < 30; i++){
+        		Vector2 p = new Vector2(x,i);
+                positions.add(p);
+        	}
+            
+        }else{
+            for (i = y+1; i <= y+speed; i++){
+                Vector2 p = new Vector2(x,i);
+                positions.add(p);
+            }
+        }
+        return positions;
+
     }
     
-    public Vector2[] availableNorth(){
-        throw new UnsupportedOperationException("Not yet implemented");
+    private ArrayList<Vector2> availableEast(Vector2 bow, int size, int speed){
+        int x = bow.x;
+        int y = bow.y;
+        int i, j = 0;
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+
+        // move backward.
+        if (x-size >= 0){
+        	Vector2 backPosition = new Vector2(x-size, y);
+        	positions.add(backPosition);
+        }
+        
+        // move sideways.
+        if (y-1 >= 0){
+        	int leftY = y-1;
+        	for (i = x; i > x-size; i--){
+    			Vector2 p = new Vector2(i,leftY);
+    			positions.add(p);
+        	}
+        }
+        if (y+1 < 30){
+        	int rightY = y+1;
+       		for (i = x; i > x-size; i--){
+       			Vector2 p = new Vector2(i,rightY);
+       			positions.add(p);
+        	}
+        }    
+        
+        // move forward.
+        if (x + speed > 29){
+            for (i = x+1; i < 30; i++){
+                Vector2 p = new Vector2(i,y);
+                positions.add(p);
+            }
+        }else{
+            for (i = x+1; i <= x+speed; i++){
+                Vector2 p = new Vector2(i,y);
+                positions.add(p);
+            }
+        }
+        return positions;
     }
     
-    public Vector2[] availableSouth(){
-        throw new UnsupportedOperationException("Not yet implemented");
+    private  ArrayList<Vector2> availableWest(Vector2 bow, int size, int speed){
+
+    	int x = bow.x;
+        int y = bow.y;
+        int i, j = 0;
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+
+        // move backward.
+        if (x+size < 30){
+        	Vector2 backPosition = new Vector2(x+size,y);
+        	positions.add(backPosition);
+        }
+        // move sideways.
+        if (y-1 >= 0){
+        	int leftY = y-1;
+        	for (i = x; i < x+size; i++){
+    			Vector2 p = new Vector2(i,leftY);
+    			positions.add(p);
+        	}
+        }
+        if (y+1 < 30){
+        	int rightY = y+1;
+       		for (i = x; i < x+size; i++){
+       			Vector2 p = new Vector2(i,rightY);
+       			positions.add(p);
+        	}
+        }  
+        // move forward.
+        if (x < speed){
+    		for (i = x-1; i >= 0; i--){
+                Vector2 p = new Vector2(i,y);
+                positions.add(p);
+             }
+        }else{
+            for (i = x-1; i >= x-speed; i--){
+                Vector2 p = new Vector2(i,y);
+                positions.add(p);              
+            }
+        }
+        return positions; 
     }
-    
-    public Vector2[] availableEast(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-    
-    public Vector2[] availableWest(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-    
+        
     /**
      *@return array of positons on the map that this ship can turn to.
      */
