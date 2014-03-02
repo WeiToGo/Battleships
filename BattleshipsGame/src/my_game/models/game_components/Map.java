@@ -8,6 +8,7 @@ import my_game.util.GameException;
 import my_game.util.Vector2;
 import java.util.ArrayList;
 import my_game.util.Positions;
+import my_game.util.Moves;
 
 
 /**
@@ -31,8 +32,7 @@ public class Map {
     protected Ship[] player1Ships;
     private Base p1Base;
     private Base p2Base;
-    
-    
+
     public Map(CoralReef reef, Ship[] player0Ships, Ship[] player1Ships, Base b0, Base b1) {
         //clear the grid (init all to null)
         clearGrid();
@@ -77,49 +77,55 @@ public class Map {
      * @param ship The ship to be moved.
      * @return An array of positions that are highlighted on the map.
      */
-    public ArrayList<Vector2> prepareMoveShip(Ship ship){
+    public Positions prepareMoveShip(Ship ship){
         Positions allMoves = ship.availableMoves();
-        ArrayList<Vector2> highlightedMoves = new ArrayList<Vector2>();
+        //not sure if it's a good idea.
+        Positions highlightedMoves = new Positions(null,null,null,null);
         //if there is any obstacle on left or right, the ship can't move sideways.
         ArrayList<Vector2> left = allMoves.getLeft();
         boolean canMove = true;
         for (int i = 0; i < left.size(); i++){
-            if (isObstacle(left.get(i))){
+            if (isVisibleObstacle(ship, left.get(i))){
                 canMove = false;
             }
         }
         if (canMove){
-            highlightedMoves.addAll(left);
+           highlightedMoves.setLeft(left);
         }
 
         ArrayList<Vector2> right = allMoves.getRight();
         canMove = true;
         for (int i = 0; i < right.size(); i++){
-            if (isObstacle(right.get(i))){
+            if (isVisibleObstacle(ship, right.get(i))){
                 canMove = false;
             }
         }
         if (canMove){
-            highlightedMoves.addAll(right);
+            highlightedMoves.setRight(right);
         }
              
         
         ArrayList<Vector2> back = allMoves.getBackward();
+        //maybe not necessary but just in case the rule changes.
+        ArrayList<Vector2> validBack = new ArrayList<Vector2>();
         for (int i = 0; i < back.size(); i++){
-            if (!isObstacle(back.get(i))){
-                highlightedMoves.add(back.get(i));
+            if (!isVisibleObstacle(ship, back.get(i))){
+                validBack.add(back.get(i));
             }
         }
+        highlightedMoves.setBack(validBack);
         // if there is an obstacle in front, the ship can't move beyond that obstacle.
         ArrayList<Vector2> forward = allMoves.getForward();
+        ArrayList<Vector2> validForward = new ArrayList<Vector2>();
         for (int i = 0; i < forward.size(); i++){
-            if (isObstacle(forward.get(i))){
-                highlightedMoves.add(forward.get(i));
+            if (isVisibleObstacle(ship, forward.get(i))){
+                validForward.add(forward.get(i));
             }else{
                 break;
             }
         }
-        
+       
+        highlightedMoves.setForward(validForward);
         return highlightedMoves;
     }
     
@@ -130,26 +136,16 @@ public class Map {
      * the position is invalid a GameException will be thrown.
      * @param ship The ship we want to move.
      * @param newPosition The position of the bow of the new position.
+     * @param p The Gamestate will keep the highlighted moves so moveship can it
+     * in getMovePositions.
      * @throws GameException 
      */
-    public void moveShip(Ship ship,Vector2 newPosition) throws GameException {
-         
-        ArrayList<Vector2> validePositions = validateMove(ship,newPosition);
-        ship.moveTo(validePositions);
-        
+    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
+        Moves shipPositions = getMovePositions (newPosition, p);
+        ArrayList<Vector2> valide = validateMovePositions(ship, shipPositions);
+        ship.moveTo(valide);
     }
     
-    /**
-     * This method checks if there are ships or mines in positions that the 
-     * player wants to move to. It's called by moveShip.
-     * @param p The desired position of the bow of the ship.
-     * @return The valide positions that the ship can move.
-     */
-    private ArrayList<Vector2> validateMove(Ship s, Vector2 p){     
-        ArrayList<Vector2> shipPositions = getMovePositions(s,p);
-        ArrayList<Vector2> validMoves = validateMovePositions(s,shipPositions);
-        return validMoves;
-    }
     /**
      * This method may need to be static?
      * @param p1 The current position of the bow of the ship.
@@ -157,9 +153,44 @@ public class Map {
      * @return An array of positions in between p1 and p2. (should handle the 
      * cases of left, right, and back move as well. 
      */
-    private ArrayList<Vector2> getMovePositions(Ship s, Vector2 p){
-        throw new UnsupportedOperationException("Not yet implemented");
-
+    private Moves getMovePositions(Vector2 p, Positions positions){
+        Moves moves = new Moves();
+        ArrayList<Vector2> back = positions.getBackward();
+        for (Vector2 v: back){
+            if (v.x == p.x && v.y == p.y){
+                moves.setMoveDirection(Moves.MoveDirection.B);
+                moves.setMoves(back);
+                return moves;// only works if we can only move backward one square.
+            }
+        }
+        ArrayList<Vector2> left = positions.getLeft();
+        for (Vector2 v: left){
+            if (v.x == p.x && v.y == p.y){
+                moves.setMoveDirection(Moves.MoveDirection.L);
+                moves.setMoves(left);
+                return moves;
+            }
+        }
+        ArrayList<Vector2> right = positions.getRight();
+        for (Vector2 v: right){
+            if (v.x == p.x && v.y == p.y){
+                moves.setMoveDirection(Moves.MoveDirection.R);
+                moves.setMoves(right);
+                return moves;
+            }
+        }
+        ArrayList<Vector2> forward = positions.getForward();
+        ArrayList<Vector2> newforward = new ArrayList<Vector2>();
+        for (Vector2 v: forward){
+            if (v.x == p.x && v.y == p.y){
+                moves.setMoveDirection(Moves.MoveDirection.F);
+                break;
+            }else{
+                newforward.add(v);
+            }
+        }
+        moves.setMoves(newforward);
+        return moves;
     }
     
     /**
@@ -170,25 +201,64 @@ public class Map {
      * @return The new positions that the ship will be moved to. It would be the 
      * same than the input is all positions are clear.
      */
-    public ArrayList<Vector2> validateMovePositions(Ship s, ArrayList<Vector2> p){
+    public ArrayList<Vector2> validateMovePositions(Ship s, Moves p){
      //   throw new UnsupportedOperationException("Not yet implemented"); 
+        //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
+        ArrayList<Vector2> moves = p.getPositions();
         Vector2 obstacle, mine; 
-        for (Vector2 v: p){
-            if (isObstacle(v)){
-                obstacle = v;
-                break;
-            }else if (isMine(v)){
-                obstacle = v;
-                break;
-            }else{
-               return p;
+        ShipUnit[] damagedUnits = new ShipUnit[2];
+        switch (p.getMoveDirection()){
+            case F:
+                ArrayList<Vector2> forwardmoves = new ArrayList<Vector2>();
+            //need to generate new positions if needed.
+            for (Vector2 v: moves){
+                if (isHiddenObstacle(v)){ 
+                    break;                  
+                }
+                if (isMine(v)){
+                    mine = v;
+                    //get first 2 shipUnits?
+                    touchedMine(mine, damagedUnits);
+                    return moves;
+                }else{
+                    forwardmoves.add(v);
+                }
+            }
+            moves.addAll(forwardmoves);
+            case B:
+            for (Vector2 v: moves){
+                if (isHiddenObstacle(v)){ return null;}
+                if (isMine(v)){
+                    mine = v;
+                    //get last 2 shipUnits?
+                    touchedMine(mine, damagedUnits);
+                    return moves;
+                }
+            }
+            case L:
+            for (Vector2 v: moves){
+                if (isHiddenObstacle(v)){ return null;}
+                if (isMine(v)){
+                    mine = v;
+                    //get last 2 shipUnits?
+                    touchedMine(mine, damagedUnits);
+                    return moves;
+                }
+            }
+            case R:
+            for (Vector2 v: moves){
+                if (isHiddenObstacle(v)){ return null;}
+                if (isMine(v)){
+                    mine = v;
+                    //get last 2 shipUnits?
+                    touchedMine(mine, damagedUnits);
+                    return moves;
+                }
             }
         }
-        // need generate new valid positions.
-        
-        return null; // TO CHANGE.
-     
+       
+        return moves;     
     }
     
     
@@ -270,7 +340,7 @@ public class Map {
         // to remember the position where an obstacle or mine is encountered.
         boolean turn = true;
         for (Vector2 v: p){
-            if (isObstacle(v)){
+            if (isHiddenObstacle(v)){
                 turn = false;
                 break; // don't turn if there is an obstacle.
             }else if (isMine(v)){
@@ -282,9 +352,14 @@ public class Map {
         
         return turn;
     }
-    
-   
-    public boolean isObstacle(Vector2 position){
+    /*
+     * This method decides if a position has an obstacle that is visible for 
+     * the given ship.
+     */
+    public boolean isVisibleObstacle(Ship s, Vector2 p){
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    public boolean isHiddenObstacle(Vector2 p){
         boolean isObstacle = false; //set to false for now, TO CHANGE
         return isObstacle;
                 
@@ -295,6 +370,14 @@ public class Map {
         return isMine;
     }
     
+    public void touchedMine(Vector2 mineZone, ShipUnit[] damagedUnits){
+        GameObject mine = getObjectAt(mineZone);
+        //assume we can get the actual mine which is at the center of this mineZone,
+        // and we destroyed it.
+        for (ShipUnit s: damagedUnits){
+            s.setDamage(1);
+        }    
+    }
     public boolean isClear(Vector2 position){
         boolean isClear = false;
         return isClear;

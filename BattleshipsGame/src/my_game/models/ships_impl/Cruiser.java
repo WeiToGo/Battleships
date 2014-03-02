@@ -32,7 +32,7 @@ public class Cruiser extends Ship {
 	this.cannonDamage = cannonDamage;
     }
 
-    public Cruiser(int pid, Vector2[] position, ShipDirection direction){
+    public Cruiser(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
         setShipType(ShipType.Cruiser);
         setSize(5);
