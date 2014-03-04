@@ -19,8 +19,8 @@ import my_game.networking.client.GameClient;
 import my_game.networking.server.Constants;
 import my_game.networking.server.GameServer;
 import my_game.models.player_components.Player;
-import my_game.networking.server.packets.impl.GameStatePacket;
-import my_game.networking.server.packets.impl.HelloPacket;
+import my_game.networking.packets.impl.GameStatePacket;
+import my_game.networking.packets.impl.HelloPacket;
 import my_game.util.Misc;
 
 public class MainWindow extends JFrame implements DrawingPanelListener {
@@ -122,7 +122,7 @@ public class MainWindow extends JFrame implements DrawingPanelListener {
 		Player player = null;
 		InetAddress serverAddress = null;
 		try {
-			player = new Player(username, "", InetAddress.getByName("localhost"), Constants.SERVER_PORT);
+			player = new Player(username, "", InetAddress.getByName("localhost"), Constants.SERVER_PORT, 1, 0);
 	
 			//get the server's IP address
 			System.out.println("Please enter the server's IP address or machine name: ");
@@ -143,7 +143,7 @@ public class MainWindow extends JFrame implements DrawingPanelListener {
 		//now create a player object for the person playing
 		Player player = null;
 		try {
-			player = new Player(username, "", InetAddress.getByName("localhost"), Constants.SERVER_PORT);
+			player = new Player(username, "", InetAddress.getByName("localhost"), Constants.SERVER_PORT, 2, 0);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();	//a weird exception which generally should not happen
 		}

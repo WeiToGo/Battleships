@@ -2,7 +2,7 @@ package my_game.networking.packets;
 
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.Packet.PacketTypes;
-import my_game.networking.server.packets.impl.GameStatePacket;
+import my_game.networking.packets.impl.GameStatePacket;
 import my_game.util.Misc;
 
 /**

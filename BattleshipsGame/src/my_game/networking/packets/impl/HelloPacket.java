@@ -1,4 +1,4 @@
-package my_game.networking.server.packets.impl;
+package my_game.networking.packets.impl;
 
 import my_game.networking.packets.Packet;
 

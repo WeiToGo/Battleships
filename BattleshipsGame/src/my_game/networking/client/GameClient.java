@@ -16,8 +16,8 @@ import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
 import my_game.networking.server.Constants;
 import my_game.models.player_components.Player;
-import my_game.networking.server.packets.impl.GameStatePacket;
-import my_game.networking.server.packets.impl.HelloPacket;
+import my_game.networking.packets.impl.GameStatePacket;
+import my_game.networking.packets.impl.HelloPacket;
 import my_game.util.Misc;
 
 /**

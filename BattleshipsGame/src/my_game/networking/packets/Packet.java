@@ -6,7 +6,7 @@ public abstract class Packet {
 
 	public static enum PacketTypes {
 		//assign an ID to every packet type
-		INVALID(-1), HELLO(00), DISCONNECT(01), SILENT(02), GAMESTATE(03);
+		INVALID(-1), HELLO(00), DISCONNECT(01), SILENT(02), GAMESTATE(03), SERVERINFO(04);
 		
 		/** 
 		 * The ID determining the packet type. It should be 

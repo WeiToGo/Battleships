@@ -5,3 +5,4 @@
 *.war
 *.ear
 /BattleshipsGame/nbproject/private/
+/BattleshipsGame/build/
