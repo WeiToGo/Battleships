@@ -11,7 +11,6 @@ import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
-import my_game.networking.packets.impl.GameStatePacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
 import my_game.util.Misc;
@@ -21,6 +20,8 @@ import my_game.util.Misc;
  */
 public class GameServer implements NetworkEntity {
 
+    private final int CONNECTION_TIMEOUT = 1000;
+            
     /**
      * Socket on which the server accepts clients. */
     private ServerSocket socket;
@@ -48,6 +49,9 @@ public class GameServer implements NetworkEntity {
     private final String serverName;
     
     private ArrayList<NetEntityListener> listeners;
+    /** A reference to the main thread is necessary to stop it in case the server
+     * is stopped while it is waiting for a client to connect. */
+    private Thread mainThread;
     
     private boolean serverRunning = false;
     /**
@@ -84,11 +88,15 @@ public class GameServer implements NetworkEntity {
         packetHandler = new PacketHandler(this);
 
         //start a new main thread
-        Thread t = new Thread(new MainServerThread());
-        t.start();
+        mainThread = new Thread(new MainServerThread());
+        mainThread.start();
         //start also a server information request thread
         Thread tInfo = new Thread(new ServerInfoThread());
         tInfo.start();
+    }
+    
+    public void addNetListener(NetEntityListener l) {
+        listeners.add(l);
     }
 
     /**
@@ -98,11 +106,17 @@ public class GameServer implements NetworkEntity {
         Misc.log("Server will now close.");
         //close the socket and server when done
         try {
-            server.close();
+            if(server != null) {
+                server.close();
+            }
             socket.close();
             infoSocket.close();
-            in.close();
-            out.close();
+            if(in != null) {
+                in.close();
+            }
+            if(out != null) {
+                out.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,8 +163,8 @@ public class GameServer implements NetworkEntity {
         public void run() {
             while (serverRunning) {
                 //wait for someone to connect
-                Misc.log("Server waiting for client...");
                 try {
+                    socket.setSoTimeout(CONNECTION_TIMEOUT);
                     server = socket.accept();
                     Misc.log(server.getRemoteSocketAddress() + " has connected.");
                     clientConnected = true;
@@ -178,10 +192,11 @@ public class GameServer implements NetworkEntity {
                     closeServer();
 
                     //end of thread
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                } catch (IOException ignore) {}
             }   //serverRunning == false, endwhile
+            closeServer();  //call this to finalize the closing of all sockets and
+            //data streams once the main loop has finished => no one is still listening 
+            //on the sockets.
         }
     }
 
@@ -190,6 +205,8 @@ public class GameServer implements NetworkEntity {
         public void run() {
             while (serverRunning) {
                 try {
+                    infoSocket.setSoTimeout(CONNECTION_TIMEOUT);
+                    
                     Socket s = infoSocket.accept();
                     DataOutputStream out = new DataOutputStream(s.getOutputStream());
                     //create an info packet, send it on the s socket and close socket and stream
@@ -197,10 +214,7 @@ public class GameServer implements NetworkEntity {
                     sendData(pkt.getData(), out);
                     out.close();
                     s.close();
-                } catch (IOException e) {
-                    Misc.log("Exception in info server.");
-                    serverRunning = false;
-                }
+                } catch (IOException e) { }
             }//serverRunning == false, endwhile
             //just end the thread
         }

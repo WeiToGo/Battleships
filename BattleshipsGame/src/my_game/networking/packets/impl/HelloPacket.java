@@ -11,6 +11,11 @@ public class HelloPacket extends Packet {
 
 	private String username;
 	
+        /**
+         * Build a Hello Packet from the byte[] data, but make sure to
+         * remove the usual packet id (2 chars) from the beginning of the byte[] data.
+         * @param data 
+         */
 	public HelloPacket(byte[] data) {
 		this(readData(data));
 	}

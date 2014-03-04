@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.networking.packets.Packet;
+import my_game.util.GameException;
 
 /**
  * A packet used to communicate basic information about the server to clients, 
@@ -17,15 +18,24 @@ import my_game.networking.packets.Packet;
  */
 public class ServerInfoPacket extends Packet {
     
-    String serverName;
-    String playerName;
-    InetAddress ipAddress;
+    public String serverName;
+    public String playerName;
+    public InetAddress ipAddress;
     
     
-    public ServerInfoPacket(byte[] data) {
+    public ServerInfoPacket(byte[] data) throws GameException {
         super(PacketTypes.SERVERINFO.getId());
-        
-        String message = readData(data);
+        //packet type checking
+        String message = new String(data).trim();
+        //get the packet type using the lookupPacket method on 
+        //the first 2 characters of the message String (the packet id)
+        String typeCode = message.substring(0,2);
+        PacketTypes type = Packet.lookupPacket(typeCode);
+        if(type.getId() != this.packetId) {
+            throw new GameException("Wrong packet type found in ServerInfoPacket constructor: " + typeCode);
+        }
+        //now treat the data
+        message = readData(data);
         String args[] = message.split("~");
         //now the message is split into the different server info pieces
         //parse info
@@ -48,7 +58,10 @@ public class ServerInfoPacket extends Packet {
 
     @Override
     public byte[] getData() {
-        return (serverName + "~" + playerName + "~" + ipAddress.getHostAddress()).getBytes();
+        int id = PacketTypes.SERVERINFO.getId();
+        String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
+        String ret = (typeId + serverName + "~" + playerName + "~" + ipAddress.getHostAddress());
+        return ret.getBytes();
     }
     
 }
