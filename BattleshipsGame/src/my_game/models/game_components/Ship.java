@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import my_game.util.Range;
 import my_game.util.Vector2;
 import my_game.util.Positions;
+import my_game.util.TurnPositions;
+
 /**
  *
  */
@@ -184,7 +186,7 @@ public abstract class Ship {
      * 
      * @return 
      */
-    public boolean hasFlexibleTurn(){
+    private boolean hasFlexibleTurn(){
         if (this.shipType.equals(ShipType.TorpedoBoat)){
             return true;
         }else if (this.shipType.equals(ShipType.RadarBoat)){
@@ -199,33 +201,30 @@ public abstract class Ship {
      *@return array of positions on the map that this ship can move to.
      */
     public Positions availableMoves(){
-    
-        ShipUnit[] shipUnits = this.getShipUnits();
-        ShipDirection direction = this.getDirection();
         int speed = this.getCurrentSpeed();
-        int size = this.getCurrentSize();
-        Vector2 shipBow = shipUnits[0].getPosition();
+        int size = this.getSize(); //need original size?
+        Vector2 shipBow = this.getShipUnits()[0].getPosition();
         // I get an error if I don't add this part.
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         ArrayList<Vector2> forward = new ArrayList<Vector2>();
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> right = new ArrayList<Vector2>();
         Positions availableMoves = new Positions(back, forward, left, right);
-        switch (direction){
-            case North: availableMoves = this.availableNorth(shipBow, size, speed);
+        switch (this.getDirection()){
+            case North: availableMoves = this.availableMoveNorth(shipBow, size, speed);
                 break;
-            case South: availableMoves = this.availableSouth(shipBow, size, speed);
+            case South: availableMoves = this.availableMoveSouth(shipBow, size, speed);
                 break;
-            case East: availableMoves = this.availableEast(shipBow, size, speed);
+            case East: availableMoves = this.availableMoveEast(shipBow, size, speed);
                 break;
-            case West: availableMoves = this.availableWest(shipBow, size, speed);
+            case West: availableMoves = this.availableMoveWest(shipBow, size, speed);
                 break;
         }
   
         return availableMoves;
     }
     
-    private Positions availableNorth(Vector2 bow, int size, int speed){
+    private Positions availableMoveNorth(Vector2 bow, int size, int speed){
     	int x = bow.x;
         int y = bow.y;
         int i, j = 0;
@@ -272,7 +271,7 @@ public abstract class Ship {
         return positions; 
     }     
         
-    private Positions availableSouth(Vector2 bow, int size, int speed){
+    private Positions availableMoveSouth(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
         int i, j = 0;
@@ -319,7 +318,7 @@ public abstract class Ship {
 
     }
     
-    private Positions availableEast(Vector2 bow, int size, int speed){
+    private Positions availableMoveEast(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
         int i, j = 0;
@@ -366,7 +365,7 @@ public abstract class Ship {
         return positions;
     }
     
-    private  Positions availableWest(Vector2 bow, int size, int speed){
+    private Positions availableMoveWest(Vector2 bow, int size, int speed){
 
     	int x = bow.x;
         int y = bow.y;
@@ -416,9 +415,390 @@ public abstract class Ship {
     /**
      *@return array of positons on the map that this ship can turn to.
      */
-    public Vector2[] availableTurns() {
-        throw new UnsupportedOperationException("Not yet implemented");
-        
+    public TurnPositions availableTurns() {
+        TurnPositions availableTurns = new TurnPositions(null,null,null,null,null);
+        ShipUnit[] shipUnits = this.getShipUnits();
+        ShipDirection direction = this.getDirection();
+        int size = this.getSize();// need original size
+ 
+        switch (direction){
+            case North: availableTurns = this.availableTurnNorth(shipUnits, size);
+                break;
+            case South: availableTurns = this.availableTurnSouth(shipUnits, size);
+                break;
+            case East: availableTurns = this.availableTurnEast(shipUnits, size);
+                break;
+            case West: availableTurns = this.availableTurnWest(shipUnits, size);
+                break;
+        }
+        return availableTurns;
     }
-          
+    
+    private TurnPositions availableTurnNorth(ShipUnit[] su, int size){
+        ShipUnit pivot;
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> lPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
+        ArrayList<Vector2> rPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        int i,j;
+        int xPivot;
+        int yPivot;
+        if (this.hasFlexibleTurn()){
+            pivot = su[size-2];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+           
+            if (xPivot-1 >= 0 && xPivot+1 < 30){
+                //left 90.
+                for (i = xPivot-1; i <= xPivot+1; i++){
+                    Vector2 p = new Vector2(i,yPivot);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                Vector2 p1 = new Vector2(xPivot-1, yPivot-1);
+                Vector2 p2 = new Vector2(xPivot+1, yPivot+1);
+                lPath.add(p1);
+                lPath.add(p2);
+                positions.setLeftPath(lPath);
+                //right 90.      
+                for (i = xPivot+1; i >= xPivot-1; i--){
+                    Vector2 p = new Vector2(i,yPivot);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                Vector2 p3 = new Vector2(xPivot+1, yPivot-1);
+                Vector2 p4 = new Vector2(xPivot-1, yPivot+1);
+                rPath.add(p3);
+                rPath.add(p4);
+                positions.setRightPath(rPath);
+                
+                //180 turn should also be possible. 
+                for (i = yPivot+1; i >= yPivot-1; i--){
+                    Vector2 p = new Vector2(xPivot,i);
+                    back.add(p);
+                }
+                positions.setBack(back);
+            }               
+                       
+        }else{
+            pivot = su[size-1];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+
+            if (xPivot-size+1 >= 0){
+                //left 90.
+                for (i = xPivot-size+1; i <= xPivot; i++){
+                    Vector2 p = new Vector2(i,yPivot);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                for (i = yPivot-1; i >= yPivot-size+1; i--){
+                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                        Vector2 p = new Vector2(j,i);
+                        lPath.add(p);                        
+                    }
+                }
+                positions.setLeftPath(lPath);             
+            }
+
+            if (xPivot+size-1 < 30){
+                //right 90;
+                for (i = xPivot+size-1; i >= xPivot; i--){
+                    Vector2 p = new Vector2(i,yPivot);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                for (i = yPivot-1; i >= yPivot-size+1; i--){
+                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                        Vector2 p = new Vector2(j,i);
+                        rPath.add(p);                        
+                    }
+                }
+                positions.setRightPath(rPath);
+            }
+        }
+        return positions;    
+    }
+
+    private TurnPositions availableTurnSouth(ShipUnit[] su, int size){
+        ShipUnit pivot;
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> lPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
+        ArrayList<Vector2> rPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        int i,j;
+        int xPivot;
+        int yPivot;
+        if (this.hasFlexibleTurn()){
+            pivot = su[size-2];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+
+            if (xPivot-1 >= 0 && xPivot+1 < 30){
+                //left 90.
+                for (i = xPivot+1; i >= xPivot-1; i--){
+                    Vector2 p = new Vector2(i,yPivot);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                Vector2 p1 = new Vector2(xPivot-1, yPivot-1);
+                Vector2 p2 = new Vector2(xPivot+1, yPivot+1);
+                lPath.add(p1);
+                lPath.add(p2);
+                positions.setLeftPath(lPath);
+                //right 90.
+                for (i = xPivot-1; i <= xPivot+1; i++){
+                    Vector2 p = new Vector2(i,yPivot);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                Vector2 p3 = new Vector2(xPivot+1, yPivot-1);
+                Vector2 p4 = new Vector2(xPivot-1, yPivot+1);
+                rPath.add(p3);
+                rPath.add(p4);
+                positions.setRightPath(rPath);
+                //180 turn should also be possible. 
+                for (i = yPivot-1; i <= yPivot+1; i++){
+                    Vector2 p = new Vector2(xPivot,i);
+                    back.add(p);
+                }
+                positions.setBack(back);
+            }               
+                       
+        }else{
+            pivot = su[size-1];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+            //right 90.
+            if (xPivot-size+1 >= 0){
+                for (i = xPivot-size+1; i <= xPivot; i++){
+                    Vector2 p = new Vector2(i,yPivot);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                for (i = yPivot+1; i <= yPivot+size-1; i++){
+                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                        Vector2 p = new Vector2(j,i);
+                        rPath.add(p);                        
+                    }
+                }
+                positions.setRightPath(rPath);                    
+            }
+            //left 90;
+            if (xPivot+size-1 < 30){
+                for (i = xPivot+size-1; i >= xPivot; i--){
+                    Vector2 p = new Vector2(i,yPivot);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                for (i = yPivot+1; i <= yPivot+size-1; i++){
+                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                        Vector2 p = new Vector2(j,i);
+                        lPath.add(p);                        
+                    }
+                }
+                positions.setLeftPath(lPath);                
+            }
+        }
+        return positions; 
+    }
+    private TurnPositions availableTurnEast(ShipUnit[] su, int size){
+        ShipUnit pivot;
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> lPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
+        ArrayList<Vector2> rPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        int i,j;
+        int xPivot;
+        int yPivot;
+        if (this.hasFlexibleTurn()){
+            pivot = su[size-2];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+
+            if (yPivot-1 >= 0 && yPivot+1 < 30){
+                //left 90.
+                for (i = yPivot-1; i <= yPivot+1; i++){
+                    Vector2 p = new Vector2(xPivot,i);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //lefttpath
+                Vector2 p1 = new Vector2(xPivot+1, yPivot-1);
+                Vector2 p2 = new Vector2(xPivot-1, yPivot+1);
+                lPath.add(p1);
+                lPath.add(p2);
+                positions.setLeftPath(lPath);              
+                //right 90.
+                for (i = yPivot+1; i >= yPivot-1; i--){
+                    Vector2 p = new Vector2(xPivot,i);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                Vector2 p3 = new Vector2(xPivot-1, yPivot-1);
+                Vector2 p4 = new Vector2(xPivot+1, yPivot+1);
+                rPath.add(p3);
+                rPath.add(p4);
+                positions.setRightPath(rPath);                
+                //180 turn should also be possible. 
+                for (i = xPivot-1; i <= xPivot+1; i++){
+                    Vector2 p = new Vector2(i, yPivot);
+                    back.add(p);
+                }
+                positions.setBack(back);
+            }               
+                       
+        }else{
+            pivot = su[size-1];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+            //left 90.
+            if (yPivot-size+1 >= 0){
+                for (i = yPivot-size+1; i <= yPivot; i++){
+                    Vector2 p = new Vector2(xPivot, i);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                for (i = yPivot-1; i >= yPivot-size+1; i--){
+                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                        Vector2 p = new Vector2(j,i);
+                        lPath.add(p);                        
+                    }
+                }
+                positions.setLeftPath(lPath);
+            }
+            //right 90;
+            if (yPivot+size-1 < 30){
+                for (i = yPivot+size-1; i >= yPivot; i--){
+                    Vector2 p = new Vector2(xPivot, i);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                for (i = yPivot+1; i <= yPivot+size-1; i++){
+                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                        Vector2 p = new Vector2(j,i);
+                        rPath.add(p);                        
+                    }
+                }
+                positions.setRightPath(rPath);                 
+            }
+        }
+        return positions;  
+    }
+    
+    private TurnPositions availableTurnWest(ShipUnit[] su, int size){
+        ShipUnit pivot;
+        ArrayList<Vector2> left = new ArrayList<Vector2>();
+        ArrayList<Vector2> lPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> right = new ArrayList<Vector2>();
+        ArrayList<Vector2> rPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> back = new ArrayList<Vector2>();
+        TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        int i,j;
+        int xPivot;
+        int yPivot;
+        if (this.hasFlexibleTurn()){
+            pivot = su[size-2];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+
+            if (xPivot-1 >= 0 && xPivot+1 < 30){
+                //left 90.
+                for (i = yPivot+1; i >= yPivot-1; i--){
+                    Vector2 p = new Vector2(xPivot, i);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //lefttpath
+                Vector2 p1 = new Vector2(xPivot+1, yPivot-1);
+                Vector2 p2 = new Vector2(xPivot-1, yPivot+1);
+                lPath.add(p1);
+                lPath.add(p2);
+                positions.setLeftPath(lPath); 
+                //right 90.
+                for (i = yPivot-1; i <= yPivot+1; i++){
+                    Vector2 p = new Vector2(xPivot, i);
+                    right.add(p);
+                }
+                positions.setRight(right);                
+                //rightpath
+                Vector2 p3 = new Vector2(xPivot-1, yPivot-1);
+                Vector2 p4 = new Vector2(xPivot+1, yPivot+1);
+                rPath.add(p3);
+                rPath.add(p4);
+                positions.setRightPath(rPath);                    
+                //180 turn should also be possible. 
+                for (i = xPivot+1; i >= xPivot-1; i--){
+                    Vector2 p = new Vector2(i, yPivot);
+                    back.add(p);
+                }
+                positions.setBack(back);
+            }               
+                       
+        }else{
+            pivot = su[size-1];
+            Vector2 pivotPosition = pivot.getPosition();
+            xPivot = pivotPosition.x;
+            yPivot = pivotPosition.y;
+            //right 90.
+            if (yPivot-size+1 >= 0){
+                for (i = yPivot-size+1; i <= yPivot; i++){
+                    Vector2 p = new Vector2(xPivot, i);
+                    right.add(p);
+                }
+                positions.setRight(right);
+                //rightpath
+                for (i = yPivot-1; i >= yPivot-size+1; i--){
+                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                        Vector2 p = new Vector2(j,i);
+                        rPath.add(p);                        
+                    }
+                }
+                positions.setRightPath(rPath);
+            }
+            //left 90;
+            if (yPivot+size-1 < 30){
+                for (i = yPivot+size-1; i >= yPivot; i--){
+                    Vector2 p = new Vector2(xPivot, i);
+                    left.add(p);
+                }
+                positions.setLeft(left);
+                //leftpath
+                for (i = yPivot+1; i <= yPivot+size-1; i++){
+                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                        Vector2 p = new Vector2(j,i);
+                        lPath.add(p);                        
+                    }
+                }
+                positions.setLeftPath(lPath);                
+            }
+        }
+        return positions; 
+    }
+
+    
 }

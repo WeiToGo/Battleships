@@ -9,6 +9,7 @@ import my_game.util.Vector2;
 import java.util.ArrayList;
 import my_game.util.Positions;
 import my_game.util.Moves;
+import my_game.util.TurnPositions;
 
 
 /**
@@ -141,7 +142,7 @@ public class Map {
      */
     public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
         Moves shipPositions = getMovePositions (newPosition, p);
-        ArrayList<Vector2> valide = validateMovePositions(ship, shipPositions);
+        ArrayList<Vector2> valide = validateMove(ship, shipPositions);
         ship.moveTo(valide);
     }
     
@@ -200,7 +201,7 @@ public class Map {
      * @return The new positions that the ship will be moved to. It would be the 
      * same than the input is all positions are clear.
      */
-    public ArrayList<Vector2> validateMovePositions(Ship s, Moves p){
+    public ArrayList<Vector2> validateMove(Ship s, Moves p){
      //   throw new UnsupportedOperationException("Not yet implemented"); 
         //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
@@ -281,22 +282,82 @@ public class Map {
         // TO DO: position the baseunits on the map. Location should be fixed
         // and the Base doesn't need to know its location.
      }
-    
 /**
 * Gather infomation about the ship to calculate the
 * possible places that ship can turn to.
 */
-    public Vector2[] prepareTurnShip(Ship ship){
-        // TODO same as in prepareMoveShip
-        //return availableMoves;
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Positions prepareTurnShip(Ship ship){
+   
+        TurnPositions allTurns = ship.availableTurns();
+        Positions highlightedTurns = new Positions(null,null,null,null);
+        // highlight a particular turn only if all positions on the path are clear.
+        ArrayList<Vector2> left = allTurns.getLeft();
+        ArrayList<Vector2> leftPath = allTurns.getLeftPath();
+        boolean canMoveLeft = true;
+        for (int i = 0; i < left.size(); i++){
+            if (isVisibleObstacle(ship, left.get(i))){
+                canMoveLeft = false;
+            }
+        }
+        for (int i = 0; i < leftPath.size(); i++){
+            if (isVisibleObstacle(ship, leftPath.get(i))){
+                canMoveLeft = false;
+            }
+        }
+        if (canMoveLeft){
+           highlightedTurns.setLeft(left);
+        }    
+        ArrayList<Vector2> right = allTurns.getRight();
+        ArrayList<Vector2> rightPath = allTurns.getRightPath();
+        boolean canMoveRight = true;
+        for (int i = 0; i < right.size(); i++){
+            if (isVisibleObstacle(ship, right.get(i))){
+                canMoveRight = false;
+            }
+        }
+        for (int i = 0; i < rightPath.size(); i++){
+            if (isVisibleObstacle(ship, rightPath.get(i))){
+                canMoveRight = false;
+            }
+        }
+        if (canMoveRight){
+           highlightedTurns.setRight(right);
+        }
+        ArrayList<Vector2> back = allTurns.getBackward();
+        for (int i = 0; i < right.size(); i++){
+            if (isVisibleObstacle(ship, right.get(i))){
+                canMoveRight = false;//can also use canMoveLeft.
+            }
+        }
+        for (int i = 0; i < rightPath.size(); i++){
+            if (isVisibleObstacle(ship, rightPath.get(i))){
+                canMoveRight = false;
+            }
+        }
+        if (canMoveLeft && canMoveRight){
+           highlightedTurns.setBack(back);
+        }
+     
+        return highlightedTurns;
     }
     
-    public void turnShip(Ship ship, int degree){
-        // check if degree is valid (+-90, +-180)
+    public void turnShip(Ship ship, Vector2 newPosition, Positions p){
+        Moves shipPositions = getTurnPositions (newPosition, p);
+        ArrayList<Vector2> valide = validateTurn(ship, shipPositions);
+        ship.turnTo(valide, newDirection);
         
-        // calls validateTurn(), if returns null, does nothing.
-        
+    }
+    
+    private Moves getTurnPositions(Vector2 p, Positions positions){
+        Moves moves = new Moves();
+        ArrayList<Vector2> back = positions.getBackward();
+        for (Vector2 v: back){
+            if (v.x == p.x && v.y == p.y){
+                moves.setMoveDirection(Moves.MoveDirection.B);
+                moves.setMoves(back);
+                return moves;// only works if we can only move backward one square.
+            }
+        }
     }
      /**
      * This method checks if there are ships, coral reef in positions that the 
@@ -310,33 +371,6 @@ public class Map {
         
         //Vectors2[] shipPositions = getTurnPositions(p1,p2,pivot);
         
-        //calls validateTurnPositions(shipPositions), if returns false, return
-        //null
-    }
-    
-    /**
-     * This method may need to be static?
-     * @param p1 The current position of the bow of the ship.
-     * @param p2 The desired position of the bow of this ship.
-     * @return An array of positions corresponding to positions in between s 
-     * and p.
-     */
-    public Vector2[] getTurnPositions(Vector2 p1, Vector2 p2, Vector2 pivot){
-        throw new UnsupportedOperationException("Not yet implemented");
-
-    }
-    
-    /**
-     * This method checks if there are obstacles or mines in the positions,
-     * if there are obstacles, the move should stop right before the obstacle,
-     * if there is a mine, touchedMine is called. 
-     * @param p The array of positions to validate.
-     * @return The new positions that the ship will be moved to. It would be the 
-     * same than the input is all positions are clear.
-     */
-    public boolean validateTurnPositions(Vector2[] p){
-  //      throw new UnsupportedOperationException("Not yet implemented"); 
-        // to remember the position where an obstacle or mine is encountered.
         boolean turn = true;
         for (Vector2 v: p){
             if (isHiddenObstacle(v)){
@@ -351,6 +385,16 @@ public class Map {
         
         return turn;
     }
+    
+    
+    /**
+     * This method checks if there are obstacles or mines in the positions,
+     * if there are obstacles, the move should stop right before the obstacle,
+     * if there is a mine, touchedMine is called. 
+     * @param p The array of positions to validate.
+     * @return The new positions that the ship will be moved to. It would be the 
+     * same than the input is all positions are clear.
+     */
     /*
      * This method decides if a position has an obstacle that is visible for 
      * the given ship.
@@ -425,5 +469,10 @@ public class Map {
                 grid[i][j] = null;
             }
         }
+    }
+    
+    
+    public static void main(String[] args) {
+        
     }
 }
