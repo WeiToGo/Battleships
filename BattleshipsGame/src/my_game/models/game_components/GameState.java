@@ -82,7 +82,8 @@ public class GameState {
         //use copy constructor to create a chatlog copy
         this.chatLog = new ChatLog(copyState.chatLog);
         //use copy constructor to create a map copy
-        this.map = new Map(copyState.map);              //TODO implement map copy constructor
+        this.map = new Map(copyState.map);
+        //TODO implement map copy constructor
     }
 
     private Ship[] generateShips(Player player) {

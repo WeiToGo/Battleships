@@ -162,43 +162,9 @@ public abstract class Ship {
     }
     
     /**
-     * This method updates each ShipUnit to the new position.
-     * @param An array of Vector2 indicating the new potions starting at the bow
-     * of the ship.
-     * @param newPosition
-     * @param d The new direction should be passed from the GUI.
-     */
-    public void turnTo(Vector2[] newPosition, ShipDirection d){
-        // assert newPosition.length == shipUnits.length
-        // and assuming it's the right order.
-        ShipUnit[] shipUnits = this.getShipUnits();
-        for (ShipUnit s: shipUnits){
-            for (Vector2 v: newPosition){
-                s.setPosition(v);
-            }
-        }
-        
-        this.setDirection(d);
-    }
-    /**
-     * This method return true if the ship can turn 180 degree in one turn
-     * (Torpedo and radar boat)
-     * 
-     * @return 
-     */
-    private boolean hasFlexibleTurn(){
-        if (this.shipType.equals(ShipType.TorpedoBoat)){
-            return true;
-        }else if (this.shipType.equals(ShipType.RadarBoat)){
-            return true; 
-        }else{
-            return false;
-        }
-    }
-    
- 
-    /**
-     *@return array of positions on the map that this ship can move to.
+     *@return Positions which contains 5 arraylists of Vector2 indicating 
+     * the positions this ship can move to in each direction (forward,back,left,
+     * right).
      */
     public Positions availableMoves(){
         int speed = this.getCurrentSpeed();
@@ -223,7 +189,13 @@ public abstract class Ship {
   
         return availableMoves;
     }
-    
+    /**
+     * This method return 4 arraylists of positions a ship can move to if the ship
+     * is originally facing north.
+     * @param su Array of shipUnits of this ship.
+     * @param size The size of the ship
+     * @return 
+     */    
     private Positions availableMoveNorth(Vector2 bow, int size, int speed){
     	int x = bow.x;
         int y = bow.y;
@@ -270,7 +242,13 @@ public abstract class Ship {
         Positions positions = new Positions(back, forward, left, right);
         return positions; 
     }     
-        
+    /**
+     * This method return 4 arraylists of positions a ship can move to if the ship
+     * is originally facing south.
+     * @param su Array of shipUnits of this ship.
+     * @param size The size of the ship
+     * @return 
+     */         
     private Positions availableMoveSouth(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
@@ -411,9 +389,45 @@ public abstract class Ship {
         Positions positions = new Positions(back, forward, left, right);
         return positions; 
     }
-        
     /**
-     *@return array of positons on the map that this ship can turn to.
+     * This method updates each ShipUnit to the new position.
+     * @param An array of Vector2 indicating the new potions starting at the bow
+     * of the ship.
+     * @param newPosition
+     * @param d The new direction should be passed from the GUI.
+     */
+    public void turnTo(Vector2[] newPosition, ShipDirection d){
+        // assert newPosition.length == shipUnits.length
+        // and assuming it's the right order.
+        ShipUnit[] shipUnits = this.getShipUnits();
+        for (ShipUnit s: shipUnits){
+            for (Vector2 v: newPosition){
+                s.setPosition(v);
+            }
+        }
+        
+        this.setDirection(d);
+    }
+    /**
+     * This method return true if the ship can turn 180 degree in one turn.
+     * It's called by prepareTurn()
+     * (Torpedo and radar boat)
+     * @return 
+     */
+    private boolean hasFlexibleTurn(){
+        if (this.shipType.equals(ShipType.TorpedoBoat)){
+            return true;
+        }else if (this.shipType.equals(ShipType.RadarBoat)){
+            return true; 
+        }else{
+            return false;
+        }
+    }
+            
+    /**
+     * This method return a TurnPositions which contains 5 arraylist of positions
+     * this ship can turn to.
+     * @return 
      */
     public TurnPositions availableTurns() {
         TurnPositions availableTurns = new TurnPositions(null,null,null,null,null);
@@ -433,8 +447,14 @@ public abstract class Ship {
         }
         return availableTurns;
     }
-    
-    private static TurnPositions availableTurnNorth(ShipUnit[] su, int size){
+    /**
+     * This method return 5 arraylist of positions a ship can turn to if the ship
+     * is originally facing north.
+     * @param su Array of shipUnits of this ship.
+     * @param size The size of the ship
+     * @return 
+     */
+    private TurnPositions availableTurnNorth(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -445,8 +465,7 @@ public abstract class Ship {
         int i,j,k;
         int xPivot;
         int yPivot;
- //       if (this.hasFlexibleTurn()){
-            if (false){
+        if (this.hasFlexibleTurn()){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
@@ -502,9 +521,7 @@ public abstract class Ship {
                 //leftpath
                 k = 0;
                 for (i = yPivot-1; i >= yPivot-size+1; i--){
-                   // for (j = xPivot-size+1+k; j <= xPivot-1; j--){
-                     for (j = xPivot-size+1+k; j <= xPivot-1; j++){
-                    
+                    for (j = xPivot-size+1+k; j <= xPivot-1; j++){           
                         Vector2 p = new Vector2(j,i);
                         lPath.add(p);  
                     }
@@ -533,8 +550,14 @@ public abstract class Ship {
         }
         return positions;    
     }
-
-    private static TurnPositions availableTurnSouth(ShipUnit[] su, int size){
+    /**
+     * This method return 5 arraylist of positions a ship can turn to if the ship
+     * is originally facing south.
+     * @param su Array of shipUnits of this ship.
+     * @param size The size of the ship
+     * @return 
+     */
+    private TurnPositions availableTurnSouth(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -545,8 +568,7 @@ public abstract class Ship {
         int i,j,k;
         int xPivot;
         int yPivot;
-  //      if (this.hasFlexibleTurn()){
-        if(false){ //TEST ONLY
+        if (this.hasFlexibleTurn()){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
@@ -632,7 +654,7 @@ public abstract class Ship {
         }
         return positions; 
     }
-    private static TurnPositions availableTurnEast(ShipUnit[] su, int size){
+    private TurnPositions availableTurnEast(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -643,8 +665,7 @@ public abstract class Ship {
         int i,j,k;
         int xPivot;
         int yPivot;
-//        if (this.hasFlexibleTurn()){
-            if (false){
+        if (this.hasFlexibleTurn()){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
@@ -728,7 +749,7 @@ public abstract class Ship {
         return positions;  
     }
     
-    private static TurnPositions availableTurnWest(ShipUnit[] su, int size){
+    private TurnPositions availableTurnWest(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -739,8 +760,7 @@ public abstract class Ship {
         int i,j,k;
         int xPivot;
         int yPivot;
- //       if (this.hasFlexibleTurn()){
-        if (false){
+        if (this.hasFlexibleTurn()){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
@@ -823,7 +843,7 @@ public abstract class Ship {
         }
         return positions; 
     }
-
+    // Added main() to test. 
 /*    public static void main(String[] args) {
         ShipUnit su = new ShipUnit();
         ShipUnit su2 = new ShipUnit();
