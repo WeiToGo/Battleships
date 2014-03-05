@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import my_game.util.Positions;
 import my_game.util.Moves;
 import my_game.util.TurnPositions;
-
+import my_game.util.Turns;
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -147,11 +147,12 @@ public class Map {
     }
     
     /**
-     * This method may need to be static?
-     * @param p1 The current position of the bow of the ship.
-     * @param p2 The desired position of the bow of this ship.
-     * @return An array of positions in between p1 and p2. (should handle the 
-     * cases of left, right, and back move as well. 
+     * This method calcule all positions that need be checked in order move the
+     * ship successfully.
+     * @param p The new position(of the bow) that the player wants to move. 
+     * @param positions All positions this ship can move to.
+     * @return An array containing all positions on the path leading to the new 
+     * position and a MoveDirection indicating which direction we moved.
      */
     private Moves getMovePositions(Vector2 p, Positions positions){
         Moves moves = new Moves();
@@ -202,7 +203,6 @@ public class Map {
      * same than the input is all positions are clear.
      */
     public ArrayList<Vector2> validateMove(Ship s, Moves p){
-     //   throw new UnsupportedOperationException("Not yet implemented"); 
         //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
         ArrayList<Vector2> moves = p.getPositions();
@@ -286,13 +286,14 @@ public class Map {
 * Gather infomation about the ship to calculate the
 * possible places that ship can turn to.
 */
-    public Positions prepareTurnShip(Ship ship){
+    public TurnPositions prepareTurnShip(Ship ship){
    
         TurnPositions allTurns = ship.availableTurns();
-        Positions highlightedTurns = new Positions(null,null,null,null);
+        TurnPositions highlightedTurns = new TurnPositions(null,null,null,null,null);
         // highlight a particular turn only if all positions on the path are clear.
         ArrayList<Vector2> left = allTurns.getLeft();
         ArrayList<Vector2> leftPath = allTurns.getLeftPath();
+        ShipDirection ld = allTurns.getLeftDirection();
         boolean canMoveLeft = true;
         for (int i = 0; i < left.size(); i++){
             if (isVisibleObstacle(ship, left.get(i))){
@@ -306,9 +307,12 @@ public class Map {
         }
         if (canMoveLeft){
            highlightedTurns.setLeft(left);
+           highlightedTurns.setLeftPath(leftPath);
+           highlightedTurns.setLeftDirection(ld);
         }    
         ArrayList<Vector2> right = allTurns.getRight();
         ArrayList<Vector2> rightPath = allTurns.getRightPath();
+        ShipDirection rd = allTurns.getRightDirection();
         boolean canMoveRight = true;
         for (int i = 0; i < right.size(); i++){
             if (isVisibleObstacle(ship, right.get(i))){
@@ -322,8 +326,11 @@ public class Map {
         }
         if (canMoveRight){
            highlightedTurns.setRight(right);
+           highlightedTurns.setRightPath(rightPath);
+           highlightedTurns.setRightDirection(rd);
         }
         ArrayList<Vector2> back = allTurns.getBackward();
+        ShipDirection bd = allTurns.getBackDirection();
         for (int i = 0; i < right.size(); i++){
             if (isVisibleObstacle(ship, right.get(i))){
                 canMoveRight = false;//can also use canMoveLeft.
@@ -336,57 +343,120 @@ public class Map {
         }
         if (canMoveLeft && canMoveRight){
            highlightedTurns.setBack(back);
+           highlightedTurns.setBackDirection(bd);
         }
-     
+        // careful in Game, path are NOT highlighted. 
         return highlightedTurns;
     }
     
-    public void turnShip(Ship ship, Vector2 newPosition, Positions p){
-        Moves shipPositions = getTurnPositions (newPosition, p);
-        ArrayList<Vector2> valide = validateTurn(ship, shipPositions);
-        ship.turnTo(valide, newDirection);
+    public void turnShip(Ship ship, Vector2 newPosition, TurnPositions p){
+        Turns shipPositions = getTurnPositions (newPosition, p);
+        Turns validTurns = validateTurn(ship, shipPositions);
+        // find the new ship direction
+        ArrayList <Vector2> valid = validTurns.getTurns();
+        ShipDirection newDirection = validTurns.getNewDirection();
+        ship.turnTo(valid, newDirection);
         
     }
-    
-    private Moves getTurnPositions(Vector2 p, Positions positions){
-        Moves moves = new Moves();
-        ArrayList<Vector2> back = positions.getBackward();
-        for (Vector2 v: back){
+    /**
+     * This method calcule all positions that need be checked in order move the
+     * ship successfully.
+     * @param p The new position(of the bow) that the player wants to move. 
+     * @param positions All positions this ship can turn to and all path this ship
+     * need to pass.
+     * @return An array containing all positions on the path leading to the new 
+     * position and an array indicating new ship positions.
+     */    
+    private Turns getTurnPositions(Vector2 p, TurnPositions positions){
+        Turns turns = new Turns();      
+        ArrayList<Vector2> left = positions.getLeft();
+        ArrayList<Vector2> leftPath = positions.getLeftPath();
+        ShipDirection ld = positions.getLeftDirection();
+        for (Vector2 v: left){
             if (v.x == p.x && v.y == p.y){
-                moves.setMoveDirection(Moves.MoveDirection.B);
-                moves.setMoves(back);
-                return moves;// only works if we can only move backward one square.
+                turns.setTurns(left);               
+                turns.setPath(leftPath);
+                turns.setNewDirection(ld);
+                return turns;
             }
         }
-    }
+        ArrayList<Vector2> right = positions.getRight();
+        ArrayList<Vector2> rightPath = positions.getRightPath();
+        ShipDirection rd = positions.getRightDirection();
+        for (Vector2 v: right){
+            if (v.x == p.x && v.y == p.y){
+                turns.setTurns(right);               
+                turns.setPath(rightPath);
+                turns.setNewDirection(rd);
+                return turns;
+            }
+        }
+        ArrayList<Vector2> back = positions.getBackward();
+        ArrayList<Vector2> backPath = new ArrayList<Vector2>();
+        ShipDirection bd = positions.getBackDirection();
+        for (Vector2 v: back){
+            if (v.x == p.x && v.y == p.y){
+                turns.setTurns(back);
+                backPath.addAll(leftPath);
+                backPath.addAll(rightPath);
+                turns.setPath(backPath);   
+                turns.setNewDirection(bd);
+                return turns;
+            }
+        }  
+        return turns;
+   }
      /**
      * This method checks if there are ships, coral reef in positions that the 
      * player wants to turn to. It's called by turnShip.
      * @param p The desired position of the bow of the ship.
      * @return The valide positions that the ship can move.
      */
-    public Vector2[] validateTurn(Ship s, Vector2 p){
-        throw new UnsupportedOperationException("Not yet implemented");
-        // needs to know which ship unit is the pivot for the turn.
-        
-        //Vectors2[] shipPositions = getTurnPositions(p1,p2,pivot);
-        
-        boolean turn = true;
-        for (Vector2 v: p){
-            if (isHiddenObstacle(v)){
-                turn = false;
-                break; // don't turn if there is an obstacle.
-            }else if (isMine(v)){
-                //call touchedMine
-                turn = false;
-                break;
+    public Turns validateTurn(Ship s, Turns t){
+        Turns valid = new Turns();
+        ArrayList<Vector2> turns = t.getTurns();
+        ArrayList<Vector2> turnPath = t.getPath();
+        ShipDirection d = t.getNewDirection();
+  
+        boolean canTurn = true;
+        Vector2 obstacle, mine;   
+        ShipUnit[] damagedUnits = new ShipUnit[2];
+
+  //      if (!s.hasFlexibleTurn()){
+            for (Vector2 v: turnPath){
+                if (isHiddenObstacle(v)){
+                    canTurn = false;
+                    break; // don't turn if there is an obstacle.
+                }else if (isMine(v)){
+                    mine = v;
+                    //get 2 shipUnits
+                    touchedMine(mine, damagedUnits);
+                    canTurn = false;
+                    break;
+                }
             }
-        }
-        
-        return turn;
+            for (Vector2 v: turns){
+                if (isHiddenObstacle(v)){
+                    canTurn = false;
+                    break; // don't turn if there is an obstacle.
+                }else if (isMine(v)){
+                    mine = v;
+                    //get 2 shipUnits
+                    touchedMine(mine, damagedUnits);
+                    canTurn = false;
+                    break;
+                }
+            }            
+            if (canTurn){
+                valid.setTurns(turns);
+                valid.setPath(turnPath);
+                valid.setNewDirection(d);
+            }
+            
+   //     }else{
+        return valid;
     }
-    
-    
+
     /**
      * This method checks if there are obstacles or mines in the positions,
      * if there are obstacles, the move should stop right before the obstacle,

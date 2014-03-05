@@ -19,10 +19,7 @@ public abstract class Ship {
         Cruiser, Destroyer, TorpedoBoat, MineLayer, RadarBoat
     };
     
-    public enum ShipDirection {
-        North, South, East, West
-    };
-    
+   
     /** The attributes of Ship class. */
     private ShipType shipType;
     private ShipUnit[] shipUnits;
@@ -396,7 +393,7 @@ public abstract class Ship {
      * @param newPosition
      * @param d The new direction should be passed from the GUI.
      */
-    public void turnTo(Vector2[] newPosition, ShipDirection d){
+    public void turnTo(ArrayList<Vector2> newPosition, ShipDirection d){
         // assert newPosition.length == shipUnits.length
         // and assuming it's the right order.
         ShipUnit[] shipUnits = this.getShipUnits();
@@ -404,17 +401,15 @@ public abstract class Ship {
             for (Vector2 v: newPosition){
                 s.setPosition(v);
             }
-        }
-        
+        }        
         this.setDirection(d);
     }
     /**
      * This method return true if the ship can turn 180 degree in one turn.
-     * It's called by prepareTurn()
      * (Torpedo and radar boat)
      * @return 
      */
-    private boolean hasFlexibleTurn(){
+    public boolean hasFlexibleTurn(){
         if (this.shipType.equals(ShipType.TorpedoBoat)){
             return true;
         }else if (this.shipType.equals(ShipType.RadarBoat)){
@@ -462,6 +457,7 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        ShipDirection d;
         int i,j,k;
         int xPivot;
         int yPivot;
@@ -477,7 +473,9 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     left.add(p);
                 }
+                d = ShipDirection.West;
                 positions.setLeft(left);
+                positions.setLeftDirection(d);
                 //leftpath
                 Vector2 p1 = new Vector2(xPivot-1, yPivot-1);
                 Vector2 p2 = new Vector2(xPivot+1, yPivot+1);
@@ -489,7 +487,9 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     right.add(p);
                 }
+                d = ShipDirection.East;
                 positions.setRight(right);
+                positions.setRightDirection(d);
                 //rightpath
                 Vector2 p3 = new Vector2(xPivot+1, yPivot-1);
                 Vector2 p4 = new Vector2(xPivot-1, yPivot+1);
@@ -502,9 +502,10 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot,i);
                     back.add(p);
                 }
+                d = ShipDirection.South;
+                positions.setBackDirection(d);
                 positions.setBack(back);
-            }               
-                       
+            }                            
         }else{
             pivot = su[size-1];
             Vector2 pivotPosition = pivot.getPosition();
@@ -517,6 +518,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     left.add(p);
                 }
+                d = ShipDirection.West;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //leftpath
                 k = 0;
@@ -535,6 +538,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     right.add(p);
                 }
+                d = ShipDirection.East;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 k = 0;
@@ -565,6 +570,7 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        ShipDirection d;
         int i,j,k;
         int xPivot;
         int yPivot;
@@ -580,6 +586,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     left.add(p);
                 }
+                d = ShipDirection.East;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //leftpath
                 Vector2 p1 = new Vector2(xPivot-1, yPivot-1);
@@ -592,6 +600,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     right.add(p);
                 }
+                d = ShipDirection.West;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 Vector2 p3 = new Vector2(xPivot+1, yPivot-1);
@@ -604,6 +614,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot,i);
                     back.add(p);
                 }
+                d = ShipDirection.North;
+                positions.setBackDirection(d);                
                 positions.setBack(back);
             }               
                        
@@ -618,6 +630,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     right.add(p);
                 }
+                d = ShipDirection.West;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 k = 0;
@@ -636,6 +650,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i,yPivot);
                     left.add(p);
                 }
+                d = ShipDirection.East;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //leftpath
                 k = 0;
@@ -662,6 +678,7 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        ShipDirection d;
         int i,j,k;
         int xPivot;
         int yPivot;
@@ -677,6 +694,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot,i);
                     left.add(p);
                 }
+                d = ShipDirection.North;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //lefttpath
                 Vector2 p1 = new Vector2(xPivot+1, yPivot-1);
@@ -689,6 +708,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot,i);
                     right.add(p);
                 }
+                d = ShipDirection.South;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 Vector2 p3 = new Vector2(xPivot-1, yPivot-1);
@@ -701,6 +722,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i, yPivot);
                     back.add(p);
                 }
+                d = ShipDirection.West;
+                positions.setBackDirection(d);                
                 positions.setBack(back);
             }               
                        
@@ -715,6 +738,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     left.add(p);
                 }
+                d = ShipDirection.North;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //leftpath
                 k = 0;
@@ -733,6 +758,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     right.add(p);
                 }
+                d = ShipDirection.South;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 k = 0;
@@ -757,6 +784,7 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
+        ShipDirection d;
         int i,j,k;
         int xPivot;
         int yPivot;
@@ -772,6 +800,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     left.add(p);
                 }
+                d = ShipDirection.South;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //lefttpath
                 Vector2 p1 = new Vector2(xPivot+1, yPivot-1);
@@ -784,6 +814,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     right.add(p);
                 }
+                d = ShipDirection.North;
+                positions.setRightDirection(d);                
                 positions.setRight(right);                
                 //rightpath
                 Vector2 p3 = new Vector2(xPivot-1, yPivot-1);
@@ -796,6 +828,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(i, yPivot);
                     back.add(p);
                 }
+                d = ShipDirection.East;
+                positions.setBackDirection(d);                
                 positions.setBack(back);
             }               
                        
@@ -810,6 +844,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     right.add(p);
                 }
+                d = ShipDirection.North;
+                positions.setRightDirection(d);                
                 positions.setRight(right);
                 //rightpath
                 k = 0;
@@ -828,6 +864,8 @@ public abstract class Ship {
                     Vector2 p = new Vector2(xPivot, i);
                     left.add(p);
                 }
+                d = ShipDirection.South;
+                positions.setLeftDirection(d);                
                 positions.setLeft(left);
                 //leftpath
                 k = 0;

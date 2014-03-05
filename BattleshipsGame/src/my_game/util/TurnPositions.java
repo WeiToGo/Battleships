@@ -1,6 +1,7 @@
 
 package my_game.util;
 import java.util.ArrayList;
+import my_game.models.game_components.ShipDirection;
 /**
  * This class contains 5 arraylists of positions involved when turning a ship.
  * @author wei
@@ -16,7 +17,14 @@ public class TurnPositions {
     public ArrayList<Vector2> backward;
     /**We don't need backPath because the path the ship needs to traverse when 
     it's turning 180 deg, is the same than leftPath + rightPath. */
-   
+    
+    /** The new direction of the ship if we are turning left 90 deg. */
+    public ShipDirection leftDirection;
+    /** The new direction of the ship if we are turning right 90 deg. */
+    public ShipDirection rightDirection;
+    /** The new direction of the ship if we are turning 180 deg. */
+    public ShipDirection backDirection;
+  
     
     public TurnPositions(ArrayList<Vector2> l, ArrayList<Vector2> lp, 
             ArrayList<Vector2> r, ArrayList<Vector2> rp, ArrayList<Vector2> back){
@@ -58,4 +66,22 @@ public class TurnPositions {
     public void setBack(ArrayList<Vector2> p){
         this.backward = p;
     }
+    public ShipDirection getLeftDirection(){
+        return this.leftDirection;
+    }
+    public void setLeftDirection(ShipDirection d){
+        this.leftDirection = d;
+    }
+    public ShipDirection getRightDirection(){
+        return this.rightDirection;
+    }
+    public void setRightDirection(ShipDirection d){
+        this.rightDirection = d;
+    }
+    public ShipDirection getBackDirection(){
+        return this.backDirection;
+    }
+    public void setBackDirection(ShipDirection d){
+        this.backDirection = d;
+    }    
 }
