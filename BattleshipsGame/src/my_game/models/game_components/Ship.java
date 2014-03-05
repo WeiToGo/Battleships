@@ -434,7 +434,7 @@ public abstract class Ship {
         return availableTurns;
     }
     
-    private TurnPositions availableTurnNorth(ShipUnit[] su, int size){
+    private static TurnPositions availableTurnNorth(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -442,16 +442,17 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
-        int i,j;
+        int i,j,k;
         int xPivot;
         int yPivot;
-        if (this.hasFlexibleTurn()){
+ //       if (this.hasFlexibleTurn()){
+            if (false){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
             yPivot = pivotPosition.y;
            
-            if (xPivot-1 >= 0 && xPivot+1 < 30){
+            if (xPivot-1 >= 0 && xPivot+1 < 30 && yPivot-1 >= 0 && yPivot+1 < 30){
                 //left 90.
                 for (i = xPivot-1; i <= xPivot+1; i++){
                     Vector2 p = new Vector2(i,yPivot);
@@ -499,15 +500,18 @@ public abstract class Ship {
                 }
                 positions.setLeft(left);
                 //leftpath
+                k = 0;
                 for (i = yPivot-1; i >= yPivot-size+1; i--){
-                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                   // for (j = xPivot-size+1+k; j <= xPivot-1; j--){
+                     for (j = xPivot-size+1+k; j <= xPivot-1; j++){
+                    
                         Vector2 p = new Vector2(j,i);
-                        lPath.add(p);                        
+                        lPath.add(p);  
                     }
+                    k++;        
                 }
                 positions.setLeftPath(lPath);             
             }
-
             if (xPivot+size-1 < 30){
                 //right 90;
                 for (i = xPivot+size-1; i >= xPivot; i--){
@@ -516,11 +520,13 @@ public abstract class Ship {
                 }
                 positions.setRight(right);
                 //rightpath
-                for (i = yPivot-1; i >= yPivot-size+1; i--){
-                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                k = 0;
+                for (i = yPivot-1; i >= yPivot-size+1; i--){                    
+                    for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
                         rPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setRightPath(rPath);
             }
@@ -528,7 +534,7 @@ public abstract class Ship {
         return positions;    
     }
 
-    private TurnPositions availableTurnSouth(ShipUnit[] su, int size){
+    private static TurnPositions availableTurnSouth(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -536,16 +542,17 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
-        int i,j;
+        int i,j,k;
         int xPivot;
         int yPivot;
-        if (this.hasFlexibleTurn()){
+  //      if (this.hasFlexibleTurn()){
+        if(false){ //TEST ONLY
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
             yPivot = pivotPosition.y;
 
-            if (xPivot-1 >= 0 && xPivot+1 < 30){
+            if (xPivot-1 >= 0 && xPivot+1 < 30 && yPivot-1 >= 0 && yPivot+1 < 30){
                 //left 90.
                 for (i = xPivot+1; i >= xPivot-1; i--){
                     Vector2 p = new Vector2(i,yPivot);
@@ -591,11 +598,13 @@ public abstract class Ship {
                 }
                 positions.setRight(right);
                 //rightpath
+                k = 0;
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
-                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                    for (j = xPivot-size+1+k; j <= xPivot-1; j++){
                         Vector2 p = new Vector2(j,i);
                         rPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setRightPath(rPath);                    
             }
@@ -607,18 +616,23 @@ public abstract class Ship {
                 }
                 positions.setLeft(left);
                 //leftpath
+                k = 0;
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
-                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                    for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
+                        System.out.print("j " + j);
+                        System.out.print( "  ");
+                        System.out.println(i);     
                         lPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setLeftPath(lPath);                
             }
         }
         return positions; 
     }
-    private TurnPositions availableTurnEast(ShipUnit[] su, int size){
+    private static TurnPositions availableTurnEast(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -626,16 +640,17 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
-        int i,j;
+        int i,j,k;
         int xPivot;
         int yPivot;
-        if (this.hasFlexibleTurn()){
+//        if (this.hasFlexibleTurn()){
+            if (false){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
             yPivot = pivotPosition.y;
 
-            if (yPivot-1 >= 0 && yPivot+1 < 30){
+            if (xPivot-1 >= 0 && xPivot+1 < 30 && yPivot-1 >= 0 && yPivot+1 < 30){
                 //left 90.
                 for (i = yPivot-1; i <= yPivot+1; i++){
                     Vector2 p = new Vector2(xPivot,i);
@@ -681,11 +696,13 @@ public abstract class Ship {
                 }
                 positions.setLeft(left);
                 //leftpath
+                k = 0;
                 for (i = yPivot-1; i >= yPivot-size+1; i--){
-                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                    for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
                         lPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setLeftPath(lPath);
             }
@@ -697,11 +714,13 @@ public abstract class Ship {
                 }
                 positions.setRight(right);
                 //rightpath
+                k = 0;
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
-                    for (j = xPivot+1; j <= xPivot+size-1-i; j++){
+                    for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
                         rPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setRightPath(rPath);                 
             }
@@ -709,7 +728,7 @@ public abstract class Ship {
         return positions;  
     }
     
-    private TurnPositions availableTurnWest(ShipUnit[] su, int size){
+    private static TurnPositions availableTurnWest(ShipUnit[] su, int size){
         ShipUnit pivot;
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> lPath = new ArrayList<Vector2>();
@@ -717,16 +736,17 @@ public abstract class Ship {
         ArrayList<Vector2> rPath = new ArrayList<Vector2>();
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         TurnPositions positions = new TurnPositions(null,null,null,null,null);
-        int i,j;
+        int i,j,k;
         int xPivot;
         int yPivot;
-        if (this.hasFlexibleTurn()){
+ //       if (this.hasFlexibleTurn()){
+        if (false){
             pivot = su[size-2];
             Vector2 pivotPosition = pivot.getPosition();
             xPivot = pivotPosition.x;
             yPivot = pivotPosition.y;
 
-            if (xPivot-1 >= 0 && xPivot+1 < 30){
+            if (xPivot-1 >= 0 && xPivot+1 < 30 && yPivot-1 >= 0 && yPivot+1 < 30){
                 //left 90.
                 for (i = yPivot+1; i >= yPivot-1; i--){
                     Vector2 p = new Vector2(xPivot, i);
@@ -772,11 +792,13 @@ public abstract class Ship {
                 }
                 positions.setRight(right);
                 //rightpath
+                k = 0;
                 for (i = yPivot-1; i >= yPivot-size+1; i--){
-                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                     for (j = xPivot-size+1+k; j <= xPivot-1; j++){                    
                         Vector2 p = new Vector2(j,i);
-                        rPath.add(p);                        
+                        rPath.add(p);  
                     }
+                    k++;        
                 }
                 positions.setRightPath(rPath);
             }
@@ -788,11 +810,13 @@ public abstract class Ship {
                 }
                 positions.setLeft(left);
                 //leftpath
+                k = 0;
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
-                    for (j = xPivot-size+i; j <= xPivot-1; j--){
+                    for (j = xPivot-size+1+k; j <= xPivot-1; j++){
                         Vector2 p = new Vector2(j,i);
                         lPath.add(p);                        
                     }
+                    k++;
                 }
                 positions.setLeftPath(lPath);                
             }
@@ -800,5 +824,63 @@ public abstract class Ship {
         return positions; 
     }
 
-    
+/*    public static void main(String[] args) {
+        ShipUnit su = new ShipUnit();
+        ShipUnit su2 = new ShipUnit();
+        ShipUnit su3 = new ShipUnit();
+        ShipUnit su4 = new ShipUnit();        
+       
+        su.setPosition(new Vector2(0,3));        
+        su2.setPosition(new Vector2(1,3));
+        su3.setPosition(new Vector2(2,3)); 
+        su4.setPosition(new Vector2(3,3));         
+        ShipUnit[] units = new ShipUnit[4];
+        units[0] = su;
+        units[1] = su2;
+        units[2] = su3;
+        units[3] = su4;
+        TurnPositions allTurns = availableTurnWest(units, 4);
+        ArrayList<Vector2> left = allTurns.getLeft();
+        ArrayList<Vector2> lp = allTurns.getLeftPath(); 
+        ArrayList<Vector2> r = allTurns.getRight();   
+        ArrayList<Vector2> rp = allTurns.getRightPath();    
+        ArrayList<Vector2> b = allTurns.getBackward();    
+        if (left != null){
+            for (int i = 0; i < left.size(); i++){
+                System.out.print("left" + left.get(i).x);
+                System.out.print( "  ");
+                System.out.println(left.get(i).y);        
+            }
+        }
+        if (lp != null){
+        for (int i = 0; i < lp.size(); i++){
+            System.out.print("lp" + lp.get(i).x);
+            System.out.print( "  ");
+            System.out.println(lp.get(i).y);        
+        }      
+        }
+        if (r != null){
+        for (int i = 0; i < r.size(); i++){
+            System.out.print("right" + r.get(i).x);
+            System.out.print( "  ");
+            System.out.println(r.get(i).y);        
+        }
+        }
+        if (rp != null){
+        for (int i = 0; i < rp.size(); i++){
+            System.out.print("rp" + rp.get(i).x);
+            System.out.print( "  ");
+            System.out.println(rp.get(i).y);        
+        }   
+        }
+        if (b != null) {
+        for (int i = 0; i < b.size(); i++){
+            System.out.print("back" + b.get(i).x);
+            System.out.print( "  ");
+            System.out.println(b.get(i).y);        
+        }        
+        }
+    }
+
+*/
 }

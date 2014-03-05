@@ -25,7 +25,7 @@ public class ShipUnit extends GameObject {
           this.ship = ship;
           this.type = GameObjectType.Ship;
           this.damageLevel = 0;
-          this.unitArmour =ship.getArmour(); 
+          this.unitArmour = ship.getArmour(); 
     }
     
     public Ship getShip() {
@@ -38,8 +38,9 @@ public class ShipUnit extends GameObject {
     }
     
     public void setPosition(Vector2 newPosition){
-        position.x = newPosition.x;
-        position.y = newPosition.y;
+//        position.x = newPosition.x;
+//        position.y = newPosition.y;
+        position = newPosition;
     }
     
     public int getDamageLevel(){
