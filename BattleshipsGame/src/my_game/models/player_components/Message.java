@@ -16,9 +16,28 @@ public class Message {
     
     /** The type of this message. */
     private MessageType type;
+    
     /** Messages of certain types are only seen by one player. 
      * That is the receiver of the message. */
     private Player receiver;
+    
+    /**
+     * The text of the message. */
+    public String text;
+
+    /**
+     * @param text Text of the message.
+     * @param type The type of message can be Chat, NetworkInfo, NetworkError and Game.
+     * @param receiver If this message is seen by all, set receiver to null.
+     */
+    public Message(String text, MessageType type, Player receiver) {
+        assert text != null;
+        assert type != null;
+        
+        this.text = text;
+        this.type = type;
+        this.receiver = receiver;
+    }
     
     /**
      * @return The type of this message.
@@ -33,7 +52,6 @@ public class Message {
      * this message, otherwise returns null.
      */
     public Player getReceiver() {
-        // TODO Not implemented.
-        return null;
+        return receiver;
     }
 }

@@ -4,6 +4,7 @@
  */
 package my_game.controller;
 
+import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.game_components.GameState;
@@ -23,6 +24,7 @@ import my_game.util.Positions;
  * entities (GameServer and GameClient).
  */
 public class Game {
+
     public enum PlayerType {
         Host, Client
     };
@@ -73,32 +75,46 @@ public class Game {
             //init game state
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
-            //TODO Send generated game state to client!!!
-            //startHostGame();
+            this.net.sendGameState(gameState);
+            startGame();
         } else {
             //You are a client. Wait to receive a game state from server
             GameState receivedGameState = null; //receive game state from server
             gameState = new GameState(receivedGameState);
-            //startClientGame();
+            startGame();
         }
     } 
+    
+    
+    private void startGame() {
+        
+    }
     
     /**
      * Places the provided ship at the specified coordinates of the map.
      * @param s
      * @param x
      * @param y 
-     */
+     *//*           TODO Not sure we will need this method.
     private void positionShip(Ship s, Vector2 position) {
         try {
             gameState.getMap().moveShip(s,position);
         } catch (GameException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
-    }
+    }*/
     
+    /**
+     * Chooses randomly between 0 and 1, then returns the result.
+     * @return 
+     */
     private int getRandomFirstPlayer() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        double r = Math.random();
+        if(r < 0.5) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
     
     // TODO Different methods to modify and control the game satate

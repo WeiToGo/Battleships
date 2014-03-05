@@ -23,7 +23,17 @@ public class ChatLog {
      */
     
     public ChatLog() {
+        this(null);
+    }
+
+    public ChatLog(ChatLog chatLog) {
         messages = new ArrayList();
+        if(chatLog != null) {
+            //if a chat log is passed, make a copy of every message
+            for(Message m: chatLog.messages) {
+                this.messages.add(m);
+            }
+        }
     }
     
     /**
@@ -34,14 +44,23 @@ public class ChatLog {
      * @return 
      */
     public List<Message> getMessages(Player p) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        ArrayList<Message> playerMsgs = new ArrayList<Message>();
+        for(Message m: this.messages) {
+            Player receiver = m.getReceiver();
+            if(receiver == null || receiver.equals(p)) {
+                playerMsgs.add(m);
+            }
+        }
+        return playerMsgs;
     }
     
     /**
-     * 
+     * Adds a message to the chat log.
      * @param m 
      */
     public void addMessage(Message m) {
-        
+        if(m != null) {
+            this.messages.add(m);
+        }
     }
 }

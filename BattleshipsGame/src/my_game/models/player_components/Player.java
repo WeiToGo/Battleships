@@ -56,4 +56,25 @@ public class Player {
     public int getStatus() {
         return this.playerStatus;
     }
+
+    @Override
+    public int hashCode() {
+        return (7 * this.id * this.username.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Player)) {
+            return false;
+        }
+
+        Player p = (Player) obj;
+        return (this.id == p.id && this.username == p.username);
+    }
 }

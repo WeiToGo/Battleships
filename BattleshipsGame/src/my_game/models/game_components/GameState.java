@@ -73,8 +73,16 @@ public class GameState {
     }
     
     public GameState(GameState copyState) {
-        //TODO copy all fields of the copyState to this game state
-        throw new UnsupportedOperationException("Not yet implemented");
+        this.phase = copyState.phase;
+        //shallow copy players array
+        this.player = new Player[copyState.player.length];
+        System.arraycopy(copyState.player, 0, this.player, 0, copyState.player.length);
+        this.playerTurn = copyState.playerTurn;
+        this.name = copyState.name;
+        //use copy constructor to create a chatlog copy
+        this.chatLog = new ChatLog(copyState.chatLog);
+        //use copy constructor to create a map copy
+        this.map = new Map(copyState.map);              //TODO implement map copy constructor
     }
 
     private Ship[] generateShips(Player player) {
