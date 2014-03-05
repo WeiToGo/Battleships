@@ -27,7 +27,6 @@ public class Map {
     private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     /** 2D array giving the radar visibility for every grid cell of the map. */
     private boolean[][] player0Visibility, player1Visibility;   //TODO implement
-    
     protected Ship[] player0Ships;
     protected Ship[] player1Ships;
     private Base p1Base;

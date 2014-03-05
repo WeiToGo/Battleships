@@ -7,12 +7,14 @@ package my_game.controller;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.game_components.GameState;
+import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.util.Vector2;
 import my_game.util.GameException;
+import my_game.util.Positions;
 
 /**
  * This class is a controller of the game. One instance
@@ -100,4 +102,26 @@ public class Game {
     }
     
     // TODO Different methods to modify and control the game satate
+    
+    public void moveAction(Ship s){
+        //need to be called on the map object.
+        //Positions highlight = map.prepareMoveShip(s);
+
+        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        
+        
+        //map.moveShip(s,newPosition, highlight);
+    }
+    
+    public void turnAction(Ship s){
+        //need to be called on the map object.
+        //Positions highlight = map.prepareTurnShip(s);
+
+        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        
+        
+        //map.turnShip(s,newPosition, highlight);
+    }
+            
+    
 }
