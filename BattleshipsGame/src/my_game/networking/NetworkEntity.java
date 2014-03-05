@@ -1,6 +1,8 @@
 package my_game.networking;
 
 import java.awt.Color;
+import my_game.models.game_components.GameState;
+import my_game.models.player_components.Player;
 
 public interface NetworkEntity {
 
@@ -9,28 +11,21 @@ public interface NetworkEntity {
     
     
 	/**
-	 * Sets the name of an opponent entity.
+	 * Communicates the opponent back to all network listeners(GUI and controllers).
 	 * @param username
 	 */
-	public void setOpponentName(String username);
+	public void setOpponent(Player p);
 
 	/**
-	 * Updates the game state of the main window gui interface connected with the entity 
-	 * with a circle at the specified coordinates and of the given colour and radius.
-	 * @param x
-	 * @param y
-	 * @param radius
-	 * @param color
+	 * Sends the game state back to all network listeners (GUI and controllers).
+	 * @param gs
 	 */
-	public void updateGameState(float x, float y, float radius, Color color);
+	public void updateGameState(GameState gs);
 
 	/**
 	 * Sends a game state packet to all other connected entities.
-	 * @param x
-	 * @param y
-	 * @param radius
-	 * @param color
+	 * @param gs
 	 */
-	public void sendGameState(float x, float y, float radius, Color color);
+	public void sendGameState(GameState gs);
 	
 }
