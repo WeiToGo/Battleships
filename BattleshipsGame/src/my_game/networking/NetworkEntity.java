@@ -4,6 +4,10 @@ import java.awt.Color;
 
 public interface NetworkEntity {
 
+    
+    //TODO adapt this interface to the battleships game
+    
+    
 	/**
 	 * Sets the name of an opponent entity.
 	 * @param username

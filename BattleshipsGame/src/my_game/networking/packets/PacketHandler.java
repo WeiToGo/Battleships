@@ -47,9 +47,9 @@ public class PacketHandler {
 			switch(type) {
 			case GAMESTATE:
 				//use the methods inside the game state packet to extract the game state from the data[]
-				GameStatePacket packet = new GameStatePacket(data);
+				//GameStatePacket packet = new GameStatePacket(data);
 				
-				net.updateGameState(packet.x, packet.y, packet.radius, packet.color);
+				//net.updateGameState(packet.x, packet.y, packet.radius, packet.color);
 				break;
 			case HELLO:
 				//send the username to the server
