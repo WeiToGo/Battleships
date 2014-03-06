@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
 import my_game.networking.NetworkEntity;
@@ -143,15 +144,15 @@ public class GameServer implements NetworkEntity {
         serverRunning = false;
     }
 
-    public void setOpponentName(String username) {
+    public void setOpponent(Player p) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void updateGameState(float x, float y, float radius, Color color) {
+    public void updateGameState(GameState gs) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void sendGameState(float x, float y, float radius, Color color) {
+    public void sendGameState(GameState gs) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

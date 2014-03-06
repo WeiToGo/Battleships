@@ -38,8 +38,6 @@ public class Map implements java.io.Serializable {
         for(int i = 0; i < WIDTH; i++) {
             for(int j = 0; j < HEIGHT; j++) {
                 grid[i][j] = m.grid[i][j];
-                player0Visibility[i][j] = m.player0Visibility[i][j];
-                player1Visibility[i][j] = m.player1Visibility[i][j];
             }
         }
         //copy other fields
@@ -55,6 +53,8 @@ public class Map implements java.io.Serializable {
         //copy bases
         this.p0Base = m.p0Base;
         this.p1Base = m.p1Base;
+        
+        //TODO Player visibility must be generated.
     }
     
     public Map(CoralReef reef, Ship[] player0Ships, Ship[] player1Ships, Base b0, Base b1) {
@@ -66,13 +66,13 @@ public class Map implements java.io.Serializable {
         int x_end = X_OFFSET + reef.WIDTH;
         int y_start = Y_OFFSET;
         int y_end = Y_OFFSET + reef.HEIGHT;
-        int i,j;
-        for (i = x_start; i < x_end; i++){
-            for (j = y_start; j < y_end; j++){
-                if (reef.hasObstacleIn(i, j)){
+        int xMap, yMap, xReef, yReef;
+        for (xMap = x_start, xReef = 0; xMap < x_end; xMap++, xReef++){
+            for (yMap = y_start, yReef = 0; yMap < y_end; yMap++, yReef++){
+                if (reef.hasObstacleIn(xReef, yReef)){
                     CoralUnit coralUnit = new CoralUnit();
                     //maybe setObjectAt should return void?
-                    Vector2 position = new Vector2(i,j);
+                    Vector2 position = new Vector2(xMap,yMap);
                     this.setObjectAt(position, coralUnit);
                 }
             }
@@ -570,5 +570,26 @@ public class Map implements java.io.Serializable {
     
     public static void main(String[] args) {
         
+    }
+    
+    @Override
+    public String toString() {
+        //just print out the map grid where obstacles are '#', empty spaces are '*'
+        //and other objects are 'o'
+        StringBuilder sb = new StringBuilder();
+        
+        for(int y = 0; y < HEIGHT; y++) { //first y so that we go horizontal line by line in the grid
+            for(int x = 0; x < WIDTH; x++) {
+                if(grid[x][y] == null) {
+                    sb.append("*");
+                } else if(grid[x][y] instanceof CoralUnit) {
+                    sb.append("#");
+                } else {
+                    sb.append("o");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

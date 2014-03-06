@@ -13,11 +13,17 @@ public class CoralReef {
     public final int WIDTH = 10;
     /** Number of cells the coral reef is high (y-axis dimension in top projection). */
     public final int HEIGHT = 24;
+    /** The probability with which an obstacle can appear in a given cell. */
+    private final double CHANCE_OF_OBSTACLE = 0.3;
     
     /** A grid of booleans. True means an obstacle is in the grid. */
     private boolean[][] reef;
- 
-    //needs a constructor?    
+
+    /** Constructs a coral reef with random coral positions. */
+    public CoralReef() {
+        reef = new boolean[WIDTH][HEIGHT];
+        reef = randomizeObstaclePositions(reef);
+    }
   
     /**
      * @param x Positive and within bounds x-coordinate on the reef.
@@ -31,7 +37,25 @@ public class CoralReef {
     /**
      * Generate random coral reef positions and set it to the reef variable.
      */
-    public void setNewPositions(){
-        
+    public void generateNewReef(){
+        this.reef = randomizeObstaclePositions(reef);
+    }
+
+    /**
+     * Creates obstacles (sets boolean to true) at random points in the provided
+     * array, then returns it.
+     * @param reef 
+     */
+    private boolean[][] randomizeObstaclePositions(boolean[][] reef) {
+        for(int x = 0; x < reef.length; x++) {
+            for(int y = 0; y < reef[0].length; y++) {
+                if(Math.random() < CHANCE_OF_OBSTACLE) {
+                    reef[x][y] = true;
+                } else {
+                    reef[x][y] = false;
+                }
+            }
+        }
+        return reef;
     }
 }

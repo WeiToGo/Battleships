@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.models.game_components.GameState;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
 import my_game.networking.server.Constants;
@@ -150,6 +151,18 @@ public class GameClient extends Thread implements NetworkEntity {
         return t;
     }
 
+    public void setOpponent(Player p) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void updateGameState(GameState gs) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void sendGameState(GameState gs) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     private class ClientThread implements Runnable {
         public void run() {
             //wait for someone to connect
@@ -225,53 +238,4 @@ public class GameClient extends Thread implements NetworkEntity {
         }
     }
 
-    @Override
-    public void setOpponentName(String name) {
-
-    }
-
-    @Override
-    public void updateGameState(float x, float y, float radius, Color color) {
-
-    }
-
-    @Override
-    public void sendGameState(float x, float y, float radius, Color color) {
-        
-    }
-    
-    
-    
-    /**
-     * SERVER LIST BUILDING TEST
-     * @param args 
-     */
-    public static void main(String[] args) {
-        GameServer s = null;
-        try {
-            //start a server on this machine
-            s = new GameServer(new Player("Player1", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 1, 0), "Server1");
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
-        ArrayList<ServerInfo> l = new ArrayList<ServerInfo>();
-        Thread t = getLANServersList(new ServerListListener() {
-
-            public void addServerInfo(ServerInfo si) {
-                System.out.println("Server info retreived: ");
-                System.out.println("Player name: " + si.playerName);
-                System.out.println("Server name: " + si.serverName);
-                System.out.println("Address: " + si.ipAddress.getHostAddress());
-                System.out.println();
-            }
-        });
-        try {
-            t.join();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        s.stopServer();
-        System.out.println("Main done.");
-    }
 }
