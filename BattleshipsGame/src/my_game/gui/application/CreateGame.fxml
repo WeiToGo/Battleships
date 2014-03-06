@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-stylesheet application.css?>
+
+<AnchorPane fx:id="pane" minHeight="455.0" minWidth="602.9998779296875" prefHeight="469.0" prefWidth="616.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.CreateGame">
+  <!-- TODO Add Nodes -->
+  <children>
+    <ImageView id="Dark blue sea" fx:id="background" fitHeight="469.0" fitWidth="616.9998779296875" layoutX="0.0" layoutY="0.0" pickOnBounds="true" preserveRatio="false">
+      <image>
+        <Image url="@../../../../Comp%20361/Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <Button fx:id="newGameButton" layoutY="152.0" mnemonicParsing="false" prefHeight="47.00367187500001" prefWidth="157.9998779296875" text="Create" AnchorPane.rightAnchor="43.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button fx:id="loadGameButton" layoutY="271.0" mnemonicParsing="false" prefHeight="46.00367187500001" prefWidth="157.9998779296875" text="Load" AnchorPane.rightAnchor="43.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button id="return" fx:id="returnGameButton" mnemonicParsing="false" prefHeight="46.00367187500001" prefWidth="158.0" text="Return" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="48.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <HBox id="HBox" alignment="CENTER" layoutY="31.0" spacing="5.0" AnchorPane.leftAnchor="416.0" AnchorPane.rightAnchor="43.0">
+      <children>
+        <Label minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="158.0" text="Create Game" textFill="#00ccb4">
+          <effect>
+            <Lighting surfaceScale="5.0">
+              <bumpInput>
+                <Shadow />
+              </bumpInput>
+              <light>
+                <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+              </light>
+            </Lighting>
+          </effect>
+          <font>
+            <Font name="Arabic Typesetting" size="40.0" />
+          </font>
+        </Label>
+      </children>
+    </HBox>
+  </children>
+</AnchorPane>

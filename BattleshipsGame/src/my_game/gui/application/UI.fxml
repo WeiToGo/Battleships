@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-stylesheet application.css?>
+
+<AnchorPane fx:id="pane" disable="false" focusTraversable="false" maxHeight="-1.0" maxWidth="-1.0" minHeight="338.1874694824219" minWidth="429.111083984375" prefHeight="352.1874915527369" prefWidth="626.11110605469" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.MainMenu">
+  <!-- TODO Add Nodes -->
+  <children>
+    <ImageView id="battleship" fx:id="background" fitHeight="352.1875" fitWidth="626.1110825232753" focusTraversable="false" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <image>
+        <Image url="@../../battleship.jpg" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <Button id="newGame" fx:id="newGameButton" focusTraversable="true" layoutX="116.0" layoutY="34.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Create" visible="true">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <font>
+        <Font name="Arial Rounded MT Bold" size="20.0" fx:id="x1" />
+      </font>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button id="joinGame" fx:id="joinGameButton" defaultButton="false" font="$x1" layoutX="116.0" layoutY="111.0" mnemonicParsing="false" opacity="0.75" pickOnBounds="true" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Join" wrapText="false">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+    </Button>
+    <Button defaultButton="false" focusTraversable="false" font="$x1" layoutX="116.0" layoutY="185.0" mnemonicParsing="false" opacity="0.75" pickOnBounds="true" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Settings">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+    </Button>
+    <Button font="$x1" layoutX="116.0" layoutY="262.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Exit">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+    </Button>
+  </children>
+  <stylesheets>
+    <URL value="@application.css" />
+  </stylesheets>
+</AnchorPane>

@@ -42,7 +42,7 @@ public class ServerListPopulationTest {
         ArrayList<ServerInfo> l = new ArrayList<ServerInfo>();
         Thread t = c.getLANServersList(new ServerListListener() {
 
-            public void addServerInfo(ServerInfo si) {
+            public void addServerInfo(ServerInfo si) {                
                 System.out.println("Server info retreived: ");
                 System.out.println("Player name: " + si.playerName);
                 System.out.println("Server name: " + si.serverName);
