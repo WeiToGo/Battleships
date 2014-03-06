@@ -8,7 +8,7 @@ import java.net.InetAddress;
 /**
  * Contains all information necessary to represent a player.
  */
-public class Player {
+public class Player implements java.io.Serializable {
 
 	
     /* Player's identification. */

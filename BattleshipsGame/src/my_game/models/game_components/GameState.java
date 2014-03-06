@@ -4,16 +4,13 @@
  */
 package my_game.models.game_components;
 
-import my_game.models.game_components.CoralReef;
-import my_game.models.game_components.Map;
-import my_game.models.game_components.Ship;
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Player;
 
 /**
  * The state of a game describes a game fully.
  */
-public class GameState {
+public class GameState implements java.io.Serializable {
     
     public enum GamePhase {
         New,    // game has just been created, players have not interacted yet

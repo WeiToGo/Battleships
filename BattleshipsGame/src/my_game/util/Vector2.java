@@ -1,6 +1,6 @@
 package my_game.util;
 
-public class Vector2 {
+public class Vector2 implements java.io.Serializable {
 
 	public int x;
 	public int y;

@@ -7,7 +7,7 @@ package my_game.models.game_components;
 /**
  *
  */
-public class Base {
+public class Base implements java.io.Serializable {
     
     private final int playerID;
     private final int size = 10;

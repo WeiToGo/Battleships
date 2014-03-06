@@ -8,7 +8,7 @@ package my_game.models.player_components;
  * A message of a certain type which also contains visibility information, which
  * means that it can be seen by one player and not the other.
  */
-public class Message {
+public class Message implements java.io.Serializable {
     
     public enum MessageType {
         Chat, NetworkInfo, NetworkError, Game

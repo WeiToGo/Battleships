@@ -1,6 +1,7 @@
 package my_game.networking.packets.impl;
 
 import java.awt.Color;
+import my_game.models.game_components.GameState;
 
 import my_game.networking.packets.Packet;
 
@@ -10,7 +11,7 @@ import my_game.networking.packets.Packet;
  */
 public class GameStatePacket extends Packet {
     
-    public GameStatePacket() {
+    public GameStatePacket(GameState gs) {
         super(PacketTypes.GAMESTATE.getId());
         //TODO implement
     }

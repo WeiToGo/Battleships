@@ -8,7 +8,7 @@ package my_game.models.game_components;
  *
  * @author wei
  */
-public class BaseUnit extends GameObject{
+public class BaseUnit extends GameObject implements java.io.Serializable {
 
     private int damageLevel; //0: healthy, 1: destroyed
     private Base base;

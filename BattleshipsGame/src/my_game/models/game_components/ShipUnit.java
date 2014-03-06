@@ -10,7 +10,7 @@ import my_game.util.Vector2;
  *
  * @author wei
  */
-public class ShipUnit extends GameObject {
+public class ShipUnit extends GameObject implements java.io.Serializable {
     private int damageLevel;
     private int unitArmour;
     private Vector2 position;

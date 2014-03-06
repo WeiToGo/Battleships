@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * A log of chat messages and game information messages sent between players.
  */
-public class ChatLog {
+public class ChatLog implements java.io.Serializable {
     
     /** This is the log of messages. */
-    private List<Message> messages;
+    private ArrayList<Message> messages;
     
     /**
      * TODO When saving the chat log, it should not be saved in ASCII because

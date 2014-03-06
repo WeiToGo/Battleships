@@ -8,7 +8,7 @@ package my_game.models.game_components;
  * Every object belonging to/shown onto the game map is 
  * a game object.
  */
-public abstract class GameObject {
+public abstract class GameObject implements java.io.Serializable {
     public enum GameObjectType {
         Ship, Weapon, Obstacle, Base
     }
