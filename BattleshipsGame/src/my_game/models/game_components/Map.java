@@ -239,7 +239,7 @@ public class Map implements java.io.Serializable {
                 ArrayList<Vector2> forwardmoves = new ArrayList<Vector2>();
             //need to generate new positions if needed.
             for (Vector2 v: moves){
-                if (isHiddenObstacle(v)){ 
+                if (isHiddenObstacle(s,v)){ 
                     break;                  
                 }
                 if (isMine(v)){
@@ -254,7 +254,7 @@ public class Map implements java.io.Serializable {
             moves.addAll(forwardmoves);
             case B:
             for (Vector2 v: moves){
-                if (isHiddenObstacle(v)){ return null;}
+                if (isHiddenObstacle(s,v)){ return null;}
                 if (isMine(v)){
                     mine = v;
                     //get last 2 shipUnits?
@@ -264,7 +264,7 @@ public class Map implements java.io.Serializable {
             }
             case L:
             for (Vector2 v: moves){
-                if (isHiddenObstacle(v)){ return null;}
+                if (isHiddenObstacle(s,v)){ return null;}
                 if (isMine(v)){
                     mine = v;
                     //get last 2 shipUnits?
@@ -274,7 +274,7 @@ public class Map implements java.io.Serializable {
             }
             case R:
             for (Vector2 v: moves){
-                if (isHiddenObstacle(v)){ return null;}
+                if (isHiddenObstacle(s,v)){ return null;}
                 if (isMine(v)){
                     mine = v;
                     //get last 2 shipUnits?
@@ -450,7 +450,7 @@ public class Map implements java.io.Serializable {
 
   //      if (!s.hasFlexibleTurn()){
             for (Vector2 v: turnPath){
-                if (isHiddenObstacle(v)){
+                if (isHiddenObstacle(s,v)){
                     canTurn = false;
                     break; // don't turn if there is an obstacle.
                 }else if (isMine(v)){
@@ -462,7 +462,7 @@ public class Map implements java.io.Serializable {
                 }
             }
             for (Vector2 v: turns){
-                if (isHiddenObstacle(v)){
+                if (isHiddenObstacle(s,v)){
                     canTurn = false;
                     break; // don't turn if there is an obstacle.
                 }else if (isMine(v)){
@@ -484,28 +484,74 @@ public class Map implements java.io.Serializable {
     }
 
     /**
-     * This method checks if there are obstacles or mines in the positions,
-     * if there are obstacles, the move should stop right before the obstacle,
-     * if there is a mine, touchedMine is called. 
-     * @param p The array of positions to validate.
-     * @return The new positions that the ship will be moved to. It would be the 
-     * same than the input is all positions are clear.
-     */
-    /*
-     * This method decides if a position has an obstacle that is visible for 
-     * the given ship.
+     * This method checks if there is any visible obstacle at a position for 
+     * a given ship. (Including Mine for minelayers)
+     * @param s
+     * @param p
+     * @return 
      */
     public boolean isVisibleObstacle(Ship s, Vector2 p){
-        throw new UnsupportedOperationException("Not yet implemented");
+        boolean isVisibleObstacle = false;
+        GameObject o = this.getObjectAt(p);     
+        if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
+             isVisibleObstacle = true;
+        }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
+            isVisibleObstacle = true;
+        }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
+            ArrayList<Vector2> visible = s.getVisiblePositions();
+            for (Vector2 v: visible){
+                if (v.x == p.x && v.y == p.y){
+                    isVisibleObstacle = true;
+                    break;
+                }
+            }
+        }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
+            if (s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                ArrayList<Vector2> visible = s.getVisiblePositions();
+                for (Vector2 v: visible){
+                    if (v.x == p.x && v.y == p.y){
+                        isVisibleObstacle = true;
+                        break;
+                    }
+                }                
+            }
+        }    
+        
+        return isVisibleObstacle;
     }
-    public boolean isHiddenObstacle(Vector2 p){
-        boolean isObstacle = false; //set to false for now, TO CHANGE
-        return isObstacle;
-                
-    }
+    /**
+     * This method checks if there is an obstacle (NOT INCLUDING mines) at a 
+     * position that is not visible for a given ship.
+     * @param s
+     * @param p
+     * @return 
+     */   
+    public boolean isHiddenObstacle(Ship s, Vector2 p){
+        boolean isHiddenObstacle = false;
+        boolean canSee = false;
+        GameObject o = this.getObjectAt(p);   
+        if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
+            ArrayList<Vector2> visible = s.getVisiblePositions();
+            for (Vector2 v: visible){
+                if (v.x == p.x && v.y == p.y){
+                    canSee = true;
+                    break;
+                }
+            }
+            if (!canSee){
+                isHiddenObstacle = true;
+            }
+        }
+        
+        return isHiddenObstacle;
+    }  
     
-    public boolean isMine(Vector2 position){
+    public boolean isMine(Vector2 p){
         boolean isMine = false;
+        GameObject o = this.getObjectAt(p);          
+        if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
+            isMine = true;
+        }
         return isMine;
     }
     

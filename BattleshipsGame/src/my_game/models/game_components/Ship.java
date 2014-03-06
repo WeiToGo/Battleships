@@ -30,6 +30,7 @@ public abstract class Ship implements java.io.Serializable {
     private int currentSpeed;
     private int armour;
     private ShipDirection direction; 
+    protected ArrayList<Vector2> visiblePositions;    
     protected ArrayList<String> weapons;
 
     
@@ -139,8 +140,13 @@ public abstract class Ship implements java.io.Serializable {
         int reducedSpeed = 0;
         setCurrentSpeed(reducedSpeed);
     }
-    
-    
+  
+    public ArrayList<Vector2> getVisiblePositions(){
+        // call getRadarRange()
+        
+        //calculate the positions within the radar range of this ship.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     /**
      * This method updates each ShipUnit to the new position, and it's called for
      * both move and turn actions.

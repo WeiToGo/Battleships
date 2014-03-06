@@ -10,7 +10,7 @@ package my_game.models.game_components;
  */
 public abstract class GameObject implements java.io.Serializable {
     public enum GameObjectType {
-        Ship, Weapon, Obstacle, Base
+        Ship, Mine, CoralReef, Base
     }
     
     /** The type of this game object. */
