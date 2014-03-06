@@ -1,7 +1,7 @@
 package my_game.models.weapons_impl;
 
 import my_game.models.game_components.Weapon;
-import my_game.models.game_components.Ship.ShipDirection;
+import my_game.models.game_components.ShipDirection;
 import my_game.util.Vector2;
 
 public class Torpedo extends Weapon {

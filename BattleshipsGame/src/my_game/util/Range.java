@@ -1,6 +1,6 @@
 package my_game.util;
 
-import my_game.models.game_components.Ship.ShipDirection;
+import my_game.models.game_components.ShipDirection;
 
 public class Range {
 	

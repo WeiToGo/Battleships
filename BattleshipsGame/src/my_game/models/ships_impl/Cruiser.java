@@ -11,6 +11,7 @@ import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
+import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Weapon;
 import my_game.util.Range;

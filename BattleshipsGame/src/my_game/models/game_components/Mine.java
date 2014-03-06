@@ -1,6 +1,6 @@
 package my_game.models.game_components;
 
-import my_game.models.game_components.Ship.ShipDirection;
+import my_game.models.game_components.ShipDirection;
 import my_game.util.Vector2;
 
 public class Mine extends GameObject {
