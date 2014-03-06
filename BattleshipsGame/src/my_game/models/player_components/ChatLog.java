@@ -63,4 +63,9 @@ public class ChatLog implements java.io.Serializable {
             this.messages.add(m);
         }
     }
+    
+    @Override
+    public String toString() {
+        return "ChatLog contains " + messages.size() + " messages.";
+    }
 }

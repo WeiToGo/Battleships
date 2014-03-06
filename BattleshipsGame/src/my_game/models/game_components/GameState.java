@@ -84,7 +84,22 @@ public class GameState implements java.io.Serializable {
     }
 
     private Ship[] generateShips(Player player) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new Ship[]{};
+        //throw new UnsupportedOperationException("Not yet implemented");
     }
     
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("phase: " + this.phase + "\n");
+        sb.append("Player0: " + this.player[0] + "\n");  //requires Player.toString();
+        sb.append("Player1: " + this.player[1] + "\n");
+        sb.append("Player turn: " + this.playerTurn + "\n");        
+        sb.append("Server name: " + this.name + "\n");
+        sb.append("ChatLog: " + this.chatLog + "\n");    //requires ChatLog.toString();
+        sb.append("Map: \n" + this.map);                   //requires Map.toString();
+        
+        return sb.toString();
+    }
 }

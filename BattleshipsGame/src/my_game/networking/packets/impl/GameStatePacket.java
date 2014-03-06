@@ -3,6 +3,7 @@ package my_game.networking.packets.impl;
 import java.io.*;
 import my_game.models.game_components.GameState;
 import my_game.networking.packets.Packet;
+import my_game.util.Misc;
 
 /**
  * A packet which can serialize a GameState object into a byte array to send
@@ -40,13 +41,14 @@ public class GameStatePacket extends Packet {
         System.arraycopy(data, code.length, gameStateData, 0, gameStateData.length);
         //GameState object
         
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ByteArrayInputStream bis = new ByteArrayInputStream(gameStateData);
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(bis);
-            GameState gameState = (GameState) in.readObject();
+            this.gs = (GameState) in.readObject();
         } catch(IOException ignore) {
         } catch(ClassNotFoundException ex) {
+            Misc.log("Class was not found in GameStatePacket.");
             this.gs = null;
         } finally {
           try {
@@ -110,5 +112,9 @@ public class GameStatePacket extends Packet {
         //copy B starting from the first element after the last element of A
         System.arraycopy(B, 0, C, aLen, bLen);
         return C;
+    }
+    
+    public GameState getGameState() {
+        return this.gs;
     }
 }

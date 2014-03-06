@@ -77,4 +77,14 @@ public class Player implements java.io.Serializable {
         Player p = (Player) obj;
         return (this.id == p.id && this.username == p.username);
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(username + " ");
+        sb.append("id:" + id + " ");
+        sb.append(ipAddress.toString() + ":");
+        sb.append(playerPort);
+        return sb.toString();
+    }
 }
