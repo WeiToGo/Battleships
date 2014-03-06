@@ -16,7 +16,7 @@ import my_game.util.Turns;
 * This is the map object containing all game objects dispayed on the
 * screen: ships, obstacles (corals), bases and weapons.
 */
-public class Map {
+public class Map implements java.io.Serializable {
     
     private final int WIDTH = 30;
     private final int HEIGHT = 30;
@@ -25,14 +25,38 @@ public class Map {
     /** Y offset of the coral reef zone. */
     private final int Y_OFFSET = 3;
     /** 2D array representing the cells of the map grid which contain game objects. */
-    private GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
+    protected GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     /** 2D array giving the radar visibility for every grid cell of the map. */
-    private boolean[][] player0Visibility, player1Visibility;   //TODO implement
+    protected boolean[][] player0Visibility, player1Visibility;   //TODO implement
     protected Ship[] player0Ships;
     protected Ship[] player1Ships;
-    private Base p1Base;
-    private Base p2Base;
+    protected Base p0Base;
+    protected Base p1Base;
 
+    public Map(Map m) {
+        //shallow copy grid and visibility arrays
+        for(int i = 0; i < WIDTH; i++) {
+            for(int j = 0; j < HEIGHT; j++) {
+                grid[i][j] = m.grid[i][j];
+                player0Visibility[i][j] = m.player0Visibility[i][j];
+                player1Visibility[i][j] = m.player1Visibility[i][j];
+            }
+        }
+        //copy other fields
+        this.player0Ships = new Ship[m.player0Ships.length];
+        this.player1Ships = new Ship[m.player1Ships.length];
+        //copy ships
+        for(int i = 0; i < player0Ships.length; i++) {
+            player0Ships[i] = m.player0Ships[i];
+        }
+        for(int i = 0; i < player1Ships.length; i++) {
+            player1Ships[i] = m.player1Ships[i];
+        }
+        //copy bases
+        this.p0Base = m.p0Base;
+        this.p1Base = m.p1Base;
+    }
+    
     public Map(CoralReef reef, Ship[] player0Ships, Ship[] player1Ships, Base b0, Base b1) {
         //clear the grid (init all to null)
         clearGrid();
@@ -64,11 +88,13 @@ public class Map {
         initShips(player0Ships);
         initShips(player1Ships);
         
-        this.p1Base = b0;
-        this.p2Base = b1;
+        this.p0Base = b0;
+        this.p1Base = b1;
         
         initBase(b0);
         initBase(b1);
+        
+        //TODO Player visibility must be generated.
     }
     
     /**

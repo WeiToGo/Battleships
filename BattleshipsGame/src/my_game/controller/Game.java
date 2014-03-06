@@ -85,9 +85,19 @@ public class Game {
         }
     } 
     
-    
     private void startGame() {
-        
+        //MAIN GAME LOOP PSEUDO
+        //init and display GUI
+        //positioning phase
+        //main game loop
+            //if your turn
+                //activate actions in gui
+                //wait to receive an action
+                //process action
+                //end turn
+            //else
+                //wait for other player to finish turn
+        //repeat until game over
     }
     
     /**
