@@ -4,6 +4,42 @@ import my_game.models.game_components.ShipDirection;
 
 public class Range {
 	
+	private Vector2 topLeft; 
+	private Vector2 topRight; 
+        private Vector2 bottomRight;        
+	private Vector2 bottomLeft; 
+
+        
+        public Range(Vector2 tl, Vector2 tr, Vector2 br, Vector2 bl){
+            this.topLeft = tl;
+            this.topRight = tr;
+            this.bottomRight = br;
+            this.bottomLeft = bl;
+        }
+        
+        public Vector2 getTopLeft(){
+            return this.topLeft;
+        }
+        public Vector2 getTopRight(){
+            return this.topRight;
+        }
+        public Vector2 getBottomRight(){
+            return this.bottomRight;
+        }           
+        public Vector2 getBottomLeft(){
+            return this.bottomLeft;
+        }
+     
+}
+
+
+
+
+
+
+/*
+public class Range {
+	
 	private int width; //perpendicular to  ship
 	private int height; //parallel to ship
 	private Vector2 pos; //the position of a Ship's bow
@@ -44,3 +80,4 @@ public class Range {
 	}
 	
 }
+*/

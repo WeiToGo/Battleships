@@ -13,7 +13,6 @@ import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
-import my_game.models.game_components.Weapon;
 import my_game.util.Range;
 import my_game.util.Vector2;
 
@@ -23,16 +22,8 @@ import my_game.util.Vector2;
  */
 public class Cruiser extends Ship {
 	
-    int cannonDamage;
-	
-    public int getCannonDamage() {
-	return cannonDamage;
-    }
-
-    public void setCannonDamage(int cannonDamage) {
-	this.cannonDamage = cannonDamage;
-    }
-
+    private int cannonDamage;
+    
     public Cruiser(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
         setShipType(ShipType.Cruiser);
@@ -49,11 +40,17 @@ public class Cruiser extends Ship {
         setCurrentSpeed(getSpeed());
         setArmour(2);
         setDirection(direction);
-        moveTo(position);
-        
+        moveTo(position);        
         weapons.add("cannon");
+        Range cr = new Range(new Vector2(-9,-5), new Vector2(5,-5), 
+            new Vector2(5,5), new Vector2(-9,5));   
+        setCannonRange(cr);
+        Range rr = new Range(new Vector2(-3,-1), new Vector2(6,-1), 
+              new Vector2(6,1), new Vector2(-3,1));       
+        setRadarRange(rr);
     }
     
+/*
     public Range getRadarRange() {
 	return new Range(3, 10, new Vector2(1, 3), getDirection());
     }
@@ -61,7 +58,16 @@ public class Cruiser extends Ship {
     public Range getCannonRange() {
     	return new Range(11, 15, new Vector2(5, 9), getDirection());
     }
+*/
+    
+    public int getCannonDamage() {
+	return cannonDamage;
+    }
 
+    public void setCannonDamage(int cannonDamage) {
+	this.cannonDamage = cannonDamage;
+    } 
+    
     public boolean fireCannon(GameObject target) {
         boolean result = false;
 	   

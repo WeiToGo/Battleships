@@ -31,8 +31,11 @@ public abstract class Ship implements java.io.Serializable {
     private int armour;
     private ShipDirection direction; 
     protected ArrayList<Vector2> visiblePositions;    
-    protected ArrayList<String> weapons;
-
+    protected ArrayList<String> weapons = new ArrayList<String>();
+    /** The cannon range for a ship facing East as default. */
+    protected Range cannonRange;
+    /** The radar range for a ship facing East as default. */
+    protected Range radarRange;
     
     /** Constructs a ship given a player ID. */
     public Ship(int pid){
@@ -122,14 +125,28 @@ public abstract class Ship implements java.io.Serializable {
 	this.shipType = shipType;
     }
 	
-    public ShipUnit[] getShipUnits(){
+    public  ShipUnit[] getShipUnits(){
         return this.shipUnits;
     }
 
     public void setShipUnits(ShipUnit[] shipUnits) {
 	this.shipUnits = shipUnits;
     }
+    public Range getCannonRange() {
+	return cannonRange;
+    }
 
+    public Range getRadarRange() {
+	return radarRange;
+    }    
+
+    public void setCannonRange(Range r){
+        this.cannonRange = r;
+    }
+    
+    public void setRadarRange(Range r){
+        this.radarRange = r;
+    }
 
     /**
      * This method should be called after each attack on the ship.
@@ -140,12 +157,131 @@ public abstract class Ship implements java.io.Serializable {
         int reducedSpeed = 0;
         setCurrentSpeed(reducedSpeed);
     }
-  
-    public ArrayList<Vector2> getVisiblePositions(){
-        // call getRadarRange()
+    public ArrayList<Vector2> getRadarPositions(){
+        Range r = this.getRadarRange();
+        ArrayList<Vector2> visible = getRangePositions(r);
+        return visible;
+    }
+    public ArrayList<Vector2> getCannonPositions(){
+        Range r = this.getCannonRange();
+        ArrayList<Vector2> visible = getRangePositions(r);
+        return visible;
+    }    
+            
+    /**
+     * This method gets an arraylist of positions that is visible within the 
+     * ship's radar or canon range. (excluding the positions of the ship itself).
+     * @return 
+     */
+    private ArrayList<Vector2> getRangePositions(Range r){
+        Vector2 tl = r.getTopLeft();
+        Vector2 tr = r.getTopRight();
+        Vector2 br = r.getBottomRight();
+        Vector2 bl = r.getBottomLeft();
+        Vector2 newtl, newtr, newbr, newbl;
+        Range newRange;
+        ShipDirection d = this.getDirection();
+        System.out.println("direction  " + d.toString());
+        Vector2 shipPosition = this.getShipUnits()[0].getPosition();
+        ArrayList<Vector2> visible = new ArrayList<Vector2>();   
+        ArrayList<Vector2> filtered = new ArrayList<Vector2>();
+        switch (d){
+            case East:
+                System.out.println("East");
+                visible = this.generateRangePositions(r,shipPosition);
+                break;
+            //counter-clock
+            case North: 
+                newtl = new Vector2(-(bl.y), bl.x);
+                newtr = new Vector2(-(tl.y), tl.x);
+                newbr = new Vector2(-(tr.y), tr.x);
+                newbl = new Vector2(-(br.y), br.x);
+                newRange = new Range(newtl,newtr,newbr,newbl);                
+                visible = this.generateRangePositions(newRange,shipPosition);
+                break;
+            //clock-wise    
+            case South: 
+                newtl = new Vector2(tr.y, -(tr.x));
+                newtr = new Vector2(br.y, -(br.x));
+                newbr = new Vector2(bl.y, -(bl.x));
+                newbl = new Vector2(tl.y, -(tl.x));
+                newRange = new Range(newtl,newtr,newbr,newbl);
+                visible = this.generateRangePositions(newRange,shipPosition);
+                break;
+            //180 deg.
+            case West: 
+                newtl = new Vector2(-(br.x), -(br.y));
+                newtr = new Vector2(-(bl.x), -(bl.y));
+                newbr = new Vector2(-(tl.x), -(tl.y));
+                newbl = new Vector2(-(tr.x), -(tr.y));
+                newRange = new Range(newtl,newtr,newbr,newbl);                
+                visible = this.generateRangePositions(newRange,shipPosition);
+                break;
+        } 
+        filtered = filterRangePositions(visible);
+        return visible;
+
+    }
+    /**
+     * This method generates an arraylist of visible positions for this ship
+     * (including the ship itself) given its radarRange.
+     * @param r The visibility range
+     * @param bowPosition
+     * @return 
+     */
+    private ArrayList<Vector2> generateRangePositions(Range r, Vector2 bowPosition){
+        Vector2 tl = r.getTopLeft();
+        Vector2 tr = r.getTopRight();
+        Vector2 bl = r.getBottomLeft();
+        Vector2 sp = bowPosition;
+        Vector2 p;
+        System.out.println("tl " + tl.x + " " + tl.y);
+        System.out.println("tr " + tr.x + " " + tr.y);
+        System.out.println("bl " + bl.x + " " + bl.y);
+        System.out.println("sp " + sp.x + " " + sp.y);
+        int xStart, xEnd, yStart, yEnd, i,j;
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        xStart = bowPosition.x + tl.x;
+        xEnd = bowPosition.x + tr.x;
+        yStart = bowPosition.y + tl.y;
+        yEnd = bowPosition.y + bl.y;
+        System.out.println("xStart " + xStart);
+        System.out.println("xEnd" + xEnd);
+        System.out.println("yStart " + yStart);
+        System.out.println("yStart " + yEnd);
         
-        //calculate the positions within the radar range of this ship.
-        throw new UnsupportedOperationException("Not yet implemented");
+        for (i = xStart; i <= xEnd; i++){
+            for (j = yStart; j <= yEnd; j++){
+                p = new Vector2(i,j);
+                positions.add(p);
+            }
+        }
+        
+        return positions;
+    }     
+    /**
+     * This method filters out the positions of the ship itself within the 
+     * ship's radar range.
+     * @param p Arraylist of all positions within the ship's radar range.
+     * @return Filtered list.
+     */
+    private ArrayList<Vector2> filterRangePositions(ArrayList<Vector2> p){
+        ArrayList<Vector2> filteredPositions = new ArrayList<Vector2>();
+        ShipUnit[] shipUnits = this.getShipUnits();
+        boolean isSelf;
+        // maybe filter the position that are outside of the map?
+        for (Vector2 v: p){
+            isSelf = false;
+            for (ShipUnit su: shipUnits){
+                if (su.getPosition().equals(p)){
+                    isSelf = true;
+                }
+            }
+            if (!isSelf){
+                filteredPositions.add(v);
+            }
+        }
+        return filteredPositions;
     }
     /**
      * This method updates each ShipUnit to the new position, and it's called for
@@ -157,10 +293,14 @@ public abstract class Ship implements java.io.Serializable {
         // assert newPosition.length == shipUnits.length
         // and assuming it's the right order.
         ShipUnit[] shipUnits = this.getShipUnits();
-        for (ShipUnit s: shipUnits){
-            for (Vector2 v: newPosition){
-                s.setPosition(v);
-            }
+        int i = 0;
+        int j = 0;
+        while (i < newPosition.size() && j < shipUnits.length){
+            ShipUnit s = shipUnits[i];
+            newPosition.get(j);
+            s.setPosition(newPosition.get(j));
+            i++;
+            j++;
         }
     }
     
@@ -403,10 +543,14 @@ public abstract class Ship implements java.io.Serializable {
         // assert newPosition.length == shipUnits.length
         // and assuming it's the right order.
         ShipUnit[] shipUnits = this.getShipUnits();
-        for (ShipUnit s: shipUnits){
-            for (Vector2 v: newPosition){
-                s.setPosition(v);
-            }
+        int i = 0;
+        int j = 0;
+        while (i < newPosition.size() && j < shipUnits.length){
+            ShipUnit s = shipUnits[i];
+            newPosition.get(j);
+            s.setPosition(newPosition.get(j));
+            i++;
+            j++;
         }        
         this.setDirection(d);
     }
@@ -887,64 +1031,4 @@ public abstract class Ship implements java.io.Serializable {
         }
         return positions; 
     }
-    // Added main() to test. 
-/*    public static void main(String[] args) {
-        ShipUnit su = new ShipUnit();
-        ShipUnit su2 = new ShipUnit();
-        ShipUnit su3 = new ShipUnit();
-        ShipUnit su4 = new ShipUnit();        
-       
-        su.setPosition(new Vector2(0,3));        
-        su2.setPosition(new Vector2(1,3));
-        su3.setPosition(new Vector2(2,3)); 
-        su4.setPosition(new Vector2(3,3));         
-        ShipUnit[] units = new ShipUnit[4];
-        units[0] = su;
-        units[1] = su2;
-        units[2] = su3;
-        units[3] = su4;
-        TurnPositions allTurns = availableTurnWest(units, 4);
-        ArrayList<Vector2> left = allTurns.getLeft();
-        ArrayList<Vector2> lp = allTurns.getLeftPath(); 
-        ArrayList<Vector2> r = allTurns.getRight();   
-        ArrayList<Vector2> rp = allTurns.getRightPath();    
-        ArrayList<Vector2> b = allTurns.getBackward();    
-        if (left != null){
-            for (int i = 0; i < left.size(); i++){
-                System.out.print("left" + left.get(i).x);
-                System.out.print( "  ");
-                System.out.println(left.get(i).y);        
-            }
-        }
-        if (lp != null){
-        for (int i = 0; i < lp.size(); i++){
-            System.out.print("lp" + lp.get(i).x);
-            System.out.print( "  ");
-            System.out.println(lp.get(i).y);        
-        }      
-        }
-        if (r != null){
-        for (int i = 0; i < r.size(); i++){
-            System.out.print("right" + r.get(i).x);
-            System.out.print( "  ");
-            System.out.println(r.get(i).y);        
-        }
-        }
-        if (rp != null){
-        for (int i = 0; i < rp.size(); i++){
-            System.out.print("rp" + rp.get(i).x);
-            System.out.print( "  ");
-            System.out.println(rp.get(i).y);        
-        }   
-        }
-        if (b != null) {
-        for (int i = 0; i < b.size(); i++){
-            System.out.print("back" + b.get(i).x);
-            System.out.print( "  ");
-            System.out.println(b.get(i).y);        
-        }        
-        }
-    }
-
-*/
-}
+ }

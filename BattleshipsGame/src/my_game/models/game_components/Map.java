@@ -498,18 +498,18 @@ public class Map implements java.io.Serializable {
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
-            ArrayList<Vector2> visible = s.getVisiblePositions();
+            ArrayList<Vector2> visible = s.getRadarPositions();
             for (Vector2 v: visible){
-                if (v.x == p.x && v.y == p.y){
+                if (v.equals(p)){
                     isVisibleObstacle = true;
                     break;
                 }
             }
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
             if (s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
-                ArrayList<Vector2> visible = s.getVisiblePositions();
+                ArrayList<Vector2> visible = s.getRadarPositions();
                 for (Vector2 v: visible){
-                    if (v.x == p.x && v.y == p.y){
+                    if (v.equals(p)){
                         isVisibleObstacle = true;
                         break;
                     }
@@ -531,9 +531,9 @@ public class Map implements java.io.Serializable {
         boolean canSee = false;
         GameObject o = this.getObjectAt(p);   
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
-            ArrayList<Vector2> visible = s.getVisiblePositions();
+            ArrayList<Vector2> visible = s.getRadarPositions();
             for (Vector2 v: visible){
-                if (v.x == p.x && v.y == p.y){
+                if (v.equals(p)){
                     canSee = true;
                     break;
                 }
