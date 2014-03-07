@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="pane" minHeight="463.0" minWidth="603.0" prefHeight="477.0" prefWidth="617.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.GameConfirmation">
+  <!-- TODO Add Nodes -->
+  <children>
+    <ImageView id="Dark blue sea" fx:id="background" fitHeight="477.0" fitWidth="617.0" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
+      <image>
+        <Image url="@../../Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <Label layoutX="366.0" layoutY="14.0" prefHeight="48.0" prefWidth="237.0" text="Game Confirmation" textFill="#00ccb4">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <font>
+        <Font name="Arabic Typesetting" size="40.0" />
+      </font>
+    </Label>
+    <ImageView fx:id="map" fitHeight="376.5" fitWidth="294.50001525878906" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="false" />
+    <Button fx:id="returnGameButton" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Return" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="36.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button fx:id="acceptGameButton" layoutX="408.0" layoutY="156.0" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Accept">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button fx:id="declineGameButton" layoutX="408.0" layoutY="248.0" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Decline">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+  </children>
+</AnchorPane>

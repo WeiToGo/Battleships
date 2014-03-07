@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<?scenebuilder-stylesheet application.css?>
+
+<AnchorPane fx:id="pane" minHeight="448.0" minWidth="601.0001220703125" prefHeight="454.999977929685" prefWidth="615.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.JoinGame">
+  <!-- TODO Add Nodes -->
+  <children>
+    <ImageView id="Dark blue sea" fx:id="background" fitHeight="455.0000084472631" fitWidth="615.0000999999975" focusTraversable="false" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
+      <image>
+        <Image url="@../../Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+      </image>
+    </ImageView>
+    <TableView id="table" fx:id="taview" editable="false" focusTraversable="true" prefHeight="238.0" prefWidth="615.0001220703125" tableMenuButtonVisible="false" visible="true" AnchorPane.bottomAnchor="108.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.5">
+      <columns>
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="200.0" text="Player name" />
+      </columns>
+    </TableView>
+    <Button fx:id="joinGameButton" mnemonicParsing="false" prefHeight="41.000099999997474" prefWidth="140.0" text="Join" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="14.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Button fx:id="returnGameButton" mnemonicParsing="false" prefHeight="41.000099999997474" prefWidth="140.0001220703125" text="Return" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="14.0">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </Button>
+    <Label layoutY="25.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="172.0" text="Join Game" textFill="#00ccb4" AnchorPane.leftAnchor="429.0" AnchorPane.rightAnchor="14.0">
+      <font>
+        <Font name="Arabic Typesetting" size="40.0" />
+      </font>
+    </Label>
+  </children>
+</AnchorPane>
