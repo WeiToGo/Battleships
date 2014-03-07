@@ -1,4 +1,4 @@
-package application;
+package my_game.gui.application;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,8 +27,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-        	
-        	AnchorPane page = null;       	
+            
+            AnchorPane page = null;       	
             page = (AnchorPane) FXMLLoader.load(Main.class.getResource("UI.fxml"));
             Scene scene = new Scene(page);
             primaryStage.setScene(scene);

@@ -1,4 +1,4 @@
-package application;
+package my_game.gui.application;
 
 import java.io.IOException;
 import java.net.URL;
