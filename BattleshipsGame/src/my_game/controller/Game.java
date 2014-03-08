@@ -11,6 +11,7 @@ import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
+import my_game.models.game_components.ShipDirection;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.util.Vector2;
@@ -89,6 +90,9 @@ public class Game {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
         //positioning phase
+        gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+       
+        
         //main game loop
             //if your turn
                 //activate actions in gui

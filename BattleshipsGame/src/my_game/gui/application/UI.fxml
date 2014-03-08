@@ -10,12 +10,12 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet application.css?>
 
-<AnchorPane fx:id="pane" disable="false" focusTraversable="false" maxHeight="-1.0" maxWidth="-1.0" minHeight="338.1874694824219" minWidth="429.111083984375" prefHeight="352.1874915527369" prefWidth="626.11110605469" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.MainMenu">
+<AnchorPane fx:id="pane" disable="false" focusTraversable="false" maxHeight="-1.0" maxWidth="-1.0" minHeight="338.1874694824219" minWidth="429.111083984375" prefHeight="352.1874915527369" prefWidth="626.11110605469" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.MainMenu">
   <!-- TODO Add Nodes -->
   <children>
     <ImageView id="battleship" fx:id="background" fitHeight="352.1875" fitWidth="626.1110825232753" focusTraversable="false" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <image>
-        <Image url="@../../battleship.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@./battleship.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
     <Button id="newGame" fx:id="newGameButton" focusTraversable="true" layoutX="116.0" layoutY="34.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Create" visible="true">

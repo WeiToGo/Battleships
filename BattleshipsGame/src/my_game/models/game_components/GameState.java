@@ -3,10 +3,11 @@
  * and open the template in the editor.
  */
 package my_game.models.game_components;
-
+import java.util.ArrayList;
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Player;
-
+import my_game.util.Vector2;
+import my_game.models.ships_impl.*;
 /**
  * The state of a game describes a game fully.
  */
@@ -51,8 +52,8 @@ public class GameState implements java.io.Serializable {
         //set game name
         this.name = name;
         //init each player's ships
-        Ship[] player0Ships = generateShips(player[0]);
-        Ship[] player1Ships = generateShips(player[1]);
+        Ship[] player0Ships = generateShips(player[0], ShipDirection.East);
+        Ship[] player1Ships = generateShips(player[1], ShipDirection.West);
         Base player0Base = new Base(player[0].getID());
         Base player1Base = new Base(player[1].getID());
         //init map
@@ -82,10 +83,95 @@ public class GameState implements java.io.Serializable {
         this.map = new Map(copyState.map);
         //TODO implement map copy constructor
     }
-
-    private Ship[] generateShips(Player player) {
-        return new Ship[]{};
-        //throw new UnsupportedOperationException("Not yet implemented");
+    public void setGamePhase(GamePhase p){
+        this.phase = p;
+    }
+    
+    private Ship[] generateShips(Player player, ShipDirection d) {
+        
+        ArrayList<Vector2> position = new ArrayList<Vector2>();
+        int y = 10;
+        for (int x = 5; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }
+        Cruiser c1 = new Cruiser(player.id, position, d);
+        position.clear();
+        y++;
+        for (int x = 5; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }
+        Cruiser c2 = new Cruiser(player.id, position, d);   
+        position.clear();
+        y++;
+        for (int x = 4; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d1 = new Destroyer(player.id, position, d);
+        position.clear();
+        y++;
+        for (int x = 4; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d2 = new Destroyer(player.id, position, d);        
+        position.clear();
+        y++;
+        for (int x = 4; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d3 = new Destroyer(player.id, position, d);        
+        position.clear();
+        y++;
+        for (int x = 3; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        TorpedoBoat t1 = new TorpedoBoat(player.id, position, d);   
+        position.clear();
+        y++;
+        for (int x = 3; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        TorpedoBoat t2 = new TorpedoBoat(player.id, position, d);     
+        position.clear();
+        y++;
+        for (int x = 2; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        MineLayer m1 = new MineLayer(player.id, position, d);    
+        position.clear();
+        y++;
+        for (int x = 2; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        MineLayer m2 = new MineLayer(player.id, position, d);     
+        position.clear();
+        y++;
+        for (int x = 3; x > 0; x--){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        RadarBoat r = new RadarBoat(player.id, position, d);   
+        Ship[] ships = new Ship[10];
+        ships[0]= c1;
+        ships[1]= c2;
+        ships[2]= d1;
+        ships[3]= d2;
+        ships[4]= d3;
+        ships[5]= t1;
+        ships[6]= t2;
+        ships[7]= m1;
+        ships[8]= m2;
+        ships[9]= r;
+                       
+        return ships;
     }
     
     @Override

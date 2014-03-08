@@ -10,12 +10,12 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet application.css?>
 
-<AnchorPane fx:id="pane" minHeight="455.0" minWidth="602.9998779296875" prefHeight="469.0" prefWidth="616.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.CreateGame">
+<AnchorPane fx:id="pane" minHeight="455.0" minWidth="602.9998779296875" prefHeight="469.0" prefWidth="616.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.CreateGame">
   <!-- TODO Add Nodes -->
   <children>
     <ImageView id="Dark blue sea" fx:id="background" fitHeight="469.0" fitWidth="616.9998779296875" layoutX="0.0" layoutY="0.0" pickOnBounds="true" preserveRatio="false">
       <image>
-        <Image url="@../../../../Comp%20361/Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@./Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
     <Button fx:id="newGameButton" layoutY="152.0" mnemonicParsing="false" prefHeight="47.00367187500001" prefWidth="157.9998779296875" text="Create" AnchorPane.rightAnchor="43.0">

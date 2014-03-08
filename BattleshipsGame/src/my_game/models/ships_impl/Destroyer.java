@@ -51,6 +51,7 @@ public class Destroyer extends Ship{
               new Vector2(5,1), new Vector2(-2,1));       
         setRadarRange(rr);
     }
+    
     public int getCannonDamage() {
 	return cannonDamage;
     }
@@ -86,5 +87,5 @@ public class Destroyer extends Ship{
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-* /
+*/
 }
