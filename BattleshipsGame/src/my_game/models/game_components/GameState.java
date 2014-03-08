@@ -52,8 +52,8 @@ public class GameState implements java.io.Serializable {
         //set game name
         this.name = name;
         //init each player's ships
-        Ship[] player0Ships = generateShips(player[0], ShipDirection.East);
-        Ship[] player1Ships = generateShips(player[1], ShipDirection.West);
+        Ship[] player0Ships = generatePlayerShips(player[0].id);
+        Ship[] player1Ships = generateOpponentShips(player[1].id);
         Base player0Base = new Base(player[0].getID());
         Base player1Base = new Base(player[1].getID());
         //init map
@@ -87,78 +87,78 @@ public class GameState implements java.io.Serializable {
         this.phase = p;
     }
     
-    private Ship[] generateShips(Player player, ShipDirection d) {
-        
+    private Ship[] generatePlayerShips(int pid) {
+        ShipDirection d = ShipDirection.East;
         ArrayList<Vector2> position = new ArrayList<Vector2>();
         int y = 10;
         for (int x = 5; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }
-        Cruiser c1 = new Cruiser(player.id, position, d);
+        Cruiser c1 = new Cruiser(pid, position, d);
         position.clear();
         y++;
         for (int x = 5; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }
-        Cruiser c2 = new Cruiser(player.id, position, d);   
+        Cruiser c2 = new Cruiser(pid, position, d);   
         position.clear();
         y++;
         for (int x = 4; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        Destroyer d1 = new Destroyer(player.id, position, d);
+        Destroyer d1 = new Destroyer(pid, position, d);
         position.clear();
         y++;
         for (int x = 4; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        Destroyer d2 = new Destroyer(player.id, position, d);        
+        Destroyer d2 = new Destroyer(pid, position, d);        
         position.clear();
         y++;
         for (int x = 4; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        Destroyer d3 = new Destroyer(player.id, position, d);        
+        Destroyer d3 = new Destroyer(pid, position, d);        
         position.clear();
         y++;
         for (int x = 3; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        TorpedoBoat t1 = new TorpedoBoat(player.id, position, d);   
+        TorpedoBoat t1 = new TorpedoBoat(pid, position, d);   
         position.clear();
         y++;
         for (int x = 3; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        TorpedoBoat t2 = new TorpedoBoat(player.id, position, d);     
+        TorpedoBoat t2 = new TorpedoBoat(pid, position, d);     
         position.clear();
         y++;
         for (int x = 2; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        MineLayer m1 = new MineLayer(player.id, position, d);    
+        MineLayer m1 = new MineLayer(pid, position, d);    
         position.clear();
         y++;
         for (int x = 2; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        MineLayer m2 = new MineLayer(player.id, position, d);     
+        MineLayer m2 = new MineLayer(pid, position, d);     
         position.clear();
         y++;
         for (int x = 3; x > 0; x--){
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        RadarBoat r = new RadarBoat(player.id, position, d);   
+        RadarBoat r = new RadarBoat(pid, position, d);   
         Ship[] ships = new Ship[10];
         ships[0]= c1;
         ships[1]= c2;
@@ -173,6 +173,94 @@ public class GameState implements java.io.Serializable {
                        
         return ships;
     }
+    
+    private Ship[] generateOpponentShips(int pid) {
+        ShipDirection d = ShipDirection.West;
+        ArrayList<Vector2> position = new ArrayList<Vector2>();
+        int y = 10;
+        int x;
+        for (x = 29-5; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }
+        Cruiser c1 = new Cruiser(pid, position, d);
+        position.clear();
+        y++;
+        for (x = 29-5; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }
+        Cruiser c2 = new Cruiser(pid, position, d);   
+        position.clear();
+        y++;
+        for (x = 29-4; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d1 = new Destroyer(pid, position, d);
+        position.clear();
+        y++;
+        for (x = 29-4; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d2 = new Destroyer(pid, position, d);        
+        position.clear();
+        y++;
+        for (x = 29-4; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        Destroyer d3 = new Destroyer(pid, position, d);        
+        position.clear();
+        y++;
+        for (x = 29-3; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        TorpedoBoat t1 = new TorpedoBoat(pid, position, d);   
+        position.clear();
+        y++;
+        for (x = 29-3; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        TorpedoBoat t2 = new TorpedoBoat(pid, position, d);     
+        position.clear();
+        y++;
+        for (x = 29-2; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        MineLayer m1 = new MineLayer(pid, position, d);    
+        position.clear();
+        y++;
+        for (x = 29-2; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        MineLayer m2 = new MineLayer(pid, position, d);     
+        position.clear();
+        y++;
+        for (x = 29-3; x < 30; x++){
+            Vector2 v = new Vector2(x,y);
+            position.add(v);
+        }        
+        RadarBoat r = new RadarBoat(pid, position, d);   
+        Ship[] ships = new Ship[10];
+        ships[0]= c1;
+        ships[1]= c2;
+        ships[2]= d1;
+        ships[3]= d2;
+        ships[4]= d3;
+        ships[5]= t1;
+        ships[6]= t2;
+        ships[7]= m1;
+        ships[8]= m2;
+        ships[9]= r;
+                       
+        return ships;
+    }    
     
     @Override
     public String toString() {

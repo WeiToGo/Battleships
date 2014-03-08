@@ -91,7 +91,11 @@ public class Game {
         //init and display GUI
         //positioning phase
         gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
-       
+        Ship s; // get the ship we want to position from GUI
+        
+        // get the new position we want to move that ship around the base;
+        
+        // calls positionShip
         
         //main game loop
             //if your turn
@@ -109,14 +113,32 @@ public class Game {
      * @param s
      * @param x
      * @param y 
-     *//*           TODO Not sure we will need this method.
-    private void positionShip(Ship s, Vector2 position) {
-        try {
+     */
+
+    // make sure that user can only move a ship to an empty position.
+    private void positionShip(Ship s, Vector2 p) {
+   /*     try {
             gameState.getMap().moveShip(s,position);
         } catch (GameException ex) {
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
-    }*/
+    
+    */
+    
+        // need to store the positions of all 12 possible places (in 12 arrays) 
+        //that we can position the ships 
+        
+        //we can check if one of these positions = p. 
+        
+        //If so, check if it's empty
+        
+        //then get the size of the ship s to calculate the exact positions
+        
+        //then call moveTo();
+        
+        // update Map?
+        
+    }
     
     /**
      * Chooses randomly between 0 and 1, then returns the result.
@@ -141,6 +163,8 @@ public class Game {
         
         
         //map.moveShip(s,newPosition, highlight);
+        
+        // map update the ships position and repaint?
     }
     
     public void turnAction(Ship s){
@@ -151,6 +175,8 @@ public class Game {
         
         
         //map.turnShip(s,newPosition, highlight);
+        
+        // map update the ships position and repaint?        
     }
             
     
