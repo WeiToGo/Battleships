@@ -51,11 +51,13 @@ public class GameState implements java.io.Serializable {
         this.playerTurn = firstPlayer;
         //set game name
         this.name = name;
-        //init each player's ships
-        Ship[] player0Ships = generatePlayerShips(player[0].id);
-        Ship[] player1Ships = generateOpponentShips(player[1].id);
+        //init each player's base
         Base player0Base = new Base(player[0].getID());
-        Base player1Base = new Base(player[1].getID());
+        Base player1Base = new Base(player[1].getID());        
+        //init each player's ships
+        Ship[] player0Ships = generateShips(player[0].id, player0Base);
+        Ship[] player1Ships = generateShips(player[1].id, player1Base);
+
         //init map
         map = new Map(reef, player0Ships, player1Ships, player0Base, player1Base);
         //init chat
@@ -85,6 +87,18 @@ public class GameState implements java.io.Serializable {
     }
     public void setGamePhase(GamePhase p){
         this.phase = p;
+    }
+    
+    private Ship[] generateShips(int pid, Base b){
+        BaseUnit[] bu = b.getBaseUnits();
+        Ship[] ships = new Ship[10];        
+        if (bu[0].getPosition().x == 0){
+            ships = generatePlayerShips(pid);
+        }else if (bu[0].getPosition().x == 29){
+            ships = generateOpponentShips(pid);
+        }
+        
+        return ships;
     }
     
     private Ship[] generatePlayerShips(int pid) {

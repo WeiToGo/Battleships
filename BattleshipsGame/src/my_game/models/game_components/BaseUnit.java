@@ -3,6 +3,8 @@
  * and open the template in the editor.
  */
 package my_game.models.game_components;
+import my_game.util.Vector2;
+
 
 /**
  *
@@ -12,15 +14,17 @@ public class BaseUnit extends GameObject implements java.io.Serializable {
 
     private int damageLevel; //0: healthy, 1: destroyed
     private Base base;
+    private Vector2 position;
     
     public BaseUnit() {
 		super();
 	}
 
-	public BaseUnit(Base b) {
+	public BaseUnit(Base b, Vector2 p) {
         this.base = b;
         this.type = GameObjectType.Base;
         this.damageLevel = 0;
+        this.position = p;
         // TODO complete
     }
     
@@ -42,5 +46,9 @@ public class BaseUnit extends GameObject implements java.io.Serializable {
     
     public boolean isDestoryed() {
     	return damageLevel == 1;
+    }
+    
+    public Vector2 getPosition(){
+        return this.position;
     }
 }
