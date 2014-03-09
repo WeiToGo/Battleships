@@ -10,4 +10,8 @@ package my_game.models.game_components;
  */
 public class CoralUnit extends GameObject{
     
+    public CoralUnit() {
+        super();
+        this.type = GameObjectType.CoralReef;
+    }
 }

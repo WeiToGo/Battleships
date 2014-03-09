@@ -583,15 +583,25 @@ public class Map implements java.io.Serializable {
             return null;
         }
     }
-  
     
     /**
-* Mutator method for inserting game objects into the grid.
-* @param position Positive and within bounds on the grid.
-* @param object Game object to insert.
-* @return The game object which was successfully inserted, or null if
-* the coordinates are invalid, or the object is null.
-*/
+     * This method is called after every moves to get the map updated.
+     * @param s The ship that we just moved.
+     */
+    public void updateShipPositions(Ship s){        
+        ShipUnit[] shipUnits = s.getShipUnits();
+        for (ShipUnit su: shipUnits){
+            Vector2 v = su.getPosition();
+            this.setObjectAt(v, su);
+        }
+    }
+    /**
+    * Mutator method for inserting game objects into the grid.
+    * @param position Positive and within bounds on the grid.
+    * @param object Game object to insert.
+    * @return The game object which was successfully inserted, or null if
+    * the coordinates are invalid, or the object is null.
+    */
     public GameObject setObjectAt(Vector2 position, GameObject object) {
         if(position.x >= 0 && position.x < WIDTH &&
            position.y >= 0 && position.y < HEIGHT && object != null) {

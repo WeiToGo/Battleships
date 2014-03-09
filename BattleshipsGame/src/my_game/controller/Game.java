@@ -115,30 +115,6 @@ public class Game {
      * @param y 
      */
 
-    // make sure that user can only move a ship to an empty position.
-    private void positionShip(Ship s, Vector2 p) {
-   /*     try {
-            gameState.getMap().moveShip(s,position);
-        } catch (GameException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-        }
-    
-    */
-    
-        // need to store the positions of all 12 possible places (in 12 arrays) 
-        //that we can position the ships 
-        
-        //we can check if one of these positions = p. 
-        
-        //If so, check if it's empty
-        
-        //then get the size of the ship s to calculate the exact positions
-        
-        //then call moveTo();
-        
-        // update Map?
-        
-    }
     
     /**
      * Chooses randomly between 0 and 1, then returns the result.

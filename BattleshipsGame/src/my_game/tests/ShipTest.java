@@ -40,7 +40,7 @@ public class ShipTest {
         Vector2 br = r.getBottomRight();
         Vector2 bl = r.getBottomLeft();
 
- /*       System.out.println("tl " + tl.x + " " + tl.y);
+ /*     System.out.println("tl " + tl.x + " " + tl.y);
         System.out.println("tr" + tr.x + " " + tr.y);
         System.out.println("br " + br.x + " " + br.y);         
         System.out.println("bl " + bl.x + " " + bl.y);

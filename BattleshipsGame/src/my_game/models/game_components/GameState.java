@@ -260,6 +260,78 @@ public class GameState implements java.io.Serializable {
         ships[9]= r;
                        
         return ships;
+    }  
+
+    /**
+     * This method is called when the players rearrange their ships around the base.
+     * @param s The ship they want to move
+     * @param p The position they want to move to. (Does not need to be the
+     * position of the bow.
+     */
+    private void positionShip(Ship s, Vector2 p) {
+   /*     try {
+            gameState.getMap().moveShip(s,position);
+        } catch (GameException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    */
+        int shipSize = s.getSize();
+        ArrayList<Vector2> positions = new ArrayList<Vector2>();
+        int i;
+        if(p.x == 0){
+            if (p.y <= 9 && p.y >= 5){
+                for (i = 10-shipSize; i < 10; i++){
+                    Vector2 v = new Vector2(p.x,i);
+                    positions.add(v);
+                }              
+            }else if (p.y >= 20 && p.y <= 24){
+                for (i = 19+shipSize; i > 19; i--){
+                    Vector2 v = new Vector2(p.x,i);
+                    positions.add(v);                
+                }
+            }
+        }else if (p.x == 29){
+            if (p.y <= 9 && p.y >= 5){
+                for (i = 10-shipSize; i < 10; i++){
+                    Vector2 v = new Vector2(p.x,i);
+                    positions.add(v);
+                }              
+            }else if (p.y >= 20 && p.y <= 24){
+                for (i = 19+shipSize; i > 19; i--){
+                    Vector2 v = new Vector2(p.x,i);
+                    positions.add(v);                
+                }
+            }
+        }else if(p.y > 9 && p.y < 20 && p.x <= 5){
+            for (i = 1; i <= shipSize; i++){
+                Vector2 v = new Vector2(i,p.y);
+                positions.add(v);
+            }             
+        }else if(p.y > 9 && p.y < 20 && p.x >= 24){
+            for (i = 29-shipSize; i < 29; i++){
+                Vector2 v = new Vector2(i,p.y);
+                positions.add(v);            
+            }
+        }
+        
+        // commented out this part so I can un the tests.
+        
+/*      boolean canMove = true;
+        for (Vector2 v: positions){
+            if (map.getObjectAt(v).getObjectType() != null){
+                canMove = false;
+            }
+        }
+        
+        if (canMove){
+            s.moveTo(positions);
+            map.updateShipPositions(s);
+        }        
+  
+  */
+            for (Vector2 v: positions){
+                System.out.println(v.x + " " + v.y);
+            }         
     }    
     
     @Override
