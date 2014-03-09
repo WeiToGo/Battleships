@@ -32,7 +32,6 @@
         <Font name="Arabic Typesetting" size="40.0" />
       </font>
     </Label>
-    <ImageView fx:id="map" fitHeight="376.5" fitWidth="294.50001525878906" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="false" />
     <Button fx:id="returnGameButton" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Return" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="36.0">
       <effect>
         <Lighting surfaceScale="5.0">
@@ -78,5 +77,6 @@
         <URL value="@application.css" />
       </stylesheets>
     </Button>
+    <TextArea fx:id="map" editable="false" layoutX="36.0" layoutY="62.0" prefHeight="299.0" prefWidth="272.5" wrapText="true" />
   </children>
 </AnchorPane>

@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import my_game.controller.Game;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -35,7 +37,7 @@ public class GameConfirmation
     private ImageView background; // Value injected by FXMLLoader
     
     @FXML //  fx:id="myButton"
-    private ImageView map; // Value injected by FXMLLoader
+    private TextArea map; // Value injected by FXMLLoader
     
     @FXML //  fx:id="myButton"
     private AnchorPane pane; // Value injected by FXMLLoader

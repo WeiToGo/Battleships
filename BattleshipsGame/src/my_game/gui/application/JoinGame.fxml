@@ -10,17 +10,19 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet application.css?>
 
-<AnchorPane fx:id="pane" minHeight="448.0" minWidth="601.0001220703125" prefHeight="454.999977929685" prefWidth="615.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.JoinGame">
+<AnchorPane fx:id="pane" minHeight="448.0" minWidth="601.0001220703125" prefHeight="454.999977929685" prefWidth="615.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.JoinGame">
   <!-- TODO Add Nodes -->
   <children>
     <ImageView id="Dark blue sea" fx:id="background" fitHeight="455.0000084472631" fitWidth="615.0000999999975" focusTraversable="false" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
       <image>
-        <Image url="@../../Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@./Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
     <TableView id="table" fx:id="taview" editable="false" focusTraversable="true" prefHeight="238.0" prefWidth="615.0001220703125" tableMenuButtonVisible="false" visible="true" AnchorPane.bottomAnchor="108.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.5">
       <columns>
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="200.0" text="Player name" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="168.0" text="Server Name" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="194.0" text="Player Name" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="251.0" text="Ip address" />
       </columns>
     </TableView>
     <Button fx:id="joinGameButton" mnemonicParsing="false" prefHeight="41.000099999997474" prefWidth="140.0" text="Join" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="14.0">

@@ -7,20 +7,18 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet application.css?>
 
-<AnchorPane fx:id="pane" minHeight="458.0002831054662" minWidth="605.9998779296875" prefHeight="468.0002831054662" prefWidth="605.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.Login">
+<AnchorPane fx:id="pane" prefHeight="445.0" prefWidth="617.0000999999975" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.loadGameConfirmation">
   <!-- TODO Add Nodes -->
   <children>
-    <ImageView id="battleship" fx:id="background" fitHeight="468.0002831054662" fitWidth="605.9998779296875" layoutX="1.0" layoutY="0.0" pickOnBounds="true">
+    <ImageView id="Dark blue sea" fx:id="background" fitHeight="445.0" fitWidth="617.0001220703125" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
       <image>
-        <Image url="@./battleship.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@./Dark%252520blue%252520sea.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
-    <TextField fx:id="username" layoutX="153.0" layoutY="174.0" prefHeight="28.0" prefWidth="302.0000999999975" />
-    <Label layoutX="271.0" layoutY="146.0" text="Username">
+    <Label layoutX="368.0" layoutY="23.0" prefHeight="46.0" prefWidth="235.0" text="Game Confirmation" textFill="#00ccb4">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
@@ -32,26 +30,10 @@
         </Lighting>
       </effect>
       <font>
-        <Font name="Arabic Typesetting" size="30.0" fx:id="x1" />
+        <Font name="Arabic Typesetting" size="40.0" />
       </font>
-      <textFill>
-        <Color blue="0.706" green="0.800" red="0.000" fx:id="x2" />
-      </textFill>
     </Label>
-    <TextField fx:id="password" layoutX="153.0" layoutY="266.0" prefHeight="28.0" prefWidth="302.0000999999975" />
-    <Label font="$x1" layoutX="271.0" layoutY="231.0" text="Password" textFill="$x2">
-      <effect>
-        <Lighting surfaceScale="5.0">
-          <bumpInput>
-            <Shadow />
-          </bumpInput>
-          <light>
-            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
-          </light>
-        </Lighting>
-      </effect>
-    </Label>
-    <Button fx:id="loginGameButton" layoutX="263.0" layoutY="306.0" minHeight="42.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="96.0" text="Login">
+    <Button fx:id="returnGameButton" layoutX="14.0" layoutY="385.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="141.0" text="Return">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
@@ -63,8 +45,24 @@
         </Lighting>
       </effect>
       <stylesheets>
-        <URL value="@application.css" />
+        <URL value="@application/application.css" />
       </stylesheets>
     </Button>
+    <Button fx:id="readyGameButton" layoutX="462.0" layoutY="385.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="141.0" text="Ready">
+      <effect>
+        <Lighting surfaceScale="5.0">
+          <bumpInput>
+            <Shadow />
+          </bumpInput>
+          <light>
+            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
+          </light>
+        </Lighting>
+      </effect>
+      <stylesheets>
+        <URL value="@application/application.css" />
+      </stylesheets>
+    </Button>
+    <TextArea fx:id="map" editable="false" layoutX="14.0" layoutY="69.0" prefHeight="278.0" prefWidth="294.50006103515625" wrapText="true" />
   </children>
 </AnchorPane>
