@@ -19,11 +19,12 @@
       </image>
     </ImageView>
     <TableView id="table" fx:id="taview" editable="false" focusTraversable="true" prefHeight="238.0" prefWidth="615.0001220703125" tableMenuButtonVisible="false" visible="true" AnchorPane.bottomAnchor="108.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.5">
+      <!--
       <columns>
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="168.0" text="Server Name" />
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="194.0" text="Player Name" />
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="251.0" text="Ip address" />
-      </columns>
+      </columns> -->
     </TableView>
     <Button fx:id="joinGameButton" mnemonicParsing="false" prefHeight="41.000099999997474" prefWidth="140.0" text="Join" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="14.0">
       <effect>

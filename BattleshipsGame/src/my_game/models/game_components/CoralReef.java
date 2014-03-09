@@ -24,7 +24,26 @@ public class CoralReef {
         reef = new boolean[WIDTH][HEIGHT];
         reef = randomizeObstaclePositions(reef);
     }
-  
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(int y = 0; y < HEIGHT; y++) {
+            for(int x = 0; x < WIDTH; x++) {
+                //for every cell, write a space if the cell is empty
+                //and write a * if the cell contains an obstacle
+                if(reef[x][y]) {
+                    sb.append("*");
+                } else {
+                    sb.append(" ");
+                }
+            }
+            //add new line before incrementing y to the next row
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+    
     /**
      * @param x Positive and within bounds x-coordinate on the reef.
      * @param y Positive and within bounds y-coordinate on the reef.

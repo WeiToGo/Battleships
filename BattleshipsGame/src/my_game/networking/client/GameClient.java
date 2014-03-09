@@ -68,6 +68,7 @@ public class GameClient extends Thread implements NetworkEntity {
      * The socket used to connect to the server.
      */
     private Socket clientSocket;
+    private Player connectedPlayer;
 
     public GameClient(Player clientPlayer) {
         this.client = clientPlayer;
@@ -128,10 +129,7 @@ public class GameClient extends Thread implements NetworkEntity {
                             //the packet should be a server info packet
                             ServerInfoPacket sip = new ServerInfoPacket(data);
                             //convert received packet into ServerInfo object
-                            ServerInfo si = new ServerInfo();
-                            si.playerName = sip.playerName;
-                            si.serverName = sip.serverName;
-                            si.ipAddress = sip.ipAddress;
+                            ServerInfo si = new ServerInfo(sip.serverName, sip.playerName, sip.ipAddress);
                             
                             sll.addServerInfo(si);
                             //close socket and stream
@@ -152,7 +150,7 @@ public class GameClient extends Thread implements NetworkEntity {
     }
 
     public void setOpponent(Player p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.connectedPlayer = p;
     }
 
     public void updateGameState(GameState gs) {
@@ -163,11 +161,16 @@ public class GameClient extends Thread implements NetworkEntity {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public InetAddress getRemote() {
+        return clientSocket.getInetAddress();
+    }
+        
+    public Player getConnectedPlayer() {
+        return connectedPlayer;
+    }
+    
     private class ClientThread implements Runnable {
         public void run() {
-            //wait for someone to connect
-            Misc.log("Server waiting for client...");
-
             try {
                 //open a socket to the server and wait for it to accept the connection
                 Misc.log("Client awaiting server to accept connection...");
@@ -186,7 +189,7 @@ public class GameClient extends Thread implements NetworkEntity {
             //client is listening until the clientRunning flag is set to false
             while (clientRunning) {
                 //construct packet object to save received data into
-                byte[] data = new byte[1024];
+                byte[] data = new byte[8192];
 
                 try {
                     //wait to receive a packet

@@ -62,9 +62,9 @@ public class Login
         		// TODO Auto-generated catch block
         		e.printStackTrace();
         	}
-        	if(Game.verifyLogin(username.toString() ,password.toString())){
+        	if(verifyLogin(username.toString() ,password.toString())){
         		try {
-					Player player=new Player(username.toString(),password.toString(),InetAddress.getLocalHost(), Constants.SERVER_PORT, 1, 0);
+					Player player=new Player(username.getText(),password.getText(),InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
 					Main.setPlayer(player);
         		} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
@@ -83,6 +83,17 @@ public class Login
         		JOptionPane.showMessageDialog(null, "Invalid username or password", "Error",
                         JOptionPane.ERROR_MESSAGE);
         	}
+        }
+
+        /**
+         * Verifies the locally stored users for a user with the existing username
+         * and password. If such users exists, returns true, otherwise returns false.
+         * @param username The username to look for.
+         * @param password The password to mach against the password stored for the given username.
+         */
+        private boolean verifyLogin(String username, String password) {
+            return true;
+            //TODO implement login verification
         }
     });
 

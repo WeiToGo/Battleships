@@ -24,12 +24,12 @@ public class Player implements java.io.Serializable {
     private int playerStatus;
 	
     public Player(String username, String password, InetAddress ipAddress, 
-            int port, int pid, int status) {
+            int port, int status) {
 		this.username = username;
 		this.password = password;
 		this.ipAddress = ipAddress;
 		this.playerPort = port;
-                this.id = pid;
+                this.id = this.hashCode();
                 this.playerStatus = 0; // TO be changed?
 	}
     
@@ -59,7 +59,7 @@ public class Player implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        return (7 * this.id * this.username.hashCode());
+        return (7 * this.username.hashCode());
     }
 
     @Override

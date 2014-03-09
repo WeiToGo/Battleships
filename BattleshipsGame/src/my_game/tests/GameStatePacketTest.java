@@ -21,8 +21,8 @@ public class GameStatePacketTest {
     
     public static void main(String[] args) {
         try {
-            Player p0 = new Player("Player0", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 1, 0);
-            Player p1 = new Player("Player1", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 2, 0);
+            Player p0 = new Player("Player0", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
+            Player p1 = new Player("Player1", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
 
             CoralReef reef = new CoralReef();
             GameState gs = new GameState(new Player[] {p0, p1}, reef, 0, "TestGameState");

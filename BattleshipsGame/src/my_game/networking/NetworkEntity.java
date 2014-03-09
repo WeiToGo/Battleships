@@ -1,6 +1,7 @@
 package my_game.networking;
 
 import java.awt.Color;
+import java.net.InetAddress;
 import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
 
@@ -27,5 +28,11 @@ public interface NetworkEntity {
 	 * @param gs
 	 */
 	public void sendGameState(GameState gs);
+        
+        /**
+         * Returns the ipAddress of the player connected to this network entity.
+         * @return 
+         */
+        public InetAddress getRemote();
 	
 }

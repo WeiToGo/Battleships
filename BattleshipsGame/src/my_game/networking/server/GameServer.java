@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
@@ -63,6 +65,8 @@ public class GameServer implements NetworkEntity {
      * stopped by setting serverRunning to false.
      */
     private boolean clientConnected;
+    
+    private Player connectedPlayer;
     
 
     public GameServer(Player hostPlayer, String serverName) {
@@ -145,7 +149,8 @@ public class GameServer implements NetworkEntity {
     }
 
     public void setOpponent(Player p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        System.out.println("Player connected to server: " + p);
+        this.connectedPlayer = p;
     }
 
     public void updateGameState(GameState gs) {
@@ -156,6 +161,18 @@ public class GameServer implements NetworkEntity {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public Player getConnectedPlayer() {
+        return connectedPlayer;
+    }
+    
+    public InetAddress getRemote() {
+        return server.getInetAddress();
+    }
+    
+    public boolean clientIsConnected() {
+        return clientConnected;
+    }
+    
     /**
      * A runnable for the main server thread.
      */
@@ -181,7 +198,7 @@ public class GameServer implements NetworkEntity {
                     //server is listening until the client disconnects
                     while (clientConnected) {
                         //construct packet object to save received data into
-                        byte[] data = new byte[1024];
+                        byte[] data = new byte[8192];
 
                         //wait to receive a packet
                         in.read(data);
@@ -189,9 +206,8 @@ public class GameServer implements NetworkEntity {
                         packetHandler.handlePacket(data);
 
                     }
-                    //we are done and it has been requested that the server turns off
-                    closeServer();
-
+                    clientConnected = false;
+                    connectedPlayer = null;
                     //end of thread
                 } catch (IOException ignore) {}
             }   //serverRunning == false, endwhile

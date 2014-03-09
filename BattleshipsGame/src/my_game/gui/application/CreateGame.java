@@ -43,6 +43,8 @@ public class CreateGame
         assert newGameButton != null : "fx:id=\"myButton\" was not injected: check your FXML file 'simple.fxml'.";
 
         // initialize your logic here: all @FXML variables will have been injected
+        
+        Main.isServer = true;
 
     background.fitHeightProperty().bind(pane.heightProperty());
     background.fitWidthProperty().bind(pane.widthProperty());

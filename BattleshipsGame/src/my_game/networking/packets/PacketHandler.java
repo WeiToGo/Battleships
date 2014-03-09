@@ -1,5 +1,6 @@
 package my_game.networking.packets;
 
+import my_game.models.player_components.Player;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.Packet.PacketTypes;
 import my_game.networking.packets.impl.GameStatePacket;
@@ -53,7 +54,8 @@ public class PacketHandler {
 				break;
 			case HELLO:
 				//send the username to the server
-				net.setOpponentName(message);
+                            //just set a player with the username and no other information
+                            net.setOpponent(new Player(message, "", net.getRemote(), 0, 0));
 				break;
 			case DISCONNECT:
 				// TODO Implement a disconnect packet.
