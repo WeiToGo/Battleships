@@ -77,4 +77,18 @@ public class CoralReef {
         }
         return reef;
     }
+
+    /**
+     * Set the current coral reef to the reef represented by the boolean array
+     * provided in the parameter.
+     * @param reef 
+     */
+    public void setReef(boolean[][] reef) {
+        this.reef = new boolean[reef.length][reef[0].length];
+        for(int x = 0; x < reef.length; x++) {
+            for(int y = 0; y < reef[0].length; y++) {
+                this.reef[x][y] = reef[x][y];
+            }
+        }
+    }
 }

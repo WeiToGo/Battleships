@@ -27,6 +27,7 @@ public class ServerInfoPacket extends Packet {
         super(PacketTypes.SERVERINFO.getId());
         //packet type checking
         String message = new String(data).trim();
+        
         //get the packet type using the lookupPacket method on 
         //the first 2 characters of the message String (the packet id)
         String typeCode = message.substring(0,2);
@@ -36,6 +37,7 @@ public class ServerInfoPacket extends Packet {
         }
         //now treat the data
         message = readData(data);
+        message = message.split("#")[0];    //clearing the ending '#' symbol
         String args[] = message.split("~");
         //now the message is split into the different server info pieces
         //parse info
@@ -60,7 +62,7 @@ public class ServerInfoPacket extends Packet {
     public byte[] getData() {
         int id = PacketTypes.SERVERINFO.getId();
         String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
-        String ret = (typeId + serverName + "~" + playerName + "~" + ipAddress.getHostAddress());
+        String ret = (typeId + serverName + "~" + playerName + "~" + ipAddress.getHostAddress() + "#");
         return ret.getBytes();
     }
     

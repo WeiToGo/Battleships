@@ -9,11 +9,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
+import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
 import my_game.util.Misc;
@@ -103,6 +105,10 @@ public class GameServer implements NetworkEntity {
     public void addNetListener(NetEntityListener l) {
         listeners.add(l);
     }
+    
+    public void removeNetListener(NetEntityListener l) {
+        listeners.remove(l);
+    }
 
     /**
      * Closes the socket, streams and the server socket.
@@ -172,6 +178,17 @@ public class GameServer implements NetworkEntity {
     public boolean clientIsConnected() {
         return clientConnected;
     }
+
+    /**
+     * Sends a CoralReef object to the connected client to this server.
+     * Doesn't send anything if the server is not running or there is no 
+     * connected client.
+     * @param reef The coral reef to send.
+     */
+    public void sendCoralReef(CoralReef reef) {
+        CoralReefPacket packet = new CoralReefPacket(reef);
+        this.sendData(packet.getData(), out);
+    }
     
     /**
      * A runnable for the main server thread.
@@ -194,6 +211,10 @@ public class GameServer implements NetworkEntity {
                     //send host's username to the connected client by creating a hello packet with the username
                     sendData(new HelloPacket(serverHost.getUsername()).getData(), out);
                     clientConnected = true;
+                    //notify all listeners that a client has connected
+                    for(NetEntityListener l: listeners) {
+                        l.onConnected();
+                    }
 
                     //server is listening until the client disconnects
                     while (clientConnected) {
@@ -204,7 +225,6 @@ public class GameServer implements NetworkEntity {
                         in.read(data);
                         //handle packet
                         packetHandler.handlePacket(data);
-
                     }
                     clientConnected = false;
                     connectedPlayer = null;

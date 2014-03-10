@@ -29,7 +29,7 @@ public class HelloPacket extends Packet {
 	@Override
 	public byte[] getData() {
 		//TODO Avoid using ~ as separator so that it can be used in passwords
-		return ("00" + this.username).getBytes();
+		return ("00" + this.username + "#").getBytes();
 	}
 
 	

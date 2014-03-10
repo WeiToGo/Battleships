@@ -1,8 +1,11 @@
 package my_game.networking.packets.impl;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.game_components.GameState;
 import my_game.networking.packets.Packet;
+import my_game.util.GameException;
 import my_game.util.Misc;
 
 /**
@@ -29,6 +32,10 @@ public class GameStatePacket extends Packet {
         
         //packet type checking
         String message = new String(data).trim();
+        if(message.contains("#")) {
+             Logger.getLogger(GameStatePacket.class.getName()).log(Level.SEVERE, null, new GameException("# received in game state but not yet treted."));
+        }
+        
         //get the packet type using the lookupPacket method on 
         //the first 2 characters of the message String (the packet id)
         String typeCode = message.substring(0,2);
@@ -92,7 +99,8 @@ public class GameStatePacket extends Packet {
             int id = PacketTypes.SERVERINFO.getId();
             String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
             byte[] typeCode = typeId.getBytes();
-            return concat(typeCode, data);
+            
+            return concat(concat(typeCode, data), "#".getBytes());
         }
     }
     

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
@@ -149,6 +150,14 @@ public class GameClient extends Thread implements NetworkEntity {
         return t;
     }
 
+    public void addNetListener(NetEntityListener l) {
+        listeners.add(l);
+    }
+    
+    public void removeNetListener(NetEntityListener l) {
+        listeners.remove(l);
+    }
+    
     public void setOpponent(Player p) {
         this.connectedPlayer = p;
     }
@@ -168,6 +177,19 @@ public class GameClient extends Thread implements NetworkEntity {
     public Player getConnectedPlayer() {
         return connectedPlayer;
     }
+
+    public void sendCoralReef(CoralReef reef) {
+        while(listeners.size() == 0) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        for(NetEntityListener l: listeners) {
+            l.onReefReceive(reef);
+        }
+    }
     
     private class ClientThread implements Runnable {
         public void run() {
@@ -186,6 +208,11 @@ public class GameClient extends Thread implements NetworkEntity {
                 e.printStackTrace();
             }
 
+            //notify all listeners that the client has connected to server
+            for(NetEntityListener l: listeners) {
+                l.onConnected();
+            }
+            
             //client is listening until the clientRunning flag is set to false
             while (clientRunning) {
                 //construct packet object to save received data into
@@ -240,5 +267,5 @@ public class GameClient extends Thread implements NetworkEntity {
             e.printStackTrace();
         }
     }
-
+    
 }

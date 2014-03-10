@@ -2,6 +2,7 @@ package my_game.networking;
 
 import java.awt.Color;
 import java.net.InetAddress;
+import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
 
@@ -34,5 +35,10 @@ public interface NetworkEntity {
          * @return 
          */
         public InetAddress getRemote();
-	
+
+        /**
+         * Sends the coral reef back to all listeners.
+         * @param reef 
+         */
+        public void sendCoralReef(CoralReef reef);
 }

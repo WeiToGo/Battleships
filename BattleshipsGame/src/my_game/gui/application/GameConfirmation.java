@@ -17,7 +17,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import my_game.models.game_components.CoralReef;
+import my_game.networking.NetEntityListener;
+import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.server.GameServer;
+import my_game.util.GameException;
 
 
 public class GameConfirmation
@@ -40,7 +43,13 @@ public class GameConfirmation
     
     @FXML //  fx:id="myButton"
     private AnchorPane pane; // Value injected by FXMLLoader
-
+    
+    /** The coral reef used for generating the playing map. */
+    private CoralReef reef;
+    
+    private final ServerListener serverListener = new ServerListener();
+    private final ClientListener clientListener = new ClientListener();
+    
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         
@@ -89,11 +98,39 @@ public class GameConfirmation
             Main.setServer(s);
 
             //Create the CoralReef and display it in the TextArea
-            CoralReef reef = new CoralReef();
+            reef = new CoralReef();
             map.setText(reef.toString());
             
+            Main.getServer().addNetListener(serverListener);
         } else {
             //it is a client connecting
+            Main.getClient().addNetListener(clientListener);
+        }
+    }
+    
+    class ServerListener implements NetEntityListener {
+
+        public void onConnected() {
+            System.out.println("Sending coral reef to client.");
+            Main.getServer().sendCoralReef(reef);
+        }
+
+        public void onReefReceive(CoralReef reef) {
+            //Server is not supposed to receive this, something went wrong
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
+        }
+        
+    }
+    
+    class ClientListener implements NetEntityListener {
+
+        public void onConnected() {
+            //do nothing
+        }
+
+        public void onReefReceive(CoralReef reef) {
+            //display the newly received coral reef in the text area
+            map.setText(reef.toString());
         }
     }
 }

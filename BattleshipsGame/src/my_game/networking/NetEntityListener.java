@@ -4,6 +4,8 @@
  */
 package my_game.networking;
 
+import my_game.models.game_components.CoralReef;
+
 /**
  * An interface which allows a class to be added to the listeners list
  * of a network entity so that the network entity communicates back events
@@ -12,4 +14,17 @@ package my_game.networking;
  */
 public interface NetEntityListener {
     //TODO add methods needed for communication here.
+    
+    /**
+     * This method is called every time another network entity is connected to
+     * this one.
+     */
+    public void onConnected();
+    
+    /**
+     * This method is called whenever the network entity receives a packet containing
+     * a CoralReef object.
+     * @param reef The CoralReef object received by the network entity.
+     */
+    public void onReefReceive(CoralReef reef);
 }
