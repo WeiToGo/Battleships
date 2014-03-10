@@ -27,4 +27,12 @@ public interface NetEntityListener {
      * @param reef The CoralReef object received by the network entity.
      */
     public void onReefReceive(CoralReef reef);
+
+    /**
+     * This methods is called whenever the network entity receives a packet 
+     * containing a map vote. True means a positive vote and false means a 
+     * negative one.
+     * @param vote 
+     */
+    public void onVoteReceive(boolean vote);
 }

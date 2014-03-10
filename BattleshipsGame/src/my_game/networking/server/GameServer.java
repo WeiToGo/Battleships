@@ -1,13 +1,11 @@
 package my_game.networking.server;
 
-import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
@@ -18,6 +16,7 @@ import my_game.networking.packets.PacketHandler;
 import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
+import my_game.networking.packets.impl.VotePacket;
 import my_game.util.Misc;
 
 /**
@@ -159,7 +158,7 @@ public class GameServer implements NetworkEntity {
         this.connectedPlayer = p;
     }
 
-    public void updateGameState(GameState gs) {
+    public void sendGameStateToListeners(GameState gs) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -185,9 +184,20 @@ public class GameServer implements NetworkEntity {
      * connected client.
      * @param reef The coral reef to send.
      */
-    public void sendCoralReef(CoralReef reef) {
+    public void sendCoralReefToListeners(CoralReef reef) {
         CoralReefPacket packet = new CoralReefPacket(reef);
         this.sendData(packet.getData(), out);
+    }
+
+    public void sendVoteToListeners(boolean vote) {
+        for(NetEntityListener l: listeners) {
+            l.onVoteReceive(vote);
+        }
+    }
+
+    public void sendVote(boolean vote) {
+        VotePacket v = new VotePacket(vote);
+        this.sendData(v.getData(), out);
     }
     
     /**

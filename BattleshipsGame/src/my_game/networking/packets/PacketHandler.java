@@ -6,6 +6,7 @@ import my_game.networking.NetworkEntity;
 import my_game.networking.packets.Packet.PacketTypes;
 import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.packets.impl.GameStatePacket;
+import my_game.networking.packets.impl.VotePacket;
 import my_game.util.Misc;
 
 /**
@@ -53,11 +54,14 @@ public class PacketHandler {
                             String noTypeMessage = args[i].substring(2);
 
                             switch(type) {
+                            case VOTE:
+                                    VotePacket vote = new VotePacket(args[i].getBytes());
+                                    net.sendVoteToListeners(vote.getVote());
                             case GAMESTATE:
                                     //use the methods inside the game state packet to extract the game state from the data[]
                                     //GameStatePacket packet = new GameStatePacket(data);
 
-                                    //net.updateGameState(packet.x, packet.y, packet.radius, packet.color);
+                                    //net.sendGameStateToListeners(packet.x, packet.y, packet.radius, packet.color);
                                     break;
                             case HELLO:
                                     //send the username to the server
@@ -68,7 +72,7 @@ public class PacketHandler {
                                 CoralReefPacket p = new CoralReefPacket(args[i].getBytes());
                                 CoralReef reef = new CoralReef();
                                 reef.setReef(p.reef);
-                                net.sendCoralReef(reef);
+                                net.sendCoralReefToListeners(reef);
                                 break;
                             default:
                             case INVALID:

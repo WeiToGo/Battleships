@@ -26,6 +26,7 @@ import my_game.networking.ServerListListener;
 import my_game.networking.packets.impl.GameStatePacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
+import my_game.networking.packets.impl.VotePacket;
 import my_game.networking.server.GameServer;
 import my_game.util.GameException;
 import my_game.util.Misc;
@@ -162,7 +163,7 @@ public class GameClient extends Thread implements NetworkEntity {
         this.connectedPlayer = p;
     }
 
-    public void updateGameState(GameState gs) {
+    public void sendGameStateToListeners(GameState gs) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -178,7 +179,7 @@ public class GameClient extends Thread implements NetworkEntity {
         return connectedPlayer;
     }
 
-    public void sendCoralReef(CoralReef reef) {
+    public void sendCoralReefToListeners(CoralReef reef) {
         while(listeners.size() == 0) {
             try {
                 Thread.sleep(50);
@@ -189,6 +190,17 @@ public class GameClient extends Thread implements NetworkEntity {
         for(NetEntityListener l: listeners) {
             l.onReefReceive(reef);
         }
+    }
+
+    public void sendVoteToListeners(boolean vote) {
+        for(NetEntityListener l: listeners) {
+            l.onVoteReceive(vote);
+        }
+    }
+    
+    public void sendVote(boolean vote) {
+        VotePacket v = new VotePacket(vote);
+        sendData(v.getData());
     }
     
     private class ClientThread implements Runnable {
