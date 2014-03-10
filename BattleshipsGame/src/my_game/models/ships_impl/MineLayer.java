@@ -39,6 +39,7 @@ public class MineLayer extends Ship {
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(2);
+        setCannonDamage(1);
         setDirection(direction);
         moveTo(position);        
         weapons.add("cannon");
@@ -50,14 +51,19 @@ public class MineLayer extends Ship {
               new Vector2(2,2), new Vector2(-3,2));       
         setRadarRange(rr);
      }
+    
+    public MineLayer(int pid) {
+		super(pid);
+	}
 
     public int getCannonDamage() {
 	return cannonDamage;
     }
 
-    public void setCannonDamage(int cannonDamage) {
+	void setCannonDamage(int cannonDamage) {
 	this.cannonDamage = cannonDamage;
     } 
+    
     
     public boolean fireCannon(GameObject target) {
         boolean result = false;
@@ -77,15 +83,6 @@ public class MineLayer extends Ship {
     
     public boolean layMine(GameObject target) {
         throw new UnsupportedOperationException("Not yet implemented");
-    }    
- /*   public Vector2[] getRadarRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public Vector2[] getCanonRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-*/
+    }  
     
 }

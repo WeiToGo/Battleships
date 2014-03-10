@@ -26,7 +26,11 @@ public class RadarBoat extends Ship {
     private boolean longRangeActive;
     private Range longRange;
     
-    public RadarBoat(int pid, ArrayList<Vector2> position, ShipDirection direction){
+    public RadarBoat(int pid) {
+		super(pid);
+	}
+
+	public RadarBoat(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
         setShipType(ShipType.RadarBoat);
         setSize(3);
@@ -41,6 +45,7 @@ public class RadarBoat extends Ship {
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(1);
+        setCannonDamage(1);
         setDirection(direction);
         moveTo(position);        
         weapons.add("cannon");
@@ -55,14 +60,15 @@ public class RadarBoat extends Ship {
         setLongRadarRange(rr);        
      }
 
-   
     public int getCannonDamage() {
-	return cannonDamage;
+    	return cannonDamage;
     }
 
     public void setCannonDamage(int cannonDamage) {
-	this.cannonDamage = cannonDamage;
+    	this.cannonDamage = cannonDamage;
     } 
+   
+    
     public void setLongRadarRange(Range r){
         this.longRange = r;
     }    
@@ -80,19 +86,6 @@ public class RadarBoat extends Ship {
         }
 	   
         return result;
-    }  
-    
-    public boolean fireTorpedo(GameObject target) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }    
- /*   public Vector2[] getRadarRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public Vector2[] getCanonRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-*/
-    
+    }   
+ 
 }

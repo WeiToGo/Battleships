@@ -24,6 +24,7 @@ import my_game.util.Range;
 public class Destroyer extends Ship{
     
     private int cannonDamage;
+    private int torpedoDamage;
     
     public Destroyer(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
@@ -40,25 +41,45 @@ public class Destroyer extends Ship{
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(1);
+        setCannonDamage(1);
+        setTorpedoDamage(1);
         setDirection(direction);
         moveTo(position);        
         weapons.add("cannon");
         weapons.add("torpedo");
+        
         Range cr = new Range(new Vector2(-7,-4), new Vector2(4,-4), 
             new Vector2(4,4), new Vector2(-7,4));   
         setCannonRange(cr);
+        
+        Range tr = new Range(new Vector2(0,1), new Vector2(0,11),
+        		new Vector2(0,11), new Vector2(0,1));
+        setTorpedoRange(tr);
+        
         Range rr = new Range(new Vector2(-2,-1), new Vector2(5,-1), 
               new Vector2(5,1), new Vector2(-2,1));       
         setRadarRange(rr);
     }
     
-    public int getCannonDamage() {
+    public Destroyer(int pid) {
+		super(pid);
+	}
+
+	public int getCannonDamage() {
 	return cannonDamage;
     }
 
     public void setCannonDamage(int cannonDamage) {
 	this.cannonDamage = cannonDamage;
     } 
+	
+    public int getTorpedoDamage() {
+    	return torpedoDamage;
+    }
+    
+	void setTorpedoDamage(int torpedoDamage) {
+    	this.torpedoDamage = torpedoDamage;
+    }
     
     public boolean fireCannon(GameObject target) {
         boolean result = false;
@@ -79,13 +100,5 @@ public class Destroyer extends Ship{
     public boolean fireTorpedo(GameObject target) {
         throw new UnsupportedOperationException("Not yet implemented");
     }    
- /*   public Vector2[] getRadarRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 
-    public Vector2[] getCanonRange(){
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-*/
 }

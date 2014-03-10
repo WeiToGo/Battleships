@@ -7,6 +7,8 @@ package my_game.controller;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
@@ -155,5 +157,15 @@ public class Game {
         // map update the ships position and repaint?        
     }
             
+    public void fireCannon(GameObject unit){
+    	//can be called by any type of ship
+    	//TO DO: highlight the available ship and cannonRange to GUI pass the (user selected)attacker and targeting position to map
+    	//map.cannonAttack(Ship attacker, Vector2 position)
+    }
     
+    public void fireTorpedo(GameObject unit){
+    	//can only be called by destroyer and torpedo boat
+    	//TO DO: highlight the available ship and torpedoRange to GUI pass the (user selected)attacker and targeting position to map
+    	//map.TorpedoAttack(Ship attacker, Vector2 position)
+    }
 }

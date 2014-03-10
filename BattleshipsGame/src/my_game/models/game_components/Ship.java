@@ -34,8 +34,11 @@ public abstract class Ship implements java.io.Serializable {
     protected ArrayList<String> weapons = new ArrayList<String>();
     /** The cannon range for a ship facing East as default. */
     protected Range cannonRange;
+    /** The torpedo range for a ship facing East as default. */
+    protected Range torpedoRange;
     /** The radar range for a ship facing East as default. */
     protected Range radarRange;
+    
     
     /** Constructs a ship given a player ID. */
     public Ship(int pid){
@@ -130,17 +133,25 @@ public abstract class Ship implements java.io.Serializable {
     }
 
     public void setShipUnits(ShipUnit[] shipUnits) {
-	this.shipUnits = shipUnits;
+    	this.shipUnits = shipUnits;
     }
     public Range getCannonRange() {
-	return cannonRange;
+    	return cannonRange;
     }
 
+    public Range getTorpedoRange() {
+    	return torpedoRange;
+    } 
+    
     public Range getRadarRange() {
-	return radarRange;
+    	return radarRange;
     }    
 
     public void setCannonRange(Range r){
+        this.cannonRange = r;
+    }
+    
+    public void setTorpedoRange(Range r){
         this.cannonRange = r;
     }
     

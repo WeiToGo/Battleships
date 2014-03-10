@@ -4,11 +4,19 @@
 */
 package my_game.models.game_components;
 
+import my_game.models.ships_impl.Cruiser;
+import my_game.models.ships_impl.Destroyer;
+import my_game.models.ships_impl.MineLayer;
+import my_game.models.ships_impl.RadarBoat;
+import my_game.models.ships_impl.TorpedoBoat;
 import my_game.util.GameException;
 import my_game.util.Vector2;
+
 import java.util.ArrayList;
+
 import my_game.util.Positions;
 import my_game.util.Moves;
+import my_game.util.Range;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
 
@@ -385,7 +393,7 @@ public class Map implements java.io.Serializable {
         
     }
     /**
-     * This method calcule all positions that need be checked in order move the
+     * This method calculate all positions that need be checked in order move the
      * ship successfully.
      * @param p The new position(of the bow) that the player wants to move. 
      * @param positions All positions this ship can turn to and all path this ship
@@ -436,7 +444,7 @@ public class Map implements java.io.Serializable {
      * This method checks if there are ships, coral reef in positions that the 
      * player wants to turn to. It's called by turnShip.
      * @param p The desired position of the bow of the ship.
-     * @return The valide positions that the ship can move.
+     * @return The validate positions that the ship can move.
      */
     public Turns validateTurn(Ship s, Turns t){
         Turns valid = new Turns();
@@ -611,7 +619,159 @@ public class Map implements java.io.Serializable {
             return null;
         }
     }
+    
+    public void cannonAttack(Ship attacker, Vector2 position){
+    	GameObject target = getObjectAt(position);
+    	int damage = 0;
+    	
+    	if(attacker.getClass() == new Cruiser(10000).getClass()){
+    		damage = ((Cruiser) attacker).getCannonDamage();
+    		
+    		if (!((Cruiser) attacker).fireCannon(target))
+    			return;
+    	}
+    	else if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
+    		damage = ((TorpedoBoat) attacker).getCannonDamage();
+    		
+    		if (!((TorpedoBoat) attacker).fireCannon(target))
+    			return;
+    	}
+    	else if(attacker.getClass() == new Destroyer(10000).getClass()){
+    		damage = ((Destroyer) attacker).getCannonDamage();
+    		
+    		if (!((Destroyer) attacker).fireCannon(target))
+    			return;
+    	}
+    	else if(attacker.getClass() == new MineLayer(10000).getClass()){
+    		damage = ((MineLayer) attacker).getCannonDamage();
+    		
+    		if (!((MineLayer) attacker).fireCannon(target))
+    			return;
+    	}
+    	else if(attacker.getClass() == new RadarBoat(10000).getClass()){
+    		damage = ((RadarBoat) attacker).getCannonDamage();
+    		
+    		if (!((RadarBoat) attacker).fireCannon(target))
+    			return;
+    	}
 
+    	if (target.getClass() == new ShipUnit().getClass()){
+			((ShipUnit)target).setDamage(damage);
+		}
+		
+		if (target.getClass() == new BaseUnit().getClass()){
+			((BaseUnit)target).setDamage();
+		}
+		
+		if (target.getClass() == new Mine().getClass()){
+			setObjectAt(position, null);
+		}
+    }
+    
+    public void torpedoAttack(Ship attacker, Vector2 position){
+    	int damage = 0;
+    	
+    	ShipDirection d = attacker.getDirection();
+    	Vector2 head = attacker.getShipUnits()[0].getPosition();
+    	int x = head.x;
+    	int y = head.y;
+    	
+    	ArrayList<Vector2> torpedoRange = new ArrayList<Vector2>();
+    	
+    	switch (d){
+	        case East:
+	            for(int i = 1; i <= 10; i++){
+	            	if(x + i < 30){
+	            		torpedoRange.add(new Vector2(x + i, y));
+	            	}
+	            	else
+	            		break;
+	            }
+	        	break;
+	        	
+	        case North: 
+	        	for(int i = 1; i <= 10; i++){
+	            	if(y - i >= 0){
+	            		torpedoRange.add(new Vector2(x, y - i));
+	            	}
+	            	else
+	            		break;
+	            }
+	        	
+	        case South: 
+	        	for(int i = 1; i <= 10; i++){
+	            	if(y + i < 30){
+	            		torpedoRange.add(new Vector2(x, y + i));
+	            	}
+	            	else
+	            		break;
+	            }
+	        	
+	        case West: 
+	        	for(int i = 1; i <= 10; i++){
+	            	if(x - i >= 0){
+	            		torpedoRange.add(new Vector2(x - i, y));
+	            	}
+	            	else
+	            		break;
+	            }
+	            break;
+    	} 
+
+    	GameObject target = null;
+    	for (Vector2 vec : torpedoRange){
+    		if(target.getClass() == new ShipUnit().getClass() ||
+    		           target.getClass() == new BaseUnit().getClass() ||
+    		           target.getClass() == new Mine().getClass()) {
+    			target = getObjectAt(vec);
+    			break;
+    		}	
+    	}
+    	
+    	if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
+    		damage = ((TorpedoBoat) attacker).getTorpedoDamage();
+    		
+    		if (((TorpedoBoat) attacker).fireTorpedo(target)){
+    			
+    			if (target.getClass() == new ShipUnit().getClass()){
+    				((ShipUnit)target).setDamage(damage);
+    			}
+    			
+    			if (target.getClass() == new BaseUnit().getClass()){
+    				((BaseUnit)target).setDamage();
+    			}
+    					
+    			if (target.getClass() == new Mine().getClass()){
+    				setObjectAt(position, null);
+    			}
+    		}
+    	}
+    	else if(attacker.getClass() == new Destroyer(10000).getClass()){
+    		damage = ((Destroyer) attacker).getTorpedoDamage();
+    		
+    		if (((Destroyer) attacker).fireTorpedo(target)){
+    			
+    			if (target.getClass() == new ShipUnit().getClass()){
+    				((ShipUnit)target).setDamage(damage);
+    			}
+    			
+    			if (target.getClass() == new BaseUnit().getClass()){
+    				((BaseUnit)target).setDamage();
+    			}
+    					
+    			if (target.getClass() == new Mine().getClass()){
+    				setObjectAt(position, null);
+    			}
+    			
+    			
+    		}
+    	}
+    	
+    	
+    	
+    	
+    }
+    
     /**
      * Sets every cell of the grid to null.
      */
