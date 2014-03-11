@@ -14,6 +14,7 @@ import my_game.networking.NetEntityListener;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.PacketHandler;
 import my_game.networking.packets.impl.CoralReefPacket;
+import my_game.networking.packets.impl.GameStatePacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
 import my_game.networking.packets.impl.VotePacket;
@@ -159,11 +160,14 @@ public class GameServer implements NetworkEntity {
     }
 
     public void sendGameStateToListeners(GameState gs) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(NetEntityListener l: listeners) {
+            l.onGameStateReceive(gs);
+        }
     }
 
     public void sendGameState(GameState gs) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        GameStatePacket p = new GameStatePacket(gs);
+        this.sendData(p.getData(), out);
     }
 
     public Player getConnectedPlayer() {
@@ -198,6 +202,13 @@ public class GameServer implements NetworkEntity {
     public void sendVote(boolean vote) {
         VotePacket v = new VotePacket(vote);
         this.sendData(v.getData(), out);
+    }
+
+    /**
+     * @return The name of this server.
+     */
+    public String getName() {
+        return this.serverName;
     }
     
     /**
