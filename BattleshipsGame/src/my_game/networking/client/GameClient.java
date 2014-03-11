@@ -164,11 +164,14 @@ public class GameClient extends Thread implements NetworkEntity {
     }
 
     public void sendGameStateToListeners(GameState gs) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        for(NetEntityListener l: listeners) {
+            l.onGameStateReceive(gs);
+        }
     }
 
     public void sendGameState(GameState gs) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        GameStatePacket p = new GameStatePacket(gs);
+        this.sendData(p.getData());
     }
 
     public InetAddress getRemote() {
