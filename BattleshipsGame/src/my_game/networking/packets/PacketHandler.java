@@ -57,12 +57,6 @@ public class PacketHandler {
                             case VOTE:
                                     VotePacket vote = new VotePacket(args[i].getBytes());
                                     net.sendVoteToListeners(vote.getVote());
-                            case GAMESTATE:
-                                    //use the methods inside the game state packet to extract the game state from the data[]
-                                    //GameStatePacket packet = new GameStatePacket(data);
-
-                                    //net.sendGameStateToListeners(packet.x, packet.y, packet.radius, packet.color);
-                                    break;
                             case HELLO:
                                     //send the username to the server
                                 //just set a player with the username and no other information
@@ -73,6 +67,10 @@ public class PacketHandler {
                                 CoralReef reef = new CoralReef();
                                 reef.setReef(p.reef);
                                 net.sendCoralReefToListeners(reef);
+                                break;
+                            case GAMESTATE:
+                                GameStatePacket g = new GameStatePacket(args[i].getBytes());
+                                net.sendGameStateToListeners(g.getGameState());
                                 break;
                             default:
                             case INVALID:

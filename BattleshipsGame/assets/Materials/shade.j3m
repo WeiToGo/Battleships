@@ -1,0 +1,12 @@
+Material My Material : Common/MatDefs/Misc/Unshaded.j3md {
+     MaterialParameters {
+        Color : 1 0 0 0.15
+        VertexColor : false
+     }
+    AdditionalRenderState {
+      Blend Alpha
+      DepthTest On
+      ColorWrite On
+      DepthWrite On
+    }
+}

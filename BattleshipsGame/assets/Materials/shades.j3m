@@ -1,0 +1,17 @@
+Material My Material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        UseAlpha : false
+        Diffuse : 1.0 1.0 1.0 1
+        UseMaterialColors : false
+        Specular : 1 1 1 1
+        PackedNormalParallax : false
+        VTangent : false
+        LATC : false
+     }
+    AdditionalRenderState {
+      Blend Off
+      ColorWrite Off
+      DepthTest Off
+      DepthWrite Off
+    }
+}

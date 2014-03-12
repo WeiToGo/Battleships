@@ -16,9 +16,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import my_game.controller.Game;
 import my_game.models.game_components.CoralReef;
+import my_game.models.game_components.GameState;
 import my_game.networking.NetEntityListener;
-import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.server.GameServer;
 import my_game.util.GameException;
 
@@ -79,10 +80,19 @@ public class GameConfirmation
                     //both players voted yes, start game
                     if(Main.isServer) {
                         System.out.println("Server will now start game.");
-                        //TODO Start the game for the server.
+                        //first remove the listener from the server
+                        Main.getServer().removeNetListener(serverListener);
+                        //now create a new Game
+                        Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
+                                reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName(), 0);
+                        //TODO Close this window.
                     } else {
                         System.out.println("Client will now start game.");
-                        //TODO Start the game for the client.
+                        Main.getClient().removeNetListener(clientListener);
+                        //now create a new Game
+                        Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
+                                reef, Main.getServer(), Game.PlayerType.Client, "", 0);
+                        //TODO Close this window.
                     }
                 } else {
                     if(Main.isServer) {
@@ -176,6 +186,11 @@ public class GameConfirmation
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
         }
+
+        public void onGameStateReceive(GameState gs) {
+            //this method shouldn't get called while here
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+        }
         
     }
     
@@ -193,6 +208,11 @@ public class GameConfirmation
         public void onVoteReceive(boolean vote) {
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
+        }
+
+        public void onGameStateReceive(GameState gs) {
+            //this method shouldn't get called while here
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
     }
 }

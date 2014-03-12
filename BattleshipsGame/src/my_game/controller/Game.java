@@ -7,6 +7,7 @@ package my_game.controller;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.gui.GameGUI;
 
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
@@ -16,6 +17,7 @@ import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipDirection;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
+import my_game.networking.NetEntityListener;
 import my_game.util.Vector2;
 import my_game.util.GameException;
 import my_game.util.Positions;
@@ -39,11 +41,15 @@ public class Game {
     /** Network object used for communication with the opponent. */
     private final NetworkEntity net;
     /** The game state contains a full description of the game that is currently being played. */
-    private GameState gameState;
+    private GameState gameState, receivedGameState;
+    private boolean receivedNewGamestate = false;
+    
     /** The player type is a flag indicating whether the player running the instance
      * of this Game object is the host of the game, or a client connected to the host. */
     private final Game.PlayerType playerType;
     
+    private final ServerListener sListener;
+    private final ClientListener cListener;
     
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
@@ -70,6 +76,11 @@ public class Game {
         this.playerType = playerType;
         
         if(playerType == Game.PlayerType.Host) {
+            sListener = new ServerListener();
+            cListener = null;
+            
+            net.addNetListener(sListener);
+            
             //generate the index of the first player if an invalid index is passed.
             int firstPlayer = startingPlayer;
             if(startingPlayer < 0 || startingPlayer > 1) {
@@ -81,16 +92,82 @@ public class Game {
             this.net.sendGameState(gameState);
             startGame();
         } else {
+            //add a listener to the client
+            sListener = null;
+            cListener = new ClientListener();
+            
+            net.addNetListener(cListener);
+            
             //You are a client. Wait to receive a game state from server
-            GameState receivedGameState = null; //receive game state from server
-            gameState = new GameState(receivedGameState);
+            while(!receivedNewGamestate) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            gameState = new GameState(this.receivedGameState);
+            receivedNewGamestate = false;
+            
             startGame();
         }
     } 
     
+    /**
+     * A listener for the server, if this player is a host.
+     */
+    private class ServerListener implements NetEntityListener {
+
+        public void onConnected() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onReefReceive(CoralReef reef) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onVoteReceive(boolean vote) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onGameStateReceive(GameState gs) {
+            receivedGameState = gs;
+            receivedNewGamestate = true;
+        }
+        
+    }
+    
+    /**
+     * A listener for the client, if this player joined the game of a host.
+     */
+    public class ClientListener implements NetEntityListener {
+
+        public void onConnected() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onReefReceive(CoralReef reef) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onVoteReceive(boolean vote) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void onGameStateReceive(GameState gs) {
+            receivedGameState = gs;
+            receivedNewGamestate = true;
+        }
+        
+    }
+    
     private void startGame() {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
+        GameGUI gui = new GameGUI();
+        gui.start();
+        
         //positioning phase
         gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
         Ship s; // get the ship we want to position from GUI

@@ -5,6 +5,7 @@
 package my_game.networking;
 
 import my_game.models.game_components.CoralReef;
+import my_game.models.game_components.GameState;
 
 /**
  * An interface which allows a class to be added to the listeners list
@@ -13,7 +14,7 @@ import my_game.models.game_components.CoralReef;
  * @author Ivo Parvanov
  */
 public interface NetEntityListener {
-    //TODO add methods needed for communication here.
+    // add methods needed for communication here.
     
     /**
      * This method is called every time another network entity is connected to
@@ -35,4 +36,11 @@ public interface NetEntityListener {
      * @param vote 
      */
     public void onVoteReceive(boolean vote);
+
+    /**
+     * This method is called whenever the network entity receives a packet
+     * containing a GameState object. 
+     * @param gs The GameState object received.
+     */
+    public void onGameStateReceive(GameState gs);
 }

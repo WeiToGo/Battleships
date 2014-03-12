@@ -53,4 +53,16 @@ public interface NetworkEntity {
          * @param vote The received vote: true means accept and false means refuse.
          */
         public void sendVoteToListeners(boolean vote);
+        
+        /**
+         * Adds a NetEntityListener to the list of listeners of this NetEntity.
+         * @param l 
+         */
+        public void addNetListener(NetEntityListener l);
+    
+        /**
+         * Removes a NetEntityListener to the list of listeners of this NetEntity.
+         * @param l 
+         */
+        public void removeNetListener(NetEntityListener l);
 }

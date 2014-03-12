@@ -4,10 +4,13 @@
  */
 package my_game.models.game_components;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Player;
 import my_game.util.Vector2;
 import my_game.models.ships_impl.*;
+import my_game.util.GameException;
 /**
  * The state of a game describes a game fully.
  */
@@ -96,12 +99,17 @@ public class GameState implements java.io.Serializable {
             ships = generatePlayerShips(pid);
         }else if (bu[0].getPosition().x == 29){
             ships = generateOpponentShips(pid);
+        } else {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, 
+                    new GameException("Something went wrong in generateShips: doesn't know which player's ships to create.\n"
+                    + "Horizontal position of base found: " + bu[0].getPosition().x));
         }
         
         return ships;
     }
     
     private Ship[] generatePlayerShips(int pid) {
+        System.out.println("Generating ships.");
         ShipDirection d = ShipDirection.East;
         ArrayList<Vector2> position = new ArrayList<Vector2>();
         int y = 10;
