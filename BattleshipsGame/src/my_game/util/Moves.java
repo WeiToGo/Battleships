@@ -10,8 +10,8 @@ import java.util.ArrayList;
  */
 public class Moves {
 
-    public ArrayList<Vector2> positions;
-    public MoveDirection md;
+    private ArrayList<Vector2> positions;
+    private MoveDirection md;
     // to keep track of which way we are moving, initially set to All.
     public enum MoveDirection {
         L, R, F, B

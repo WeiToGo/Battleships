@@ -217,9 +217,8 @@ public class Game {
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
         
         
-        //map.moveShip(s,newPosition, highlight);
+        //map.moveShip(s,newPosition, highlight); move calls updateMap
         
-        // map update the ships position and repaint?
     }
     
     public void turnAction(Ship s){

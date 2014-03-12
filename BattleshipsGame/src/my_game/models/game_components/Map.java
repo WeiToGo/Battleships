@@ -19,6 +19,8 @@ import my_game.util.Moves;
 import my_game.util.Range;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -112,7 +114,7 @@ public class Map implements java.io.Serializable {
      * @return An array of positions that are highlighted on the map.
      */
     public Positions prepareMoveShip(Ship ship){
-        Positions allMoves = ship.availableMoves();
+        Positions allMoves = ship.availableMoves();      
         //not sure if it's a good idea.
         Positions highlightedMoves = new Positions(null,null,null,null);
         //if there is any obstacle on left or right, the ship can't move sideways.
@@ -152,14 +154,17 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> forward = allMoves.getForward();
         ArrayList<Vector2> validForward = new ArrayList<Vector2>();
         for (int i = 0; i < forward.size(); i++){
-            if (isVisibleObstacle(ship, forward.get(i))){
+            if (!isVisibleObstacle(ship, forward.get(i))){
                 validForward.add(forward.get(i));
-            }else{
+            }else if (isVisibleObstacle(ship, forward.get(i))){
+   //             System.out.println("obs " + forward.get(i).x + " " + forward.get(i).y);              
                 break;
+            }else{
+                //shouldn't happen
             }
         }
        
-        highlightedMoves.setForward(validForward);
+        highlightedMoves.setForward(validForward);         
         return highlightedMoves;
     }
     
@@ -174,10 +179,28 @@ public class Map implements java.io.Serializable {
      * in getMovePositions.
      * @throws GameException 
      */
-    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
+//    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
+    public void moveShip(Ship ship,Vector2 newPosition, Positions p) {
         Moves shipPositions = getMovePositions (newPosition, p);
-        ArrayList<Vector2> valide = validateMove(ship, shipPositions);
-        ship.moveTo(valide);
+        System.out.println("move dir " + shipPositions.getMoveDirection().toString());
+        ArrayList<Vector2> valide = new ArrayList<Vector2>();
+        valide = validateMove(ship, shipPositions);
+        System.out.println("valide " + valide.get(0).x + " " + valide.get(0).y);
+        System.out.println("valide " + valide.get(1).x + " " + valide.get(1).y);
+        System.out.println("valide " + valide.get(2).x + " " + valide.get(2).y);
+        
+ /*       try{
+        }catch (GameException e){
+            Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null,
+                    new GameException("move error"));
+        }
+ */       if (valide != null){
+            this.updateShipPositions(ship, valide);
+            System.out.println("ship size == " + ship.getSize());
+            System.out.println("list size == " + valide.size());
+            ship.moveTo(valide);           
+        }
+
     }
     
     /**
@@ -191,40 +214,48 @@ public class Map implements java.io.Serializable {
     private Moves getMovePositions(Vector2 p, Positions positions){
         Moves moves = new Moves();
         ArrayList<Vector2> back = positions.getBackward();
-        for (Vector2 v: back){
-            if (v.x == p.x && v.y == p.y){
-                moves.setMoveDirection(Moves.MoveDirection.B);
-                moves.setMoves(back);
-                return moves;// only works if we can only move backward one square.
+        if(back != null){
+            for (Vector2 v : back) {
+                if (v.x == p.x && v.y == p.y) {
+                    moves.setMoveDirection(Moves.MoveDirection.B);
+                    moves.setMoves(back);
+                    return moves;// only works if we can only move backward one square.
+                }
             }
         }
         ArrayList<Vector2> left = positions.getLeft();
-        for (Vector2 v: left){
-            if (v.x == p.x && v.y == p.y){
-                moves.setMoveDirection(Moves.MoveDirection.L);
-                moves.setMoves(left);
-                return moves;
+        if (left != null){
+            for (Vector2 v : left) {
+                if (v.x == p.x && v.y == p.y) {
+                    moves.setMoveDirection(Moves.MoveDirection.L);
+                    moves.setMoves(left);
+                    return moves;
+                }
             }
         }
         ArrayList<Vector2> right = positions.getRight();
-        for (Vector2 v: right){
-            if (v.x == p.x && v.y == p.y){
-                moves.setMoveDirection(Moves.MoveDirection.R);
-                moves.setMoves(right);
-                return moves;
+        if (right != null){
+            for (Vector2 v : right) {
+                if (v.x == p.x && v.y == p.y) {
+                    moves.setMoveDirection(Moves.MoveDirection.R);
+                    moves.setMoves(right);
+                    return moves;
+                }
             }
         }
         ArrayList<Vector2> forward = positions.getForward();
-        ArrayList<Vector2> newforward = new ArrayList<Vector2>();
-        for (Vector2 v: forward){
-            if (v.x == p.x && v.y == p.y){
-                moves.setMoveDirection(Moves.MoveDirection.F);
-                break;
-            }else{
-                newforward.add(v);
+        if (forward != null){
+            ArrayList<Vector2> newforward = new ArrayList<Vector2>();
+            for (Vector2 v : forward) {
+                if (v.x == p.x && v.y == p.y) {
+                    moves.setMoveDirection(Moves.MoveDirection.F);
+                    break;
+                } else {
+                    newforward.add(v);
+                }
             }
+            moves.setMoves(newforward);
         }
-        moves.setMoves(newforward);
         return moves;
     }
     
@@ -242,53 +273,65 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> moves = p.getPositions();
         Vector2 obstacle, mine; 
         ShipUnit[] damagedUnits = new ShipUnit[2];
-        switch (p.getMoveDirection()){
-            case F:
-                ArrayList<Vector2> forwardmoves = new ArrayList<Vector2>();
-            //need to generate new positions if needed.
-            for (Vector2 v: moves){
-                if (isHiddenObstacle(s,v)){ 
-                    break;                  
-                }
-                if (isMine(v)){
-                    mine = v;
-                    //get first 2 shipUnits?
-                    touchedMine(mine, damagedUnits);
-                    return moves;
-                }else{
-                    forwardmoves.add(v);
-                }
-            }
-            moves.addAll(forwardmoves);
-            case B:
-            for (Vector2 v: moves){
-                if (isHiddenObstacle(s,v)){ return null;}
-                if (isMine(v)){
-                    mine = v;
-                    //get last 2 shipUnits?
-                    touchedMine(mine, damagedUnits);
-                    return moves;
-                }
-            }
-            case L:
-            for (Vector2 v: moves){
-                if (isHiddenObstacle(s,v)){ return null;}
-                if (isMine(v)){
-                    mine = v;
-                    //get last 2 shipUnits?
-                    touchedMine(mine, damagedUnits);
-                    return moves;
-                }
-            }
-            case R:
-            for (Vector2 v: moves){
-                if (isHiddenObstacle(s,v)){ return null;}
-                if (isMine(v)){
-                    mine = v;
-                    //get last 2 shipUnits?
-                    touchedMine(mine, damagedUnits);
-                    return moves;
-                }
+        if (p.getMoveDirection() == null){
+            Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, 
+                    new GameException("no move direction, something's wrong."));            
+        }else{
+            switch (p.getMoveDirection()) {
+                case F:
+                    ArrayList<Vector2> forwardmoves = new ArrayList<Vector2>();
+                    //need to generate new positions if needed.
+                    for (Vector2 v : moves) {
+                        if (isHiddenObstacle(s, v)) {
+                            break;
+                        }
+                        if (isMine(v)) {
+                            mine = v;
+                            //get first 2 shipUnits?
+                            touchedMine(mine, damagedUnits);
+                            return moves;
+                        } else {
+                            forwardmoves.add(v);
+                        }
+                    }
+                    moves.addAll(forwardmoves);
+                case B:
+                    for (Vector2 v : moves) {
+                        if (isHiddenObstacle(s, v)) {
+                            return null;
+                        }
+                        if (isMine(v)) {
+                            mine = v;
+                            //get last 2 shipUnits?
+                            touchedMine(mine, damagedUnits);
+                            return moves;
+                        }
+                    }
+                case L:
+                    for (Vector2 v : moves) {
+                        if (isHiddenObstacle(s, v)) {
+                            return null;
+                        }
+                        if (isMine(v)) {
+                            mine = v;
+                            //get last 2 shipUnits?
+                            touchedMine(mine, damagedUnits);
+                            return moves;
+                        }
+                    }
+                case R:
+                    for (Vector2 v : moves) {
+                        if (isHiddenObstacle(s, v)) {
+                            return null;
+                        }
+                        if (isMine(v)) {
+                            mine = v;
+                            //get last 2 shipUnits?
+                            touchedMine(mine, damagedUnits);
+                            return moves;
+                        }
+                    }
+                default: // do something?
             }
         }
        
@@ -408,41 +451,49 @@ public class Map implements java.io.Serializable {
      */    
     private Turns getTurnPositions(Vector2 p, TurnPositions positions){
         Turns turns = new Turns();      
+        ArrayList<Vector2> leftPath = new ArrayList<Vector2>();
+        ArrayList<Vector2> rightPath = new ArrayList<Vector2>();
         ArrayList<Vector2> left = positions.getLeft();
-        ArrayList<Vector2> leftPath = positions.getLeftPath();
-        ShipDirection ld = positions.getLeftDirection();
-        for (Vector2 v: left){
-            if (v.x == p.x && v.y == p.y){
-                turns.setTurns(left);               
-                turns.setPath(leftPath);
-                turns.setNewDirection(ld);
-                return turns;
+        if (left != null){        
+            leftPath = positions.getLeftPath();
+            ShipDirection ld = positions.getLeftDirection();
+            for (Vector2 v : left) {
+                if (v.x == p.x && v.y == p.y) {
+                    turns.setTurns(left);
+                    turns.setPath(leftPath);
+                    turns.setNewDirection(ld);
+                    return turns;
+                }
             }
         }
         ArrayList<Vector2> right = positions.getRight();
-        ArrayList<Vector2> rightPath = positions.getRightPath();
-        ShipDirection rd = positions.getRightDirection();
-        for (Vector2 v: right){
-            if (v.x == p.x && v.y == p.y){
-                turns.setTurns(right);               
-                turns.setPath(rightPath);
-                turns.setNewDirection(rd);
-                return turns;
+        if (right != null){
+            rightPath = positions.getRightPath();
+            ShipDirection rd = positions.getRightDirection();
+            for (Vector2 v : right) {
+                if (v.x == p.x && v.y == p.y) {
+                    turns.setTurns(right);
+                    turns.setPath(rightPath);
+                    turns.setNewDirection(rd);
+                    return turns;
+                }
             }
         }
         ArrayList<Vector2> back = positions.getBackward();
-        ArrayList<Vector2> backPath = new ArrayList<Vector2>();
-        ShipDirection bd = positions.getBackDirection();
-        for (Vector2 v: back){
-            if (v.x == p.x && v.y == p.y){
-                turns.setTurns(back);
-                backPath.addAll(leftPath);
-                backPath.addAll(rightPath);
-                turns.setPath(backPath);   
-                turns.setNewDirection(bd);
-                return turns;
+        if (back != null){
+            ArrayList<Vector2> backPath = new ArrayList<Vector2>();
+            ShipDirection bd = positions.getBackDirection();
+            for (Vector2 v : back) {
+                if (v.x == p.x && v.y == p.y) {
+                    turns.setTurns(back);
+                    backPath.addAll(leftPath);
+                    backPath.addAll(rightPath);
+                    turns.setPath(backPath);
+                    turns.setNewDirection(bd);
+                    return turns;
+                }
             }
-        }  
+        }
         return turns;
    }
      /**
@@ -505,11 +556,16 @@ public class Map implements java.io.Serializable {
      */
     public boolean isVisibleObstacle(Ship s, Vector2 p){
         boolean isVisibleObstacle = false;
-        GameObject o = this.getObjectAt(p);     
+        GameObject o = this.getObjectAt(p);    
+        // null game object is the empty sea. 
+        if (o == null){
+            return false;
+        }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
              isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;
+
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ArrayList<Vector2> visible = s.getRadarPositions();
             for (Vector2 v: visible){
@@ -543,6 +599,9 @@ public class Map implements java.io.Serializable {
         boolean isHiddenObstacle = false;
         boolean canSee = false;
         GameObject o = this.getObjectAt(p);   
+        if (o == null){
+            return false;
+        }        
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ArrayList<Vector2> visible = s.getRadarPositions();
             for (Vector2 v: visible){
@@ -561,7 +620,10 @@ public class Map implements java.io.Serializable {
     
     public boolean isMine(Vector2 p){
         boolean isMine = false;
-        GameObject o = this.getObjectAt(p);          
+        GameObject o = this.getObjectAt(p);  
+        if (o == null){
+            return false;
+        }        
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
             isMine = true;
         }
@@ -578,6 +640,9 @@ public class Map implements java.io.Serializable {
     }
     public boolean isClear(Vector2 position){
         boolean isClear = false;
+        if (this.getObjectAt(position) == null){
+            isClear = true;
+        }
         return isClear;
     }
     
@@ -601,14 +666,19 @@ public class Map implements java.io.Serializable {
      * This method is called after every moves to get the map updated.
      * @param s The ship that we just moved.
      */
-    public void updateShipPositions(Ship s, ArrayList<Vector2> positions){        
-        ShipUnit[] shipUnits = s.getShipUnits();
-        int i = 0;
-        for (ShipUnit su: shipUnits){  
-            Vector2 oldPosition = su.getPosition();
-            this.setObjectAt(oldPosition, null);
-            this.setObjectAt(positions.get(i), su);
-            i++;
+    public void updateShipPositions(Ship s, ArrayList<Vector2> positions){   
+        if (s.getSize() != positions.size()){
+        Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, 
+            new GameException("ship size not equal to position size."));          
+        }else{
+            ShipUnit[] shipUnits = s.getShipUnits();
+            int i = 0;
+            for (ShipUnit su: shipUnits){  
+                Vector2 oldPosition = su.getPosition();
+                this.setObjectAt(oldPosition, null);
+                this.setObjectAt(positions.get(i), su);
+                i++;
+            }
         }
     }
     /**
@@ -620,7 +690,7 @@ public class Map implements java.io.Serializable {
     */
     public GameObject setObjectAt(Vector2 position, GameObject object) {
         if(position.x >= 0 && position.x < WIDTH &&
-           position.y >= 0 && position.y < HEIGHT && object != null) {
+           position.y >= 0 && position.y < HEIGHT) {
             grid[position.x][position.y] = object;
             return grid[position.x][position.y];
         } else {
@@ -820,4 +890,31 @@ public class Map implements java.io.Serializable {
         }
         return sb.toString();
     }
+
+    public String toStringTry() {
+        //just print out the map grid where obstacles are '#', empty spaces are '*'
+        //and other objects are 'o'
+        StringBuilder sb = new StringBuilder();
+        GameObject o;
+        Vector2 v;
+        for(int y = 0; y < HEIGHT; y++) { //first y so that we go horizontal line by line in the grid
+            for(int x = 0; x < WIDTH; x++){ 
+                v = new Vector2(x,y);
+                o = this.getObjectAt(v);
+                if(o == null) {
+                    sb.append("-");
+                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef) == 0) {
+                    sb.append("C");
+                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.Ship) == 0) {
+                    sb.append("S");
+                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.Base) == 0) {
+                    sb.append("B");                    
+                } else {
+                    sb.append("o");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }    
 }

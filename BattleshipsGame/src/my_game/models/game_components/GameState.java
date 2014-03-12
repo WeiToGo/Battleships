@@ -312,12 +312,7 @@ public class GameState implements java.io.Serializable {
      * position of the bow.
      */
     public void positionShip(Ship s, Vector2 p) {
-   /*     try {
-            gameState.getMap().moveShip(s,position);
-        } catch (GameException ex) {
-            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-        }
-    */
+        boolean validTarget = true;
         int shipSize = s.getSize();
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         int i;
@@ -355,28 +350,23 @@ public class GameState implements java.io.Serializable {
                 Vector2 v = new Vector2(i,p.y);
                 positions.add(v);            
             }
+        }else{
+            validTarget = false;;
         }
         
-        // commented out this part so I can un the tests.
-        
-      boolean canMove = true;
-        for (Vector2 v: positions){
-            if (map.getObjectAt(v) != null){
-                System.out.println(" not null " );
-                canMove = false;
-            }
+        if (validTarget){        
+            boolean canMove = true;
+                for (Vector2 v: positions){
+                    if (map.getObjectAt(v) != null){
+                        canMove = false;
+                    }
+                }
+            if (canMove){
+                map.updateShipPositions(s,positions);            
+                s.moveTo(positions);
+            }        
         }
-        
-        if (canMove){
-            map.updateShipPositions(s,positions);            
-            s.moveTo(positions);
-        }        
-  
-            for (Vector2 v: positions){
-                System.out.println(v.x + " " + v.y);
-            }         
     }    
-    
     
     @Override
     public String toString() {

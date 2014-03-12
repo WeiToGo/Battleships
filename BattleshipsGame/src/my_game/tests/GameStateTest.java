@@ -17,6 +17,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.util.Positions;
+import my_game.util.Moves;
+import my_game.util.Range;
+import my_game.util.TurnPositions;
+import my_game.util.Turns;
 /**
  *
  * @author wei
@@ -51,36 +56,39 @@ public class GameStateTest {
         CoralReef coral = new CoralReef();
         GameState gs = new GameState(players,coral,0,"game1");
         Map map = gs.getMap();
-        System.out.println(map.toString());
+        System.out.println(map.toStringTry());
         Ship[] p0ships = gs.getShipsP0();
         Ship[] p1ships = gs.getShipsP1();
-        Vector2 newPosition = new Vector2(0,5);
-        gs.positionShip(p0ships[2], newPosition);
+        Vector2 newPosition;
         
-        map = gs.getMap();     
-        System.out.println(map.toString());        
-      /*  for (Ship s: player1Ships){
-            System.out.println(s.getShipType().toString());
-            ShipUnit[] shipUnits = s.getShipUnits();
-            for (ShipUnit su: shipUnits){
-                Vector2 v = su.getPosition();
-                System.out.println(v.x + " " + v.y);
-            }
-        } 
-     */   
-    /*    ShipUnit[] units = player1Ships[6].getShipUnits();
-            for (ShipUnit su: units){
-                Vector2 v = su.getPosition();
-                System.out.println(v.x + " " + v.y);
-            }         
-        System.out.println("new positions");         
-        GameState.positionShip(player1Ships[6], new Vector2(29,24));
-        units = player1Ships[2].getShipUnits();
-        System.out.println("new positions");
-            for (ShipUnit su: units){
-                Vector2 v = su.getPosition();
-                System.out.println(v.x + " " + v.y);
-            }        
-    */
+        /* TEST positionShip */
+        
+/*        System.out.println( "reposition ship[2] at (0,5). ");
+        newPosition = new Vector2(0,5);
+        gs.positionShip(p0ships[2], newPosition);
+         
+        System.out.println(map.toString());     
+
+        System.out.println( "reposition ship[5] at (6,5). should not change anything.");        
+        newPosition = new Vector2(6,5);
+        gs.positionShip(p0ships[5], newPosition);       
+     
+        System.out.println(map.toString());          
+
+
+        System.out.println( "reposition player1 ship[8] at (29,20).");              
+        newPosition = new Vector2(29,20);
+        gs.positionShip(p1ships[8], newPosition);       
+
+        System.out.println(map.toString());            
+  */
+        /**   TEST move  */
+        Ship s = p0ships[5];
+        Positions p = map.prepareMoveShip(s);
+        System.out.println(" size of list " + p.forward.size());
+        
+        Vector2 v = new Vector2(7,15);
+        map.moveShip(s,v,p);
+        System.out.println(map.toString());             
     }    
 }

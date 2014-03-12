@@ -192,13 +192,11 @@ public abstract class Ship implements java.io.Serializable {
         Vector2 newtl, newtr, newbr, newbl;
         Range newRange;
         ShipDirection d = this.getDirection();
-        System.out.println("direction  " + d.toString());
         Vector2 shipPosition = this.getShipUnits()[0].getPosition();
         ArrayList<Vector2> visible = new ArrayList<Vector2>();   
         ArrayList<Vector2> filtered = new ArrayList<Vector2>();
         switch (d){
             case East:
-                System.out.println("East");
                 visible = this.generateRangePositions(r,shipPosition);
                 break;
             //counter-clock
@@ -246,21 +244,21 @@ public abstract class Ship implements java.io.Serializable {
         Vector2 bl = r.getBottomLeft();
         Vector2 sp = bowPosition;
         Vector2 p;
-        System.out.println("tl " + tl.x + " " + tl.y);
+ /*       System.out.println("tl " + tl.x + " " + tl.y);
         System.out.println("tr " + tr.x + " " + tr.y);
         System.out.println("bl " + bl.x + " " + bl.y);
         System.out.println("sp " + sp.x + " " + sp.y);
-        int xStart, xEnd, yStart, yEnd, i,j;
+ */       int xStart, xEnd, yStart, yEnd, i,j;
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         xStart = bowPosition.x + tl.x;
         xEnd = bowPosition.x + tr.x;
         yStart = bowPosition.y + tl.y;
         yEnd = bowPosition.y + bl.y;
-        System.out.println("xStart " + xStart);
+/*        System.out.println("xStart " + xStart);
         System.out.println("xEnd" + xEnd);
         System.out.println("yStart " + yStart);
         System.out.println("yStart " + yEnd);
-        
+  */      
         for (i = xStart; i <= xEnd; i++){
             for (j = yStart; j <= yEnd; j++){
                 p = new Vector2(i,j);
@@ -339,8 +337,8 @@ public abstract class Ship implements java.io.Serializable {
                 break;
             case West: availableMoves = this.availableMoveWest(shipBow, size, speed);
                 break;
+            default: // return a null arraylist of available moves?
         }
-  
         return availableMoves;
     }
     /**
@@ -458,7 +456,7 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> forward = new ArrayList<Vector2>();
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> right = new ArrayList<Vector2>();
-
+System.out.println(" East move");
         // move backward.
         if (x-size >= 0){
             Vector2 backPosition = new Vector2(x-size, y);
@@ -488,12 +486,13 @@ public abstract class Ship implements java.io.Serializable {
                 forward.add(p);
             }
         }else{
+            System.out.println(" East forward");
             for (i = x+1; i <= x+speed; i++){
                 Vector2 p = new Vector2(i,y);
                 forward.add(p);
             }
         }
-        Positions positions = new Positions(back, forward, left, right);       
+        Positions positions = new Positions(back, forward, left, right);   
         return positions;
     }
     
