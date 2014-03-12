@@ -27,7 +27,7 @@ public class GameStateTest {
         }
       
        */
-        Ship[] player1Ships = GameState.generateOpponentShips(0);   
+      //  Ship[] player1Ships = GameState.generateShips(0, );   
       /*  for (Ship s: player1Ships){
             System.out.println(s.getShipType().toString());
             ShipUnit[] shipUnits = s.getShipUnits();
