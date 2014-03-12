@@ -40,6 +40,9 @@ public class GameState implements java.io.Serializable {
     protected ChatLog chatLog;
     protected Map map;
     
+    /* TEST ONLY */
+    Ship[] player0Ships;
+    Ship[] player1Ships;
     
     //TODO accessors and mutators for chat log and map
 
@@ -54,13 +57,21 @@ public class GameState implements java.io.Serializable {
         this.playerTurn = firstPlayer;
         //set game name
         this.name = name;
-        //init each player's base
-        Base player0Base = new Base(player[0].getID());
-        Base player1Base = new Base(player[1].getID());        
-        //init each player's ships
-        Ship[] player0Ships = generateShips(player[0].id, player0Base);
-        Ship[] player1Ships = generateShips(player[1].id, player1Base);
+        //init each player's base, assuming the first player in the array has 
+        // base on the west side of the map.
+        Base player0Base = new Base(player[0].getID(),1);
+        Base player1Base = new Base(player[1].getID(),0);
+        BaseUnit[] bu = player0Base.getBaseUnits();
 
+        //init each player's ships
+   //     Ship[] player0Ships = generateShips(player[0].id, player0Base);
+   //     Ship[] player1Ships = generateShips(player[1].id, player1Base);
+
+        /* TEST ONLY */
+        player0Ships = generateShips(player[0].id, player0Base);
+        player1Ships = generateShips(player[1].id, player1Base);             
+        /***********/
+        
         //init map
         map = new Map(reef, player0Ships, player1Ships, player0Base, player1Base);
         //init chat
@@ -75,9 +86,19 @@ public class GameState implements java.io.Serializable {
         return this.map;
     }
     
+    /* TEST ONLY */
+    public Ship[] getShipsP0(){
+        return player0Ships;
+    }
+    
+    public Ship[] getShipsP1(){
+        return player1Ships;
+    }    
+    /******END TEST *******************/
+    
     public GameState(GameState copyState) {
         this.phase = copyState.phase;
-        //shallow copy players array
+        //shallow copy players arrayer
         this.player = new Player[copyState.player.length];
         System.arraycopy(copyState.player, 0, this.player, 0, copyState.player.length);
         this.playerTurn = copyState.playerTurn;
@@ -94,7 +115,7 @@ public class GameState implements java.io.Serializable {
     
     private Ship[] generateShips(int pid, Base b){
         BaseUnit[] bu = b.getBaseUnits();
-        Ship[] ships = new Ship[10];        
+        Ship[] ships = new Ship[10];       
         if (bu[0].getPosition().x == 0){
             ships = generatePlayerShips(pid);
         }else if (bu[0].getPosition().x == 29){
@@ -107,10 +128,9 @@ public class GameState implements java.io.Serializable {
         
         return ships;
     }
-    
     private Ship[] generatePlayerShips(int pid) {
-        System.out.println("Generating ships.");
-        ShipDirection d = ShipDirection.East;
+        System.out.println("**********Generating ships for P0 ********");
+        ShipDirection d = ShipDirection.East; 
         ArrayList<Vector2> position = new ArrayList<Vector2>();
         int y = 10;
         for (int x = 5; x > 0; x--){
@@ -197,6 +217,7 @@ public class GameState implements java.io.Serializable {
     }
     
     private Ship[] generateOpponentShips(int pid) {
+        System.out.println("**********Generating ships for P1 ********");        
         ShipDirection d = ShipDirection.West;
         ArrayList<Vector2> position = new ArrayList<Vector2>();
         int y = 10;
@@ -290,7 +311,7 @@ public class GameState implements java.io.Serializable {
      * @param p The position they want to move to. (Does not need to be the
      * position of the bow.
      */
-    private void positionShip(Ship s, Vector2 p) {
+    public void positionShip(Ship s, Vector2 p) {
    /*     try {
             gameState.getMap().moveShip(s,position);
         } catch (GameException ex) {
@@ -338,23 +359,24 @@ public class GameState implements java.io.Serializable {
         
         // commented out this part so I can un the tests.
         
-/*      boolean canMove = true;
+      boolean canMove = true;
         for (Vector2 v: positions){
-            if (map.getObjectAt(v).getObjectType() != null){
+            if (map.getObjectAt(v) != null){
+                System.out.println(" not null " );
                 canMove = false;
             }
         }
         
         if (canMove){
+            map.updateShipPositions(s,positions);            
             s.moveTo(positions);
-            map.updateShipPositions(s);
         }        
   
-  */
             for (Vector2 v: positions){
                 System.out.println(v.x + " " + v.y);
             }         
     }    
+    
     
     @Override
     public String toString() {

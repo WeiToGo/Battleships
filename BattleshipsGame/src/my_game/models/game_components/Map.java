@@ -315,6 +315,11 @@ public class Map implements java.io.Serializable {
     private void initBase(Base b) {
         // TO DO: position the baseunits on the map. Location should be fixed
         // and the Base doesn't need to know its location.
+        BaseUnit[] baseUnits = b.getBaseUnits();
+        for(BaseUnit bu: baseUnits) {
+           Vector2 position = bu.getPosition();
+           grid[position.x][position.y] = bu;
+        }       
      }
 /**
 * Gather infomation about the ship to calculate the
@@ -596,11 +601,14 @@ public class Map implements java.io.Serializable {
      * This method is called after every moves to get the map updated.
      * @param s The ship that we just moved.
      */
-    public void updateShipPositions(Ship s){        
+    public void updateShipPositions(Ship s, ArrayList<Vector2> positions){        
         ShipUnit[] shipUnits = s.getShipUnits();
-        for (ShipUnit su: shipUnits){
-            Vector2 v = su.getPosition();
-            this.setObjectAt(v, su);
+        int i = 0;
+        for (ShipUnit su: shipUnits){  
+            Vector2 oldPosition = su.getPosition();
+            this.setObjectAt(oldPosition, null);
+            this.setObjectAt(positions.get(i), su);
+            i++;
         }
     }
     /**
@@ -797,9 +805,13 @@ public class Map implements java.io.Serializable {
         for(int y = 0; y < HEIGHT; y++) { //first y so that we go horizontal line by line in the grid
             for(int x = 0; x < WIDTH; x++) {
                 if(grid[x][y] == null) {
-                    sb.append("*");
+                    sb.append("-");
                 } else if(grid[x][y] instanceof CoralUnit) {
-                    sb.append("#");
+                    sb.append("C");
+                } else if(grid[x][y] instanceof ShipUnit) {
+                    sb.append("S");
+                } else if(grid[x][y] instanceof BaseUnit) {
+                    sb.append("B");                    
                 } else {
                     sb.append("o");
                 }

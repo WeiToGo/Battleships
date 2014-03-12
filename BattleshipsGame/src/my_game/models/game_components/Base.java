@@ -15,19 +15,19 @@ public class Base implements java.io.Serializable {
     private int sizeRemaining;
     private BaseUnit[] baseUnits;
     
-    public Base(int pid) {
+    public Base(int pid, int west) {
         this.playerID = pid;
         this.sizeRemaining = size;
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         int i,j;
-        if (pid == 0){
+        if (west == 1){
             i = 0;
         }else{
             i = 29;
         }
         for (j = 10; j < 20; j++){
-            Vector2 v = new Vector2(j,j);
-            positions.add(v);
+            Vector2 v = new Vector2(i,j);
+            positions.add(v);          
         }
 
         BaseUnit[] bu = new BaseUnit[this.size];
