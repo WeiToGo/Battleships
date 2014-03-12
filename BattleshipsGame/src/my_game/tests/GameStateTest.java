@@ -56,7 +56,7 @@ public class GameStateTest {
         CoralReef coral = new CoralReef();
         GameState gs = new GameState(players,coral,0,"game1");
         Map map = gs.getMap();
-        System.out.println(map.toStringTry());
+        System.out.println(map.toString());
         Ship[] p0ships = gs.getShipsP0();
         Ship[] p1ships = gs.getShipsP1();
         Vector2 newPosition;
@@ -85,10 +85,16 @@ public class GameStateTest {
         /**   TEST move  */
         Ship s = p0ships[5];
         Positions p = map.prepareMoveShip(s);
-        System.out.println(" size of list " + p.forward.size());
+   //     System.out.println(" size of list " + p.forward.size());
         
-        Vector2 v = new Vector2(7,15);
+        Vector2 v = new Vector2(9,15);
         map.moveShip(s,v,p);
-        System.out.println(map.toString());             
+        System.out.println(map.toString());          
+        
+    /*    v = new Vector2(8,16);
+        map.moveShip(s,v,p);
+        System.out.println(map.toString());           
+    
+    */
     }    
 }

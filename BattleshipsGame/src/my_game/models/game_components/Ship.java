@@ -358,8 +358,10 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> right = new ArrayList<Vector2>();
         //move backward.
         if (y+size < 30){
-            Vector2 backPosition = new Vector2(x,y+size);
-            back.add(backPosition);
+            for (i = y+1; i <= y+size; i++){
+                Vector2 p = new Vector2(x,i);
+    		back.add(p);     
+            }
         }
         
         //move sideways.
@@ -411,8 +413,10 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> right = new ArrayList<Vector2>();
         // move backward.
         if (y-size >= 0){
-            Vector2 backPosition = new Vector2(x,y-size);
-            back.add(backPosition);
+            for (i = y-1; i <= y-size; i--){
+                Vector2 p = new Vector2(x,i);
+    		back.add(p);     
+            }
         }
         
         // move sideways.
@@ -456,15 +460,18 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> forward = new ArrayList<Vector2>();
         ArrayList<Vector2> left = new ArrayList<Vector2>();
         ArrayList<Vector2> right = new ArrayList<Vector2>();
-System.out.println(" East move");
         // move backward.
         if (x-size >= 0){
-            Vector2 backPosition = new Vector2(x-size, y);
-            back.add(backPosition);
+            System.out.println(" East back");
+            for (i = x-1; i <= x-size; i--){
+                Vector2 p = new Vector2(i,y);
+    		back.add(p);     
+            }
         }
         
         // move sideways.
         if (y-1 >= 0){
+            System.out.println(" East left");    
             int leftY = y-1;
             for (i = x; i > x-size; i--){
                 Vector2 p = new Vector2(i,leftY);
@@ -472,6 +479,7 @@ System.out.println(" East move");
             }
         }
         if (y+1 < 30){
+            System.out.println(" East right");
             int rightY = y+1;
             for (i = x; i > x-size; i--){
        		Vector2 p = new Vector2(i,rightY);
@@ -508,8 +516,10 @@ System.out.println(" East move");
 
         // move backward.
         if (x+size < 30){
-            Vector2 backPosition = new Vector2(x+size,y);
-            back.add(backPosition);
+            for (i = x+1; i <= x+size; i++){
+                Vector2 p = new Vector2(i,y);
+    		back.add(p);     
+            }
         }
         // move sideways.
         if (y-1 >= 0){
