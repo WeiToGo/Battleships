@@ -91,7 +91,7 @@ public class GameConfirmation
                         Main.getClient().removeNetListener(clientListener);
                         //now create a new Game
                         Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
-                                reef, Main.getServer(), Game.PlayerType.Client, "", 0);
+                                reef, Main.getClient(), Game.PlayerType.Client, "", 0);
                         //TODO Close this window.
                     }
                 } else {

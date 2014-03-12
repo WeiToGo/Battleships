@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.gui.GameGUI;
-
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
@@ -162,14 +161,14 @@ public class Game {
         
     }
     
-    private void startGame() {
+    private static void startGame() {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
-        GameGUI gui = new GameGUI();
+        GameGUI gui = new GameGUI(30, 30);
         gui.start();
         
         //positioning phase
-        gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+        //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
         Ship s; // get the ship we want to position from GUI
         
         // get the new position we want to move that ship around the base;
@@ -243,5 +242,10 @@ public class Game {
     	//can only be called by destroyer and torpedo boat
     	//TO DO: highlight the available ship and torpedoRange to GUI pass the (user selected)attacker and targeting position to map
     	//map.TorpedoAttack(Ship attacker, Vector2 position)
+    }
+    
+    
+    public static void main(String[] args) {
+        startGame();
     }
 }

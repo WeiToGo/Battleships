@@ -30,6 +30,7 @@ public class GameTest {
 
         Player player0 = new Player("player0", "", localAddress, Constants.SERVER_PORT, 0);
         Player player1 = new Player("player1", "", localAddress, Constants.SERVER_PORT, 0);
+
         CoralReef reef = new CoralReef();
         GameServer server = new GameServer(player0, "testServer");
 
