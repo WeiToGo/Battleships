@@ -55,7 +55,6 @@ public class MineLayer extends Ship {
     public MineLayer(int pid) {
 		super(pid);
 	}
-<<<<<<< HEAD
 
     public int getCannonDamage() {
 	return cannonDamage;
@@ -80,9 +79,6 @@ public class MineLayer extends Ship {
         }
         //return result;
     }  
-=======
-   
->>>>>>> f016c4a1ce6e3a98113a4cdee43a9abbf3b52744
     
     public boolean layMine(GameObject target) {
         throw new UnsupportedOperationException("Not yet implemented");
