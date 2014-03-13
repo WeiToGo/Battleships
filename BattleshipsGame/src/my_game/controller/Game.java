@@ -113,6 +113,8 @@ public class Game implements GameGUI.GameGuiListener {
             System.out.println("Client received a game state.");
             gameState = new GameState(this.receivedGameState);
             receivedNewGamestate = false;
+            //replace the partial information about this player in the gamestate with the full info
+            gameState.setPlayer(1, player);
             
             startGame();
         }
@@ -177,7 +179,7 @@ public class Game implements GameGUI.GameGuiListener {
     private void startGame() {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
-        GameGUI gui = new GameGUI(30, 30, this);
+        GameGUI gui = new GameGUI(30, 30, this, this.player);
         gui.start();
         //now wait until the gui initializes
         synchronized(this) {

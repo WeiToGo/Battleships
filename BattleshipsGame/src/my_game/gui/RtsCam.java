@@ -35,7 +35,7 @@ public class RtsCam implements Control, ActionListener {
     private float[] maxValue = new float[5];
     private Vector3f position = new Vector3f();
     private Vector3f center = new Vector3f();
-    private float tilt = (float) (Math.PI / 4);
+    private float tilt = (float) (Math.PI / 3.5);
     private float rot = 0;
     private float distance = 15;
     private static final int SIDE = Degree.SIDE.ordinal();

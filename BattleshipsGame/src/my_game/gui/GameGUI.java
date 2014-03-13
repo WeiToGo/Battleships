@@ -12,6 +12,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.Random;
@@ -24,6 +25,7 @@ import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
+import my_game.models.player_components.Player;
 import my_game.util.GameException;
 import my_game.util.Vector2;
 
@@ -53,10 +55,21 @@ public class GameGUI extends SimpleApplication {
     private GameState gameState;
     /** A flag set to true every time the drawGameState method is called. */
     private boolean gameStateUpdated;
+    /** Reference to the player running the instance of this GUI. This variable
+     * is used for determining the radar visibility, chat log and controls. */
+    private Player player;
 
-    public GameGUI(int width, int height, GameGuiListener g) {
+    /**
+     * 
+     * @param width
+     * @param height
+     * @param g
+     * @param p The player who is running the instance of this GUI.
+     */
+    public GameGUI(int width, int height, GameGuiListener g, Player p) {
         objectsGrid = new Spatial[width][height];
         guiListener = g;
+        this.player = p;
     }
     
     @Override
@@ -68,6 +81,7 @@ public class GameGUI extends SimpleApplication {
         loadShip();
         loadBase();
         loadRock();
+        loadRadar();
         
                 //Post processing
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
@@ -86,7 +100,7 @@ public class GameGUI extends SimpleApplication {
         flyCam.setEnabled(false);
         final RtsCam rtsCam = new RtsCam(cam, rootNode);
         rtsCam.registerWithInput(inputManager);
-        rtsCam.setCenter(new Vector3f(70, 60, 70));
+        rtsCam.setCenter(new Vector3f(0, 80, 100));
         rtsCam.setMaxSpeed(RtsCam.Degree.FWD, 50, 0.5f);
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
@@ -169,17 +183,23 @@ public class GameGUI extends SimpleApplication {
     private void loadBase() {
         blueBase = assetManager.loadModel("/Models/BaseBlocks/BaseBlock.j3o");
         blueBase.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
-        blueBase.setLocalScale(0.95f, 1, 1);
+        blueBase.setLocalScale(0.8f, 1, 1);
         
         redBase = assetManager.loadModel("/Models/BaseBlocks/BaseBlock.j3o");
         redBase.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
-        redBase.setLocalScale(0.95f, 1, 1);
+        redBase.setLocalScale(0.8f, 1, 1);
         
     }
     
     private void loadRock() {
         rock = assetManager.loadModel("Models/Rock/Cube.mesh.xml");
         rock.setMaterial(assetManager.loadMaterial("Materials/rockMaterial.j3m"));
+    }
+    
+    private void loadRadar() {
+        shade = assetManager.loadModel("Models/ShaderBlock/Cube.mesh.xml"); 
+        shade.setMaterial(assetManager.loadMaterial("Materials/shade.j3m"));
+        shade.setQueueBucket(RenderQueue.Bucket.Transparent);
     }
     
     /* *********************** END OF LOADERS ******************************** */
@@ -268,6 +288,15 @@ public class GameGUI extends SimpleApplication {
         this.objectsGrid[x][y] = rockInstance;
     }
     
+    
+    private void drawRadarShade(int x, int y) {
+        Spatial shadeInstance = shade.clone();
+        // x-axis columns; y-axis rows
+        shadeInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
+        field.attachChild(shadeInstance);
+        this.objectsGrid[x][y] = shadeInstance;
+    }
+    
     /**
      * Renders on the map all objects in the provided game state. Also populates
      * the chat log with the messages contained in the game state.
@@ -287,36 +316,44 @@ public class GameGUI extends SimpleApplication {
     private void drawGameState() {
         //draw map objects 
         Map m = gameState.getMap();
+        //get the radar visibility for the current player
+        boolean[][] visibility = gameState.getRadarVisibility(this.player);
+        
         for(int x = 0; x < m.WIDTH; x++) {
             for(int y = 0; y < m.HEIGHT; y++) {
                 Vector2 position = new Vector2(x, y);
-                if(m.isClear(position)) {
-                    //don't draw anything
-                } else {
-                    //find out what the object is and draw it
-                    GameObject o = m.getObjectAt(position);
-                    
-                    switch(o.getObjectType()) {
-                        case Ship:
-                            ShipUnit s = (ShipUnit) o;
-                            if(s.isBow()) {
-                                drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BOW_BLUE : BOW_RED);
-                            } else {
-                                drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BLOCK_BLUE : BLOCK_RED);
-                            }
-                            
-                            break;
-                        case Base:
-                            BaseUnit b = (BaseUnit) o;
-                            drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BASE_BLUE : BASE_RED);
-                            break;
-                        case CoralReef:
-                            CoralUnit c = (CoralUnit) o;
-                            drawCoral(position.x, position.y);
-                        default:
-                            //do nothing just yet
-                            break;
+                if(visibility[x][y]) {
+                    if(m.isClear(position)) {
+                        //don't draw anything
+                    } else {
+                        //find out what the object is and draw it
+                        GameObject o = m.getObjectAt(position);
+
+                        switch(o.getObjectType()) {
+                            case Ship:
+                                ShipUnit s = (ShipUnit) o;
+                                if(s.isBow()) {
+                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BOW_BLUE : BOW_RED);
+                                } else {
+                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BLOCK_BLUE : BLOCK_RED);
+                                }
+
+                                break;
+                            case Base:
+                                BaseUnit b = (BaseUnit) o;
+                                drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BASE_BLUE : BASE_RED);
+                                break;
+                            case CoralReef:
+                                CoralUnit c = (CoralUnit) o;
+                                drawCoral(position.x, position.y);
+                            default:
+                                //do nothing just yet
+                                break;
+                        }
                     }
+                } else {
+                    //this cell is not visible by this player
+                    drawRadarShade(x, y);
                 }
             }//END INNER LOOP
         }//ENDFOR

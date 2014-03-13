@@ -4,23 +4,20 @@
 */
 package my_game.models.game_components;
 
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
 import my_game.models.ships_impl.MineLayer;
 import my_game.models.ships_impl.RadarBoat;
 import my_game.models.ships_impl.TorpedoBoat;
 import my_game.util.GameException;
-import my_game.util.Vector2;
-
-import java.util.ArrayList;
-
-import my_game.util.Positions;
 import my_game.util.Moves;
-import my_game.util.Range;
+import my_game.util.Positions;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import my_game.util.Vector2;
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -28,8 +25,8 @@ import java.util.logging.Logger;
 */
 public class Map implements java.io.Serializable {
     
-    public final int WIDTH = 30;
-    public final int HEIGHT = 30;
+    public final static int WIDTH = 30;
+    public final static int HEIGHT = 30;
     /** X offset of the coral reef zone. */
     private final int X_OFFSET = 10;
     /** Y offset of the coral reef zone. */
@@ -37,7 +34,7 @@ public class Map implements java.io.Serializable {
     /** 2D array representing the cells of the map grid which contain game objects. */
     protected GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     /** 2D array giving the radar visibility for every grid cell of the map. */
-    protected boolean[][] player0Visibility, player1Visibility;   //TODO implement
+    boolean[][] player0Visibility, player1Visibility;   //TODO implement
     protected Ship[] player0Ships;
     protected Ship[] player1Ships;
     protected Base p0Base;
@@ -48,6 +45,8 @@ public class Map implements java.io.Serializable {
         for(int i = 0; i < WIDTH; i++) {
             for(int j = 0; j < HEIGHT; j++) {
                 grid[i][j] = m.grid[i][j];
+                player0Visibility[i][j] = m.player0Visibility[i][j];
+                player1Visibility[i][j] = m.player1Visibility[i][j];
             }
         }
         //copy other fields
@@ -63,8 +62,6 @@ public class Map implements java.io.Serializable {
         //copy bases
         this.p0Base = m.p0Base;
         this.p1Base = m.p1Base;
-        
-        //TODO Player visibility must be generated.
     }
     
     public Map(CoralReef reef, Ship[] player0Ships, Ship[] player1Ships, Base b0, Base b1) {
@@ -104,7 +101,10 @@ public class Map implements java.io.Serializable {
         initBase(b0);
         initBase(b1);
         
-        //TODO Player visibility must be generated.
+        player0Visibility = new boolean[WIDTH][HEIGHT];
+        player1Visibility = new boolean[WIDTH][HEIGHT];
+        
+        updateRadarVisibilityArrays();
     }
     
     /**
@@ -830,6 +830,25 @@ public class Map implements java.io.Serializable {
         return !isBlue(s);
     }
     
+    /**
+     * Returns the radar visibility array for the player with the specified index.
+     * @param playerIndex
+     * @return 
+     */
+    public boolean[][] getRadarVisibility(int playerIndex) {
+        switch(playerIndex) {
+            case 0:
+                return this.player0Visibility;
+            case 1:
+                return this.player1Visibility;
+            default:
+                Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null,                         
+                        new GameException("Unknown player index: " + playerIndex));
+                break;
+        }
+        return null;
+    }
+    
     public void torpedoAttack(Ship attacker, Vector2 position){
     	
     	ShipDirection d = attacker.getDirection();
@@ -971,4 +990,69 @@ public class Map implements java.io.Serializable {
         }
         return sb.toString();
     }    
+
+    /**
+     * Recalculates the visibility of every grid cell for every player and
+     * saves the results in player0Visibility and player1Visibility.
+     */
+    public void updateRadarVisibilityArrays() {
+        player0Visibility = generateRadarVisibility(player0Ships);
+        for(BaseUnit u: this.p0Base.getBaseUnits()) {
+            //make visible every grid cell around the base unit
+            Vector2 pos = u.getPosition();
+            makeVisibleAllNeighbours(pos, player0Visibility);
+            
+        }
+        player1Visibility = generateRadarVisibility(player1Ships);
+        for(BaseUnit u: this.p1Base.getBaseUnits()) {
+            //make visible every grid cell around the base unit
+            Vector2 pos = u.getPosition();
+            makeVisibleAllNeighbours(pos, player1Visibility);
+            
+        }
+    }
+
+    /**
+     * Returns a grid with booleans for every cell determining whether the cell
+     * is in the radar range of one or more ships in the playerShips list.
+     * @param playerShips
+     * @return 
+     */
+    public static boolean[][] generateRadarVisibility(Ship[] playerShips) {
+        boolean[][] array = new boolean[WIDTH][HEIGHT];
+        
+        for(Ship s: playerShips) {
+            ArrayList<Vector2> visibleCells = s.getRadarPositions();
+            for(Vector2 point: visibleCells) {
+                try {
+                    array[point.x][point.y] = true;
+                } catch(ArrayIndexOutOfBoundsException ignore) {}
+            }
+        }
+        return array;
+    }
+
+    /**
+     * A small helper method which sets to true all flags inside and around
+     * the given position.
+     * @param pos
+     * @param player0Visibility 
+     */
+    private static void makeVisibleAllNeighbours(Vector2 pos, boolean[][] player0Visibility) {
+        try {
+            player0Visibility[pos.x][pos.y] = true;
+        } catch(IndexOutOfBoundsException ignore){}
+        try {
+            player0Visibility[pos.x - 1][pos.y] = true;
+        } catch(IndexOutOfBoundsException ignore){}
+        try {
+            player0Visibility[pos.x + 1][pos.y] = true;
+        } catch(IndexOutOfBoundsException ignore){}
+        try {
+            player0Visibility[pos.x][pos.y - 1] = true;
+        } catch(IndexOutOfBoundsException ignore){}
+        try {
+            player0Visibility[pos.x][pos.y + 1] = true;
+        } catch(IndexOutOfBoundsException ignore){}
+    }
 }

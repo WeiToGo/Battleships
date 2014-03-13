@@ -3,14 +3,15 @@
  * and open the template in the editor.
  */
 package my_game.models.game_components;
+
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Player;
-import my_game.util.Vector2;
 import my_game.models.ships_impl.*;
 import my_game.util.GameException;
+import my_game.util.Vector2;
 /**
  * The state of a game describes a game fully.
  */
@@ -128,6 +129,28 @@ public class GameState implements java.io.Serializable {
         
         return ships;
     }
+    
+    public boolean[][] getRadarVisibility(Player p) {
+        if(p.equals(player[0])) {
+            return map.getRadarVisibility(0);
+        } else if(p.equals(player[1])) {
+            return map.getRadarVisibility(1);
+        } else {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null,                         
+                        new GameException("Unrecongnized player: " + p));
+            return null;
+        }
+    }
+    
+    /**
+     * Sets the player at the provided index to the provided player object.
+     * @param index
+     * @param player 
+     */
+    public void setPlayer(int index, Player player) {
+       this.player[index] = player;
+    }
+    
     private Ship[] generatePlayerShips(int pid) {
         System.out.println("**********Generating ships for P0 ********");
         ShipDirection d = ShipDirection.East; 
