@@ -793,9 +793,18 @@ public class Map implements java.io.Serializable {
     		if (!((RadarBoat) attacker).fireCannon(target))
     			return;
     	}
+    	else return;
 
     	if (target.getClass() == new ShipUnit().getClass()){
 			((ShipUnit)target).setDamage(damage);
+			if (((ShipUnit)target).isDestoryed()){
+				Ship tempShip = ((ShipUnit)target).getShip();
+				tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+				int oldSpeed = tempShip.getSpeed();
+				int size = tempShip.getSize();
+				tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
+				tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
+			}
 		}
 		
 		if (target.getClass() == new BaseUnit().getClass()){
@@ -806,6 +815,7 @@ public class Map implements java.io.Serializable {
 			setObjectAt(position, null);
 		}
     }
+    
     
     public void torpedoAttack(Ship attacker, Vector2 position){
     	int damage = 0;
@@ -873,7 +883,57 @@ public class Map implements java.io.Serializable {
     		if (((TorpedoBoat) attacker).fireTorpedo(target)){
     			
     			if (target.getClass() == new ShipUnit().getClass()){
+    				Ship tempShip = ((ShipUnit)target).getShip();
+    				
     				((ShipUnit)target).setDamage(damage);
+    				ShipDirection dire = tempShip.getDirection();
+    				
+    				if (((ShipUnit)target).isDestoryed()){	
+    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+    				}
+    				
+    				if (attacker.getDirection().ordinal() != dire.ordinal() && 
+    					attacker.getDirection().ordinal() != dire.ordinal() + 2 &&
+    					attacker.getDirection().ordinal() != dire.ordinal() -2 ){
+    					
+    					ShipUnit[] temp = tempShip.getShipUnits();
+    					ArrayList<ShipUnit> units = new ArrayList<ShipUnit>();
+    					for(int i = 0; i < temp.length; i++){
+    						units.add(temp[i]);
+    					}
+    					
+    					int index = units.indexOf((ShipUnit)target);
+    					int full = 0;
+    					
+    					if (index - 1 >= 0){
+    						ShipUnit neighbor = units.get(index - 1);  
+    						if (neighbor != null) {
+    							full++;
+    							neighbor.setDamage(damage);
+    							if (neighbor.isDestoryed()){	
+    		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+    		    				}
+    						}	
+    					}
+    					
+    					if (full == 1 && index + 1 < units.size()){
+    						ShipUnit neighbor = units.get(index + 1);  
+    						if (neighbor != null) {
+    							neighbor.setDamage(damage);
+    							if (neighbor.isDestoryed()){	
+    		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+    		    				}
+    						}
+    					}
+    					
+    				}
+    				
+    				int oldSpeed = tempShip.getSpeed();
+					int size = tempShip.getSize();
+					tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
+					tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
+    				
+    				
     			}
     			
     			if (target.getClass() == new BaseUnit().getClass()){
@@ -892,6 +952,60 @@ public class Map implements java.io.Serializable {
     			
     			if (target.getClass() == new ShipUnit().getClass()){
     				((ShipUnit)target).setDamage(damage);
+    				
+    				if (target.getClass() == new ShipUnit().getClass()){
+        				Ship tempShip = ((ShipUnit)target).getShip();
+        				
+        				((ShipUnit)target).setDamage(damage);
+        				ShipDirection dire = tempShip.getDirection();
+        				
+        				if (((ShipUnit)target).isDestoryed()){	
+        					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+        				}
+        				
+        				if (attacker.getDirection().ordinal() != dire.ordinal() && 
+        					attacker.getDirection().ordinal() != dire.ordinal() + 2 &&
+        					attacker.getDirection().ordinal() != dire.ordinal() -2 ){
+        					
+        					ShipUnit[] temp = tempShip.getShipUnits();
+        					ArrayList<ShipUnit> units = new ArrayList<ShipUnit>();
+        					for(int i = 0; i < temp.length; i++){
+        						units.add(temp[i]);
+        					}
+        					
+        					int index = units.indexOf((ShipUnit)target);
+        					int full = 0;
+        					
+        					if (index - 1 >= 0){
+        						ShipUnit neighbor = units.get(index - 1);  
+        						if (neighbor != null) {
+        							full++;
+        							neighbor.setDamage(damage);
+        							if (neighbor.isDestoryed()){	
+        		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+        		    				}
+        						}	
+        					}
+        					
+        					if (full == 1 && index + 1 < units.size()){
+        						ShipUnit neighbor = units.get(index + 1);  
+        						if (neighbor != null) {
+        							neighbor.setDamage(damage);
+        							if (neighbor.isDestoryed()){	
+        		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
+        		    				}
+        						}
+        					}
+        					
+        				}
+        				
+        				int oldSpeed = tempShip.getSpeed();
+    					int size = tempShip.getSize();
+    					tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
+    					tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
+        				
+        				
+        			}
     			}
     			
     			if (target.getClass() == new BaseUnit().getClass()){
@@ -900,14 +1014,10 @@ public class Map implements java.io.Serializable {
     					
     			if (target.getClass() == new Mine().getClass()){
     				setObjectAt(position, null);
-    			}
-    			
-    			
+    			}		
     		}
     	}
-    	
-    	
-    	
+    	else return;
     	
     }
     

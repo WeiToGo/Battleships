@@ -30,6 +30,7 @@ public abstract class Ship implements java.io.Serializable {
     private int currentSpeed;
     private int armour;
     private ShipDirection direction; 
+    private int destoryedUnit;
     protected ArrayList<Vector2> visiblePositions;    
     protected ArrayList<String> weapons = new ArrayList<String>();
     /** The cannon range for a ship facing East as default. */
@@ -112,8 +113,16 @@ public abstract class Ship implements java.io.Serializable {
     public void setWeapons(ArrayList<String> weapons) {
 	this.weapons = weapons;
     }
+    
+    public int getDestoryedUnit() {
+		return destoryedUnit;
+	}
 
-    public int getPlayerID() {
+	public void setDestoryedUnit(int destoryedUnit) {
+		this.destoryedUnit = destoryedUnit;
+	}
+
+	public int getPlayerID() {
 	return playerID;
     }
 
