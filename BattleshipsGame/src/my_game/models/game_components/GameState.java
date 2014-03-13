@@ -64,12 +64,12 @@ public class GameState implements java.io.Serializable {
         BaseUnit[] bu = player0Base.getBaseUnits();
 
         //init each player's ships
-   //     Ship[] player0Ships = generateShips(player[0].id, player0Base);
-   //     Ship[] player1Ships = generateShips(player[1].id, player1Base);
+        Ship[] player0Ships = generateShips(player[0].id, player0Base);
+        Ship[] player1Ships = generateShips(player[1].id, player1Base);
 
         /* TEST ONLY */
-        player0Ships = generateShips(player[0].id, player0Base);
-        player1Ships = generateShips(player[1].id, player1Base);             
+   //     player0Ships = generateShips(player[0].id, player0Base);
+   //     player1Ships = generateShips(player[1].id, player1Base);             
         /***********/
         
         //init map

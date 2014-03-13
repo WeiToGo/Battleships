@@ -167,13 +167,19 @@ public class Game {
         GameGUI gui = new GameGUI(30, 30);
         gui.start();
         
+        // get all ships of this player
+        
         //positioning phase
         //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+        
+        //LOOP 
         Ship s; // get the ship we want to position from GUI
-        
-        // get the new position we want to move that ship around the base;
-        
+        //get the new position we want to move that ship around the base;
+        Vector2 newPosition;
         // calls positionShip
+        //gameState.positionShip(s, newPosition);
+        
+        //END LOOP when user finishes positioning the ships.
         
         //main game loop
             //if your turn
@@ -186,12 +192,6 @@ public class Game {
         //repeat until game over
     }
     
-    /**
-     * Places the provided ship at the specified coordinates of the map.
-     * @param s
-     * @param x
-     * @param y 
-     */
 
     
     /**
