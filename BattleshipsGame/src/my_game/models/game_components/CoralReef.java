@@ -14,7 +14,7 @@ public class CoralReef {
     /** Number of cells the coral reef is high (y-axis dimension in top projection). */
     public final int HEIGHT = 24;
     /** The probability with which an obstacle can appear in a given cell. */
-    private final double CHANCE_OF_OBSTACLE = 0.3;
+    private final double CHANCE_OF_OBSTACLE = 0.15;
     
     /** A grid of booleans. True means an obstacle is in the grid. */
     private boolean[][] reef;

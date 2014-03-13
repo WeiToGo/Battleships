@@ -14,9 +14,11 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.game_components.BaseUnit;
+import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
@@ -35,7 +37,7 @@ public class GameGUI extends SimpleApplication {
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
     
-    Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase;
+    Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid;
@@ -65,6 +67,7 @@ public class GameGUI extends SimpleApplication {
         loadLights();
         loadShip();
         loadBase();
+        loadRock();
         
                 //Post processing
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
@@ -99,6 +102,8 @@ public class GameGUI extends SimpleApplication {
         }
     }
     
+    
+    /* *************************** ASSET LOADER METHODS ********************** */
     
     private void loadTerrain() {
         Spatial terrain;
@@ -172,6 +177,15 @@ public class GameGUI extends SimpleApplication {
         
     }
     
+    private void loadRock() {
+        rock = assetManager.loadModel("Models/Rock/Cube.mesh.xml");
+        rock.setMaterial(assetManager.loadMaterial("Materials/rockMaterial.j3m"));
+    }
+    
+    /* *********************** END OF LOADERS ******************************** */
+    
+    
+    
     private void drawShipPart(int x, int y, ShipDirection dir, int type) {
         Spatial shipPartInstance = null;
         switch(type) {
@@ -241,6 +255,19 @@ public class GameGUI extends SimpleApplication {
         this.objectsGrid[x][y] = baseBlock;
     }
     
+    
+    private void drawCoral(int x, int y) {
+        Random rand = new Random();
+        Spatial rockInstance = rock.clone();
+        Quaternion rockRotation = new Quaternion(new float[] {rand.nextFloat() * 3.14f, rand.nextFloat() * 3.14f, rand.nextFloat() * 3.14f});
+        rockInstance.setLocalRotation(rockRotation);
+        // x-axis columns; y-axis rows
+        rockInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
+        
+        field.attachChild(rockInstance);
+        this.objectsGrid[x][y] = rockInstance;
+    }
+    
     /**
      * Renders on the map all objects in the provided game state. Also populates
      * the chat log with the messages contained in the game state.
@@ -283,6 +310,9 @@ public class GameGUI extends SimpleApplication {
                             BaseUnit b = (BaseUnit) o;
                             drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BASE_BLUE : BASE_RED);
                             break;
+                        case CoralReef:
+                            CoralUnit c = (CoralUnit) o;
+                            drawCoral(position.x, position.y);
                         default:
                             //do nothing just yet
                             break;
@@ -293,10 +323,6 @@ public class GameGUI extends SimpleApplication {
         
         //we are done with displaying the contents of the game state
     }
-
-
-
-
 
     /**
      * Interface used by GameGUI to communicate back to the controller which
