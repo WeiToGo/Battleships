@@ -1,5 +1,8 @@
 package my_game.networking.packets;
 
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.networking.server.GameServer;
 
 public abstract class Packet {
@@ -56,7 +59,12 @@ public abstract class Packet {
 	 * @return A String message representing the data.
 	 */
 	public static String readData(byte[] data) {
-		String message = new String(data).trim();
+		String message = null;
+        try {
+            message = new String(data, "ISO-8859-1");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
+        }
 		//trim out the beginning 2-digit packet type code
 		return message.substring(2);
 	}

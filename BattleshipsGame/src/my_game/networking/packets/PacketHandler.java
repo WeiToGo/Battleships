@@ -1,6 +1,11 @@
 package my_game.networking.packets;
 
+import de.lessvoid.nifty.loaderv2.types.apply.Convert;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.game_components.CoralReef;
+import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
 import my_game.networking.NetworkEntity;
 import my_game.networking.packets.Packet.PacketTypes;
@@ -15,6 +20,7 @@ import my_game.util.Misc;
 public class PacketHandler {
 	
 	NetworkEntity net;
+        public static final String PACKET_SEPARATOR = "#end-of-packet#";
 	
 	
 	public PacketHandler(NetworkEntity entity) {
@@ -39,11 +45,12 @@ public class PacketHandler {
 		
 		@Override
 		public void run() {
-			//extract packet message into a String
-			String message = new String(data).trim();
+                    try {
+                        //extract packet message into a String
+                        String message = new String(data, "ISO-8859-1");
                         //if more than one packets were received, separate them
-                        String[] args = message.split("#");
-                        
+                        String[] args = message.split(PACKET_SEPARATOR);
+
                         //process every packet
                         for(int i = 0; i < args.length; i++) {
                             //get the packet type using the lookupPacket method on 
@@ -55,7 +62,7 @@ public class PacketHandler {
 
                             switch(type) {
                             case VOTE:
-                                    VotePacket vote = new VotePacket(args[i].getBytes());
+                                    VotePacket vote = new VotePacket(args[i].getBytes("ISO-8859-1"));
                                     net.sendVoteToListeners(vote.getVote());
                             case HELLO:
                                     //send the username to the server
@@ -63,20 +70,24 @@ public class PacketHandler {
                                 net.setOpponent(new Player(noTypeMessage, "", net.getRemote(), 0, 0));
                                 break;
                             case CORALREEF:
-                                CoralReefPacket p = new CoralReefPacket(args[i].getBytes());
+                                CoralReefPacket p = new CoralReefPacket(args[i].getBytes("ISO-8859-1"));
                                 CoralReef reef = new CoralReef();
                                 reef.setReef(p.reef);
                                 net.sendCoralReefToListeners(reef);
                                 break;
                             case GAMESTATE:
-                                GameStatePacket g = new GameStatePacket(args[i].getBytes());
+                                GameStatePacket g = new GameStatePacket(args[i].getBytes("ISO-8859-1"));
+                                System.out.println("Game state packet received." + g.getGameState());
                                 net.sendGameStateToListeners(g.getGameState());
                                 break;
                             default:
                             case INVALID:
-                                    Misc.log("[PKT_HAND]: Invalid packet received - code: " + typeCode + ", data: " + message);
+                                    Misc.log("[PKT_HAND]: Invalid packet received - code: " + typeCode);
                             }
                         }
+                    } catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(PacketHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 		}
 	}
 }

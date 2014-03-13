@@ -240,7 +240,7 @@ public class GameServer implements NetworkEntity {
                     //server is listening until the client disconnects
                     while (clientConnected) {
                         //construct packet object to save received data into
-                        byte[] data = new byte[8192];
+                        byte[] data = new byte[24576];
 
                         //wait to receive a packet
                         in.read(data);

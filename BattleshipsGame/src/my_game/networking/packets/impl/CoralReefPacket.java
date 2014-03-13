@@ -4,9 +4,13 @@
  */
 package my_game.networking.packets.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.game_components.CoralReef;
 import my_game.networking.packets.Packet;
+import my_game.networking.packets.PacketHandler;
 
 /**
  * A packet used to send the contents of a coral reef within the confirmation
@@ -21,7 +25,7 @@ public class CoralReefPacket extends Packet {
         super(PacketTypes.CORALREEF.getId());
         
         String message = readData(data);
-        message = message.split("#")[0];    //clearing the ending '#' symbol
+        message = message.split(PacketHandler.PACKET_SEPARATOR)[0];    //clearing the ending '#' symbol
         String args[] = message.split("~");
         int width = Integer.parseInt(args[0]);
         int height = Integer.parseInt(args[1]);
@@ -69,7 +73,12 @@ public class CoralReefPacket extends Packet {
                 }
             }
         }
-        return (typeId + reef.length + "~" + reef[0].length + "~" + coralReef.toString() + "#").getBytes();
+        try {
+            return (typeId + reef.length + "~" + reef[0].length + "~" + coralReef.toString() + PacketHandler.PACKET_SEPARATOR).getBytes("ISO-8859-1");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(CoralReefPacket.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
 }

@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.game_components.GameState;
 import my_game.networking.packets.Packet;
+import my_game.networking.packets.PacketHandler;
 import my_game.util.GameException;
 import my_game.util.Misc;
 
@@ -29,43 +30,47 @@ public class GameStatePacket extends Packet {
      */
     public GameStatePacket(byte[] data) {
         super(PacketTypes.GAMESTATE.getId());
-        
-        //packet type checking
-        String message = new String(data).trim();
-        if(message.contains("#")) {
-             Logger.getLogger(GameStatePacket.class.getName()).log(Level.SEVERE, null, new GameException("# received in game state but not yet treted."));
-        }
-        
-        //get the packet type using the lookupPacket method on 
-        //the first 2 characters of the message String (the packet id)
-        String typeCode = message.substring(0,2);
-        PacketTypes type = Packet.lookupPacket(typeCode);
-        //remove the typeCode from the data, to be able to deserialize the 
-        int id = PacketTypes.SERVERINFO.getId();
-        String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
-        byte[] code = typeId.getBytes();
-        byte[] gameStateData = new byte[data.length - code.length];
-        System.arraycopy(data, code.length, gameStateData, 0, gameStateData.length);
-        //GameState object
-        
-        ByteArrayInputStream bis = new ByteArrayInputStream(gameStateData);
-        ObjectInputStream in = null;
         try {
-            in = new ObjectInputStream(bis);
-            this.gs = (GameState) in.readObject();
-        } catch(IOException ignore) {
-        } catch(ClassNotFoundException ex) {
-            Misc.log("Class was not found in GameStatePacket.");
-            this.gs = null;
-        } finally {
-          try {
-                bis.close();
-            } catch (IOException ignore) {}
+            //packet type checking
+            String message = new String(data, "ISO-8859-1");
+            if(message.contains(PacketHandler.PACKET_SEPARATOR)) {
+                 Logger.getLogger(GameStatePacket.class.getName()).log(Level.INFO, null, 
+                         new GameException("Packet separator received in game state but should have been treated in packet handler."));
+            }
+            //get the packet type using the lookupPacket method on
+            //the first 2 characters of the message String (the packet id)
+            String typeCode = message.substring(0,2);
+            PacketTypes type = Packet.lookupPacket(typeCode);
+            //remove the typeCode from the data, to be able to deserialize the
+            int id = PacketTypes.GAMESTATE.getId();
+            String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
+            byte[] code = typeId.getBytes("ISO-8859-1");
+            byte[] gameStateData = new byte[data.length - code.length];
+            System.arraycopy(data, code.length, gameStateData, 0, gameStateData.length);
+            //GameState object
+            ByteArrayInputStream bis = new ByteArrayInputStream(gameStateData);
+            ObjectInputStream in = null;
             try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ignore) {}
+                in = new ObjectInputStream(bis);
+                this.gs = (GameState) in.readObject();
+            } catch(IOException ex) {
+                ex.printStackTrace();
+            } catch(ClassNotFoundException ex) {
+                ex.printStackTrace();
+                Misc.log("Class was not found in GameStatePacket.");
+                this.gs = null;
+            } finally {
+              try {
+                    bis.close();
+                } catch (IOException ignore) {}
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException ignore) {}
+            }
+        } catch(UnsupportedEncodingException ex) {
+            Logger.getLogger(GameStatePacket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -74,33 +79,42 @@ public class GameStatePacket extends Packet {
         if(this.gs == null) {
             return null;
         } else {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = null;
-            
-            byte[] data = null;
             try {
-                out = new ObjectOutputStream(bos);
-                out.writeObject(this.gs);
-                data = bos.toByteArray();
-            } catch(IOException e) {
-                data = null;
-            }finally {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream out = null;
+                
+                byte[] data = null;
                 try {
-                    if(out != null) {
-                        out.close();
-                    }
-                } catch (IOException ignore) {}
-                try {
-                    bos.close();
-                } catch (IOException ignore) {}
+                    out = new ObjectOutputStream(bos);
+                    out.writeObject(this.gs);
+                    data = bos.toByteArray();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                    data = null;
+                }finally {
+                    try {
+                        if(out != null) {
+                            out.close();
+                        }
+                    } catch (IOException ignore) {}
+                    try {
+                        bos.close();
+                    } catch (IOException ignore) {}
+                }
+                
+                //add the packet type code to the beginning of the byte array
+                int id = PacketTypes.GAMESTATE.getId();
+                String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
+                byte[] typeCode = typeId.getBytes("ISO-8859-1");
+                
+                
+                byte[] typeAndData = concat(typeCode, data);
+                
+                return concat(typeAndData, PacketHandler.PACKET_SEPARATOR.getBytes("ISO-8859-1"));
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(GameStatePacket.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
-            
-            //add the packet type code to the beginning of the byte array
-            int id = PacketTypes.SERVERINFO.getId();
-            String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
-            byte[] typeCode = typeId.getBytes();
-            
-            return concat(concat(typeCode, data), "#".getBytes());
         }
     }
     

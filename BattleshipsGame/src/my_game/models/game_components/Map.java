@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 */
 public class Map implements java.io.Serializable {
     
-    private final int WIDTH = 30;
-    private final int HEIGHT = 30;
+    public final int WIDTH = 30;
+    public final int HEIGHT = 30;
     /** X offset of the coral reef zone. */
     private final int X_OFFSET = 10;
     /** Y offset of the coral reef zone. */
@@ -697,6 +697,13 @@ public class Map implements java.io.Serializable {
             s.setDamage(1);
         }    
     }
+    
+    /**
+     * If there is no object at the specified position in the grid, isClear()
+     * returns true. Otherwise, it returns false.
+     * @param position
+     * @return 
+     */
     public boolean isClear(Vector2 position){
         boolean isClear = false;
         if (this.getObjectAt(position) == null){
@@ -706,12 +713,11 @@ public class Map implements java.io.Serializable {
     }
     
     /**
-* Accessor method for game objects in the grid.
-* @param position Positive and within bounds on the grid.
-* @return Game object at the specified coordinates in the grid, or null
-* if invalid coordinate.
-*/
-      
+     * Accessor method for game objects in the grid.
+     * @param position Positive and within bounds on the grid.
+     * @return Game object at the specified coordinates in the grid, or null
+     * if invalid coordinate.
+     */
     public GameObject getObjectAt(Vector2 position) {
         if(position.x >= 0 && position.x < WIDTH &&
            position.y >= 0 && position.y < HEIGHT) {

@@ -16,8 +16,13 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.models.game_components.GameObject;
+import my_game.models.game_components.GameState;
+import my_game.models.game_components.Map;
 import my_game.models.game_components.ShipDirection;
+import my_game.models.game_components.ShipUnit;
 import my_game.util.GameException;
+import my_game.util.Vector2;
 
 /**
  * This is the JMonkeyEngine window where the gameplay interface and 3D graphics
@@ -38,9 +43,17 @@ public class GameGUI extends SimpleApplication {
     Vector3f translation;
     Quaternion rotation;
     Vector3f direction;
+    
+    /** A reference to the guiListener interface used to communicate back to a controller. */
+    GameGuiListener guiListener;
+    /** Local reference to a game state which is drawn on frame update. */
+    private GameState gameState;
+    /** A flag set to true every time the drawGameState method is called. */
+    private boolean gameStateUpdated;
 
-    public GameGUI(int width, int height) {
+    public GameGUI(int width, int height, GameGuiListener g) {
         objectsGrid = new Spatial[width][height];
+        guiListener = g;
     }
     
     @Override
@@ -62,7 +75,7 @@ public class GameGUI extends SimpleApplication {
         
         
         FilterPostProcessor water;
-        water = assetManager.loadFilter("Models/water.j3f");
+        water = assetManager.loadFilter("/Models/water.j3f");
         viewPort.addProcessor(water);
 
         flyCam.setEnabled(false);
@@ -72,28 +85,29 @@ public class GameGUI extends SimpleApplication {
         rtsCam.setMaxSpeed(RtsCam.Degree.FWD, 50, 0.5f);
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
-
-        
-        //TESTS
-        //draw a bunch of ship squares
-        ShipDirection dir = ShipDirection.East;
-        drawShipPart(9, 9, dir, BLOCK);
-        drawShipPart(10, 9, dir, BLOCK);
-        drawShipPart(11, 9, dir, BLOCK);
-        drawShipPart(12, 9, dir, BLOCK);
-        drawShipPart(13, 9, dir, BOW);
+        //report to the guiListener that init. is complete so he can now send requests to the gui
+        guiListener.initializeComplete();
     }
 
+    @Override
+    public void simpleUpdate(float tpf) {
+        if(this.gameStateUpdated) {
+            drawGameState();
+            gameStateUpdated = false;
+        }
+    }
+    
+    
     private void loadTerrain() {
         Spatial terrain;
-        terrain = assetManager.loadModel("Scenes/world.j3o");
+        terrain = assetManager.loadModel("/Scenes/world.j3o");
         rootNode.attachChild(terrain);
     }
     
     private void loadGrid() {
         
         field = new Node("Field");
-        grid = assetManager.loadModel("Models/Grid/Plane.002.mesh.xml");
+        grid = assetManager.loadModel("/Models/Grid/Plane.002.mesh.xml");
         field.attachChild(grid);
         field.setLocalScale(3, 1.5f, 3);
         field.setLocalTranslation(0, 0.4f, 0);
@@ -124,11 +138,13 @@ public class GameGUI extends SimpleApplication {
     }
     
     private void loadShip() {
-        shipMain = assetManager.loadModel("Models/ShipBlocks/ShipBlock.j3o");
-        shipMain.setMaterial(assetManager.loadMaterial("Materials/shipMaterialDefault.j3m"));
+        shipMain = assetManager.loadModel("/Models/ShipBlocks/ShipBlock.j3o");
+        shipMain.setMaterial(assetManager.loadMaterial("/Materials/shipMaterialDefault.j3m"));
+        shipMain.setLocalScale(0.95f, 1, 1);
         
-        shipBow = assetManager.loadModel("Models/ShipBlocks/ShipBow.j3o");
-        shipBow.setMaterial(assetManager.loadMaterial("Materials/shipMaterialDefault.j3m"));
+        shipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
+        shipBow.setMaterial(assetManager.loadMaterial("/Materials/shipMaterialDefault.j3m"));
+        shipBow.setLocalScale(0.95f, 1, 1);
     }
     
     private void drawShipPart(int x, int y, ShipDirection dir, int type) {
@@ -146,7 +162,9 @@ public class GameGUI extends SimpleApplication {
                 break;
         }
         //position the ship unit within the grid
+        
         shipPartInstance.setLocalTranslation(2 * (x - 15) + 1, 1, 2 * (y - 15) + 1);
+        
         //set the rotation of the ship relative to its direction
         Quaternion rotation = null;
         switch(dir) {
@@ -169,5 +187,61 @@ public class GameGUI extends SimpleApplication {
         shipPartInstance.setLocalRotation(rotation);
         field.attachChild(shipPartInstance);
         this.objectsGrid[x][y] = shipPartInstance;
+    }
+    
+    /**
+     * Renders on the map all objects in the provided game state. Also populates
+     * the chat log with the messages contained in the game state.
+     * @param gs
+     */
+    public void drawGameState(GameState gs) {
+        //use direct reference as the gui does not change the game state
+        this.gameState = gs;
+        this.gameStateUpdated = true;
+    }
+    
+    /**
+     * Draws the GamState that is saved locally. This method is private because
+     * only the GUI thread is allowed to modify the scene, so this method is
+     * called in the simpleUpdate(...) method and not by an external class and thread.
+     */
+    private void drawGameState() {
+        //draw map objects 
+        Map m = gameState.getMap();
+        for(int x = 0; x < m.WIDTH; x++) {
+            for(int y = 0; y < m.HEIGHT; y++) {
+                Vector2 position = new Vector2(x, y);
+                if(m.isClear(position)) {
+                    //don't draw anything
+                } else {
+                    //find out what the object is and draw it
+                    GameObject o = m.getObjectAt(position);
+                    
+                    switch(o.getObjectType()) {
+                        case Ship:
+                            ShipUnit s = (ShipUnit) o;
+                            drawShipPart(position.x, position.y, s.getShip().getDirection(), s.isBow() ? BOW : BLOCK);
+                            break;
+                        default:
+                            //do nothing just yet
+                            break;
+                    }
+                }
+            }//END INNER LOOP
+        }//ENDFOR
+        
+        //we are done with displaying the contents of the game state
+    }
+
+    /**
+     * Interface used by GameGUI to communicate back to the controller which
+     * initialized the gui.
+     */
+    public static interface GameGuiListener {
+        /**
+         * This method is called when the initialization of the gui
+         * is complete.
+         */
+        public void initializeComplete();
     }
 }

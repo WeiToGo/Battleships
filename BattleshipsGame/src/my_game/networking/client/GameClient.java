@@ -231,7 +231,7 @@ public class GameClient extends Thread implements NetworkEntity {
             //client is listening until the clientRunning flag is set to false
             while (clientRunning) {
                 //construct packet object to save received data into
-                byte[] data = new byte[8192];
+                byte[] data = new byte[24576];
 
                 try {
                     //wait to receive a packet
