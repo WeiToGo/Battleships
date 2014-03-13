@@ -5,6 +5,9 @@ import my_game.util.Vector2;
 
 public class Mine extends GameObject {
 	
+	boolean actived;
+	boolean destoryed;
+	
 	public Vector2[] getMineZone(Vector2 pos, ShipDirection direction) {
 		int x = pos.x;
 		int y = pos.y;
@@ -41,5 +44,22 @@ public class Mine extends GameObject {
 
 	public Mine() {
 		super();
+		actived = true;
+	}
+
+	public boolean isActived() {
+		return actived;
+	}
+
+	public void setActived(boolean actived) {
+		this.actived = actived;
+	}
+
+	public boolean isDestoryed() {
+		return destoryed;
+	}
+
+	public void setDestoryed(boolean destoryed) {
+		this.destoryed = destoryed;
 	}
 }

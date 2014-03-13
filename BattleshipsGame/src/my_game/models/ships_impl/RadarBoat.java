@@ -59,33 +59,10 @@ public class RadarBoat extends Ship {
               new Vector2(10,1), new Vector2(-1,1));       
         setLongRadarRange(rr);        
      }
-
-    public int getCannonDamage() {
-    	return cannonDamage;
-    }
-
-    public void setCannonDamage(int cannonDamage) {
-    	this.cannonDamage = cannonDamage;
-    } 
-   
     
     public void setLongRadarRange(Range r){
         this.longRange = r;
     }    
-    public boolean fireCannon(GameObject target) {
-        boolean result = false;
-	   
-        if(target.getClass() == new CoralUnit().getClass()) {
-            result = false;
-        }
-	
-        if(target.getClass() == new ShipUnit().getClass() ||
-            target.getClass() == new BaseUnit().getClass() ||
-            target.getClass() == new Mine().getClass()) {
-                result = true;
-        }
-	   
-        return result;
-    }   
+ 
  
 }

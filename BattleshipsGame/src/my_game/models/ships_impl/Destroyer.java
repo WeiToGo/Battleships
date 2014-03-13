@@ -64,14 +64,6 @@ public class Destroyer extends Ship{
     public Destroyer(int pid) {
 		super(pid);
 	}
-
-	public int getCannonDamage() {
-	return cannonDamage;
-    }
-
-    public void setCannonDamage(int cannonDamage) {
-	this.cannonDamage = cannonDamage;
-    } 
 	
     public int getTorpedoDamage() {
     	return torpedoDamage;
@@ -81,24 +73,60 @@ public class Destroyer extends Ship{
     	this.torpedoDamage = torpedoDamage;
     }
     
-    public boolean fireCannon(GameObject target) {
-        boolean result = false;
-	   
-        if(target.getClass() == new CoralUnit().getClass()) {
-            result = false;
-        }
-	
-        if(target.getClass() == new ShipUnit().getClass() ||
-            target.getClass() == new BaseUnit().getClass() ||
-            target.getClass() == new Mine().getClass()) {
-                result = true;
-        }
-	   
-        return result;
-    }  
-    
-    public boolean fireTorpedo(GameObject target) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void fireTorpedo(GameObject target) {
+    	if (target.getClass() == new ShipUnit().getClass()){
+			Ship tempShip = ((ShipUnit)target).getShip();
+			
+			((ShipUnit)target).setDamage(getTorpedoDamage());
+			ShipDirection dire = tempShip.getDirection();
+			
+			if (((ShipUnit)target).isDestoryed()){	
+				tempShip.hitUpdate();
+			}
+			
+			if (getDirection().ordinal() != dire.ordinal() && 
+				getDirection().ordinal() != dire.ordinal() + 2 &&
+				getDirection().ordinal() != dire.ordinal() -2 ){
+				
+				ShipUnit[] temp = tempShip.getShipUnits();
+				ArrayList<ShipUnit> units = new ArrayList<ShipUnit>();
+				for(int i = 0; i < temp.length; i++){
+					units.add(temp[i]);
+				}
+				
+				int index = units.indexOf((ShipUnit)target);
+				int full = 0;
+				
+				if (index - 1 >= 0){
+					ShipUnit neighbor = units.get(index - 1);  
+					if (neighbor != null) {
+						full++;
+						neighbor.setDamage(getTorpedoDamage());
+						if (neighbor.isDestoryed()){	
+							tempShip.hitUpdate();
+	    				}
+					}	
+				}
+				
+				if (full == 0 && index + 1 < units.size()){
+					ShipUnit neighbor = units.get(index + 1);  
+					if (neighbor != null) {
+						neighbor.setDamage(getTorpedoDamage());
+						if (neighbor.isDestoryed()){	
+							tempShip.hitUpdate();
+	    				}
+					}
+				}	
+			}
+		}
+		
+		if (target.getClass() == new BaseUnit().getClass()){
+			((BaseUnit)target).setDamage();
+		}
+				
+		if (target.getClass() == new Mine().getClass()){
+			((Mine)target).setDestoryed(true);
+		}
     }    
 
 }

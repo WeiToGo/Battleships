@@ -761,64 +761,31 @@ public class Map implements java.io.Serializable {
     
     public void cannonAttack(Ship attacker, Vector2 position){
     	GameObject target = getObjectAt(position);
-    	int damage = 0;
     	
     	if(attacker.getClass() == new Cruiser(10000).getClass()){
-    		damage = ((Cruiser) attacker).getCannonDamage();
-    		
-    		if (!((Cruiser) attacker).fireCannon(target))
-    			return;
+    		((Cruiser) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
-    		damage = ((TorpedoBoat) attacker).getCannonDamage();
-    		
-    		if (!((TorpedoBoat) attacker).fireCannon(target))
-    			return;
+    		((TorpedoBoat) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new Destroyer(10000).getClass()){
-    		damage = ((Destroyer) attacker).getCannonDamage();
-    		
-    		if (!((Destroyer) attacker).fireCannon(target))
-    			return;
+    		((Destroyer) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new MineLayer(10000).getClass()){
-    		damage = ((MineLayer) attacker).getCannonDamage();
-    		
-    		if (!((MineLayer) attacker).fireCannon(target))
-    			return;
+    		((MineLayer) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new RadarBoat(10000).getClass()){
-    		damage = ((RadarBoat) attacker).getCannonDamage();
-    		
-    		if (!((RadarBoat) attacker).fireCannon(target))
-    			return;
+    		((RadarBoat) attacker).fireCannon(target);
     	}
     	else return;
-
-    	if (target.getClass() == new ShipUnit().getClass()){
-			((ShipUnit)target).setDamage(damage);
-			if (((ShipUnit)target).isDestoryed()){
-				Ship tempShip = ((ShipUnit)target).getShip();
-				tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-				int oldSpeed = tempShip.getSpeed();
-				int size = tempShip.getSize();
-				tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
-				tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
-			}
-		}
-		
-		if (target.getClass() == new BaseUnit().getClass()){
-			((BaseUnit)target).setDamage();
-		}
-		
-		if (target.getClass() == new Mine().getClass()){
-			setObjectAt(position, null);
-		}
+    	
+    	if (target.getClass() == new Mine().getClass()){
+    		setObjectAt(position, null);
+    	}
     }
     
     
     public void torpedoAttack(Ship attacker, Vector2 position){
-    	int damage = 0;
     	
     	ShipDirection d = attacker.getDirection();
     	Vector2 head = attacker.getShipUnits()[0].getPosition();
@@ -869,156 +836,27 @@ public class Map implements java.io.Serializable {
 
     	GameObject target = null;
     	for (Vector2 vec : torpedoRange){
+    		target = getObjectAt(vec);
+    		if(target.getClass() == null)
+    			continue;
+    		
     		if(target.getClass() == new ShipUnit().getClass() ||
     		           target.getClass() == new BaseUnit().getClass() ||
-    		           target.getClass() == new Mine().getClass()) {
-    			target = getObjectAt(vec);
+    		           target.getClass() == new Mine().getClass())
     			break;
-    		}	
     	}
     	
     	if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
-    		damage = ((TorpedoBoat) attacker).getTorpedoDamage();
-    		
-    		if (((TorpedoBoat) attacker).fireTorpedo(target)){
-    			
-    			if (target.getClass() == new ShipUnit().getClass()){
-    				Ship tempShip = ((ShipUnit)target).getShip();
-    				
-    				((ShipUnit)target).setDamage(damage);
-    				ShipDirection dire = tempShip.getDirection();
-    				
-    				if (((ShipUnit)target).isDestoryed()){	
-    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-    				}
-    				
-    				if (attacker.getDirection().ordinal() != dire.ordinal() && 
-    					attacker.getDirection().ordinal() != dire.ordinal() + 2 &&
-    					attacker.getDirection().ordinal() != dire.ordinal() -2 ){
-    					
-    					ShipUnit[] temp = tempShip.getShipUnits();
-    					ArrayList<ShipUnit> units = new ArrayList<ShipUnit>();
-    					for(int i = 0; i < temp.length; i++){
-    						units.add(temp[i]);
-    					}
-    					
-    					int index = units.indexOf((ShipUnit)target);
-    					int full = 0;
-    					
-    					if (index - 1 >= 0){
-    						ShipUnit neighbor = units.get(index - 1);  
-    						if (neighbor != null) {
-    							full++;
-    							neighbor.setDamage(damage);
-    							if (neighbor.isDestoryed()){	
-    		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-    		    				}
-    						}	
-    					}
-    					
-    					if (full == 1 && index + 1 < units.size()){
-    						ShipUnit neighbor = units.get(index + 1);  
-    						if (neighbor != null) {
-    							neighbor.setDamage(damage);
-    							if (neighbor.isDestoryed()){	
-    		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-    		    				}
-    						}
-    					}
-    					
-    				}
-    				
-    				int oldSpeed = tempShip.getSpeed();
-					int size = tempShip.getSize();
-					tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
-					tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
-    				
-    				
-    			}
-    			
-    			if (target.getClass() == new BaseUnit().getClass()){
-    				((BaseUnit)target).setDamage();
-    			}
-    					
-    			if (target.getClass() == new Mine().getClass()){
-    				setObjectAt(position, null);
-    			}
-    		}
+    		((TorpedoBoat) attacker).fireTorpedo(target);
     	}
     	else if(attacker.getClass() == new Destroyer(10000).getClass()){
-    		damage = ((Destroyer) attacker).getTorpedoDamage();
-    		
-    		if (((Destroyer) attacker).fireTorpedo(target)){
-    			
-    			if (target.getClass() == new ShipUnit().getClass()){
-    				((ShipUnit)target).setDamage(damage);
-    				
-    				if (target.getClass() == new ShipUnit().getClass()){
-        				Ship tempShip = ((ShipUnit)target).getShip();
-        				
-        				((ShipUnit)target).setDamage(damage);
-        				ShipDirection dire = tempShip.getDirection();
-        				
-        				if (((ShipUnit)target).isDestoryed()){	
-        					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-        				}
-        				
-        				if (attacker.getDirection().ordinal() != dire.ordinal() && 
-        					attacker.getDirection().ordinal() != dire.ordinal() + 2 &&
-        					attacker.getDirection().ordinal() != dire.ordinal() -2 ){
-        					
-        					ShipUnit[] temp = tempShip.getShipUnits();
-        					ArrayList<ShipUnit> units = new ArrayList<ShipUnit>();
-        					for(int i = 0; i < temp.length; i++){
-        						units.add(temp[i]);
-        					}
-        					
-        					int index = units.indexOf((ShipUnit)target);
-        					int full = 0;
-        					
-        					if (index - 1 >= 0){
-        						ShipUnit neighbor = units.get(index - 1);  
-        						if (neighbor != null) {
-        							full++;
-        							neighbor.setDamage(damage);
-        							if (neighbor.isDestoryed()){	
-        		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-        		    				}
-        						}	
-        					}
-        					
-        					if (full == 1 && index + 1 < units.size()){
-        						ShipUnit neighbor = units.get(index + 1);  
-        						if (neighbor != null) {
-        							neighbor.setDamage(damage);
-        							if (neighbor.isDestoryed()){	
-        		    					tempShip.setDestoryedUnit(tempShip.getDestoryedUnit() + 1);
-        		    				}
-        						}
-        					}
-        					
-        				}
-        				
-        				int oldSpeed = tempShip.getSpeed();
-    					int size = tempShip.getSize();
-    					tempShip.setCurrentSize(size - tempShip.getDestoryedUnit());
-    					tempShip.setCurrentSpeed(oldSpeed*(tempShip.getCurrentSize()/size));
-        				
-        				
-        			}
-    			}
-    			
-    			if (target.getClass() == new BaseUnit().getClass()){
-    				((BaseUnit)target).setDamage();
-    			}
-    					
-    			if (target.getClass() == new Mine().getClass()){
-    				setObjectAt(position, null);
-    			}		
-    		}
+    		((Destroyer) attacker).fireTorpedo(target);	
     	}
     	else return;
     	
+    	if (target.getClass() == new Mine().getClass()){
+    		setObjectAt(position, null);
+    	}
     }
     
     /**

@@ -28,7 +28,8 @@ public abstract class Ship implements java.io.Serializable {
     private int speed;
     private int currentSize;
     private int currentSpeed;
-    private int armour;
+    private int cannonDamage;
+	private int armour;
     private ShipDirection direction; 
     private int destoryedUnit;
     protected ArrayList<Vector2> visiblePositions;    
@@ -45,6 +46,14 @@ public abstract class Ship implements java.io.Serializable {
     public Ship(int pid){
         this.playerID = pid;
     }
+    
+    public int getCannonDamage() {
+		return cannonDamage;
+	}
+
+	public void setCannonDamage(int cannonDamage) {
+		this.cannonDamage = cannonDamage;
+	}
     
     public int getSize() {
         return size;
@@ -171,11 +180,9 @@ public abstract class Ship implements java.io.Serializable {
     /**
      * This method should be called after each attack on the ship.
      */
-    public void reduceCurentSize(){
+    public void hitUpdate(){
         currentSize--;    
-        //TO DO : calculate the reduce speed accordingly.
-        int reducedSpeed = 0;
-        setCurrentSpeed(reducedSpeed);
+        setCurrentSpeed(currentSpeed - speed/size);
     }
     public ArrayList<Vector2> getRadarPositions(){
         Range r = this.getRadarRange();
@@ -187,7 +194,24 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> visible = getRangePositions(r);
         return visible;
     }    
-            
+          
+    public void fireCannon(GameObject target) {
+    	if (target.getClass() == new ShipUnit().getClass()){
+			((ShipUnit)target).setDamage(getCannonDamage());
+			if (((ShipUnit)target).isDestoryed()){
+				((ShipUnit)target).getShip().hitUpdate();
+			}
+		}
+		
+		if (target.getClass() == new BaseUnit().getClass()){
+			((BaseUnit)target).setDamage();
+		}
+		
+		if (target.getClass() == new Mine().getClass()){
+			((Mine)target).setDestoryed(true);
+		}
+    }
+    
     /**
      * This method gets an arraylist of positions that is visible within the 
      * ship's radar or canon range. (excluding the positions of the ship itself).

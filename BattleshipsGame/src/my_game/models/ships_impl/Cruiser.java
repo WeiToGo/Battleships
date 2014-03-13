@@ -22,10 +22,6 @@ import my_game.util.Vector2;
  */
 public class Cruiser extends Ship {
 	
-    private int cannonDamage;
-    
-    
-    
     public Cruiser(int pid) {
     	super(pid);    
     }
@@ -55,30 +51,6 @@ public class Cruiser extends Ship {
         Range rr = new Range(new Vector2(-3,-1), new Vector2(6,-1), 
               new Vector2(6,1), new Vector2(-3,1));       
         setRadarRange(rr);
-    }
-    
-    public int getCannonDamage() {
-    	return cannonDamage;
-    }
-
-    public void setCannonDamage(int cannonDamage) {
-    	this.cannonDamage = cannonDamage;
-    } 
-    
-    public boolean fireCannon(GameObject target) {
-        boolean result = false;
-	   
-        if(target.getClass() == new CoralUnit().getClass()) {
-            result = false;
-        }
-	
-        if(target.getClass() == new ShipUnit().getClass() ||
-           target.getClass() == new BaseUnit().getClass() ||
-           target.getClass() == new Mine().getClass()) {
-                result = true;
-        }
-	   
-        return result;
     }
     
 }
