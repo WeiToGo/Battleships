@@ -5,10 +5,17 @@
 package my_game.gui;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Plane;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Ray;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
@@ -34,10 +41,12 @@ import my_game.util.Vector2;
  * are displayed.
  * @author Ivo Parvanov
  */
-public class GameGUI extends SimpleApplication {
+public class GameGUI extends SimpleApplication implements ActionListener {    
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
+    
+    private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
     
     Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
     
@@ -104,8 +113,12 @@ public class GameGUI extends SimpleApplication {
         rtsCam.setMaxSpeed(RtsCam.Degree.FWD, 50, 0.5f);
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
+        
         //report to the guiListener that init. is complete so he can now send requests to the gui
         guiListener.initializeComplete();
+        
+        inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addListener(this, new String[]{"CLICK"});
     }
 
     @Override
@@ -359,6 +372,34 @@ public class GameGUI extends SimpleApplication {
         }//ENDFOR
         
         //we are done with displaying the contents of the game state
+    }
+
+    public void onAction(String name, boolean isPressed, float tpf) {
+        if(name == "CLICK" && isPressed) {
+            // Convert screen click to 3d position
+            Vector2f click2d = inputManager.getCursorPosition();
+            Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
+            Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+                    // Aim the ray from the clicked spot forwards.
+            Ray ray = new Ray(click3d, dir);
+            Vector3f clickOnGridPlane = new Vector3f();
+            ray.intersectsWherePlane(gridPlane, clickOnGridPlane);
+            
+            int x, y;
+            
+            if(clickOnGridPlane.x < 0) {
+                x = (( ( (int) clickOnGridPlane.x) / 6) + 14);
+            } else {
+                x = (( ( (int) clickOnGridPlane.x + 6) / 6) + 14);
+            }
+            if(clickOnGridPlane.z < 0) {
+                y =  (( ( (int) clickOnGridPlane.z) / 6) + 14);
+            } else {
+                y =  (( ( (int) clickOnGridPlane.z + 6) / 6) + 14);
+            }
+            
+            System.out.println("Click event: " + x + ";" + y);
+        }
     }
 
     /**
