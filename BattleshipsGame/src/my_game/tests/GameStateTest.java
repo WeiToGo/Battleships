@@ -83,18 +83,34 @@ public class GameStateTest {
         System.out.println(map.toString());            
   */
         /**   TEST move  */
-        Ship s = p0ships[5];
+        Ship s = p1ships[5];
         Positions p = map.prepareMoveShip(s);
-   //     System.out.println(" size of list " + p.forward.size());
         
-        Vector2 v = new Vector2(9,15);
+        Vector2 v = new Vector2(25,15); 
         map.moveShip(s,v,p);
+        System.out.println(" move to 25,15");
+        System.out.println(map.toString());   
+
+        System.out.println("***********************************");        
+        p = map.prepareMoveShip(s);        
+        v = new Vector2(21,15);
+        map.moveShip(s,v,p);
+        System.out.println(" move to 21,15");
         System.out.println(map.toString());          
         
-    /*    v = new Vector2(8,16);
+        System.out.println("***********************************");        
+        p = map.prepareMoveShip(s);        
+        v = new Vector2(21,14);
         map.moveShip(s,v,p);
-        System.out.println(map.toString());           
+        System.out.println(" move to 21,14");
+        System.out.println(map.toString());       
+        
+        System.out.println("***********************************");        
+        p = map.prepareMoveShip(s);        
+        v = new Vector2(24,14);
+        map.moveShip(s,v,p);
+        System.out.println(" move to 24,14");
+        System.out.println(map.toString());         
     
-    */
     }    
 }

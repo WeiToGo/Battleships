@@ -114,7 +114,7 @@ public class Map implements java.io.Serializable {
      * @return An array of positions that are highlighted on the map.
      */
     public Positions prepareMoveShip(Ship ship){
-        Positions allMoves = ship.availableMoves();      
+        Positions allMoves = ship.availableMoves(); 
         //not sure if it's a good idea.
         Positions highlightedMoves = new Positions(null,null,null,null);
         //if there is any obstacle on left or right, the ship can't move sideways.
@@ -133,45 +133,65 @@ public class Map implements java.io.Serializable {
         canMove = true;
         for (int i = 0; i < right.size(); i++){
             if (isVisibleObstacle(ship, right.get(i))){
-                System.out.println("can't move");
                 canMove = false;
             }
         }
         if (canMove){
             highlightedMoves.setRight(right);
         }
-        System.out.println("right avl " + highlightedMoves.getRight().size());   
-        System.out.println("r(1) " + highlightedMoves.getRight().get(1).x + " " + highlightedMoves.getRight().get(1).y);
-        System.out.println("r(2) " + highlightedMoves.getRight().get(2).x + " " + highlightedMoves.getRight().get(2).y);        
-        
+              
         ArrayList<Vector2> back = allMoves.getBackward();
         //maybe not necessary but just in case the rule changes.
         ArrayList<Vector2> validBack = new ArrayList<Vector2>();
         for (int i = 0; i < back.size(); i++){
-            if (!isVisibleObstacle(ship, back.get(i))){
+            if (!isSelf(ship,back.get(i))){            
+                if (!isVisibleObstacle(ship, back.get(i))) {
+                    validBack.add(back.get(i));
+                }
+            }else{
                 validBack.add(back.get(i));
             }
         }
         highlightedMoves.setBack(validBack);
-        System.out.println("back avl " + validBack.size());
         // if there is an obstacle in front, the ship can't move beyond that obstacle.
         ArrayList<Vector2> forward = allMoves.getForward();
         ArrayList<Vector2> validForward = new ArrayList<Vector2>();
         for (int i = 0; i < forward.size(); i++){
-            if (!isVisibleObstacle(ship, forward.get(i))){
-                validForward.add(forward.get(i));
-            }else if (isVisibleObstacle(ship, forward.get(i))){
-   //             System.out.println("obs " + forward.get(i).x + " " + forward.get(i).y);              
-                break;
+            if (!isSelf(ship,forward.get(i))){            
+                if (!isVisibleObstacle(ship, forward.get(i))) {
+                    validForward.add(forward.get(i));
+                } else if (isVisibleObstacle(ship, forward.get(i))) {
+                    break;
+                } else {
+                    //shouldn't happen
+                }
             }else{
-                //shouldn't happen
+                validForward.add(forward.get(i));
             }
-        }
-       System.out.println("forward avl " + validForward.size());
+        }       
         highlightedMoves.setForward(validForward);         
         return highlightedMoves;
     }
     
+    /**
+     * Checks if a positions is occupied by itself.
+     * @param selfPos
+     * @param p
+     * @return 
+     */
+    private boolean isSelf(Ship s, Vector2 p){
+        ShipUnit[] shipUnits = s.getShipUnits();
+        ArrayList<Vector2> selfPositions = new ArrayList<Vector2>();      
+        for (ShipUnit su: shipUnits){
+            selfPositions.add(su.getPosition());
+        }        
+        for (Vector2 v: selfPositions){
+            if(v.equals(p)){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * This method first validates the posititons, (for obstacles out of radar
      * range or mines). It then moves the ship to a selected new position by 
@@ -186,16 +206,12 @@ public class Map implements java.io.Serializable {
 //    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
     public void moveShip(Ship ship,Vector2 newPosition, Positions p) {
         Moves shipPositions = getMovePositions (newPosition, p);
-        System.out.println("from getPos " + shipPositions.getPositions().get(0).x + " " + shipPositions.getPositions().get(0).y);
-   //     System.out.println("from getPos " + shipPositions.getPositions().get(1).x + " " + shipPositions.getPositions().get(1).y);
-   //     System.out.println("from getPos " + shipPositions.getPositions().get(2).x + " " + shipPositions.getPositions().get(2).y);
-
-//        System.out.println("move dir " + shipPositions.getMoveDirection().toString());
+    /*    for (Vector2 v : shipPositions.getPositions()){
+            System.out.println(" getPos " + v.x + " " + v.y);
+        }
+   */
         ArrayList<Vector2> valide = new ArrayList<Vector2>();
         valide = validateMove(ship, shipPositions);
- //       System.out.println("valide " + valide.get(0).x + " " + valide.get(0).y);
- //       System.out.println("valide " + valide.get(1).x + " " + valide.get(1).y);
- //       System.out.println("valide " + valide.get(2).x + " " + valide.get(2).y);
         
  /*       try{
         }catch (GameException e){
@@ -203,9 +219,7 @@ public class Map implements java.io.Serializable {
                     new GameException("move error"));
         }
  */       if (valide != null){
-            this.updateShipPositions(ship, valide);
-            System.out.println("ship size == " + ship.getSize());
-            System.out.println("list size == " + valide.size());
+            this.updateShipPositions(ship, valide);    
             ship.moveTo(valide);           
         }
 
@@ -226,7 +240,6 @@ public class Map implements java.io.Serializable {
             for (Vector2 v : back) {
                 if (v.x == p.x && v.y == p.y) {
                     moves.setMoveDirection(Moves.MoveDirection.B);
-                                        System.out.println("back" );
                     moves.setMoves(back);
                     return moves;// only works if we can only move backward one square.
                 }
@@ -237,7 +250,6 @@ public class Map implements java.io.Serializable {
             for (Vector2 v : left) {
                 if (v.x == p.x && v.y == p.y) {
                     moves.setMoveDirection(Moves.MoveDirection.L);
-                                        System.out.println("left" );
                     moves.setMoves(left);
                     return moves;
                 }
@@ -248,18 +260,19 @@ public class Map implements java.io.Serializable {
             for (Vector2 v : right) {
                 if (v.x == p.x && v.y == p.y) {
                     moves.setMoveDirection(Moves.MoveDirection.R);
-                    System.out.println("right" );
                     moves.setMoves(right);
                     return moves;
                 }
             }
         }
         ArrayList<Vector2> forward = positions.getForward();
+        boolean target = false;
         if (forward != null){
             ArrayList<Vector2> newforward = new ArrayList<Vector2>();
             for (Vector2 v : forward) {
                 if (v.x == p.x && v.y == p.y) {
                     moves.setMoveDirection(Moves.MoveDirection.F);
+                    newforward.add(v);
                     break;
                 } else {
                     newforward.add(v);
@@ -308,11 +321,10 @@ public class Map implements java.io.Serializable {
                             forwardmoves.add(v);
                         }
                     }
+                    
                     moves.clear();
                     for (i = forwardmoves.size()-1; i >= forwardmoves.size()-shipSize; i--){
-                        moves.add(forwardmoves.get(i));
-                        //System.out.println("valide " + forwardmovesShip.get(0).x + " " + forwardmovesShip.get(0).y);                                         
-                        
+                        moves.add(forwardmoves.get(i));                        
                     }
                     break;
                 case B:
@@ -594,7 +606,6 @@ public class Map implements java.io.Serializable {
             for (Vector2 v: visible){
                // System.out.println("visible " +v.x + " " + v.y);
                 if (v.equals(p)){
-                    System.out.println("obs");
                     isVisibleObstacle = true;
                     break;
                 }
@@ -626,7 +637,11 @@ public class Map implements java.io.Serializable {
         GameObject o = this.getObjectAt(p);   
         if (o == null){
             return false;
-        }        
+        }  
+        
+        if (isSelf(s,p)){
+            return false;
+        }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ArrayList<Vector2> visible = s.getRadarPositions();
             for (Vector2 v: visible){
@@ -697,13 +712,15 @@ public class Map implements java.io.Serializable {
             new GameException("ship size not equal to position size."));          
         }else{
             ShipUnit[] shipUnits = s.getShipUnits();
-            int i = 0;
             for (ShipUnit su: shipUnits){  
                 Vector2 oldPosition = su.getPosition();
                 this.setObjectAt(oldPosition, null);
-                this.setObjectAt(positions.get(i), su);
-                i++;
             }
+            int j = 0;
+            for (ShipUnit su: shipUnits){  
+                this.setObjectAt(positions.get(j), su);          
+                j++;
+            }            
         }
     }
     /**

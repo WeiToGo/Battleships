@@ -244,11 +244,7 @@ public abstract class Ship implements java.io.Serializable {
         Vector2 bl = r.getBottomLeft();
         Vector2 sp = bowPosition;
         Vector2 p;
- /*       System.out.println("tl " + tl.x + " " + tl.y);
-        System.out.println("tr " + tr.x + " " + tr.y);
-        System.out.println("bl " + bl.x + " " + bl.y);
-        System.out.println("sp " + sp.x + " " + sp.y);
- */       int xStart, xEnd, yStart, yEnd, i,j;
+       int xStart, xEnd, yStart, yEnd, i,j;
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         xStart = bowPosition.x + tl.x;
         xEnd = bowPosition.x + tr.x;
@@ -305,9 +301,10 @@ public abstract class Ship implements java.io.Serializable {
         int i = 0;
         int j = 0;
         while (i < newPosition.size() && j < shipUnits.length){
-            ShipUnit s = shipUnits[i];
+            ShipUnit su = shipUnits[i];
             newPosition.get(j);
-            s.setPosition(newPosition.get(j));
+            su.setPosition(newPosition.get(j));
+     //       System.out.println("move to " +newPosition.get(j).x + " " + newPosition.get(j).y);
             i++;
             j++;
         }
@@ -382,12 +379,12 @@ public abstract class Ship implements java.io.Serializable {
         
         // move forward.
         if (y < speed){
-            for (i = y-1; i >= 0; i--){
+            for (i = y+size-1; i >= 0; i--){
                 Vector2 p = new Vector2(x,i);
        		forward.add(p);
             }
         }else{
-            for (i = y-1; i >= y-speed; i--){
+            for (i = y+size-1; i >= y-speed; i--){
         	Vector2 p = new Vector2(x,i);
                 forward.add(p);
             }
@@ -436,13 +433,13 @@ public abstract class Ship implements java.io.Serializable {
         }        
         // move forward.
         if (y + speed > 29){
-            for (i = y+1; i < 30; i++){
+            for (i = y-size+1; i < 30; i++){
         	Vector2 p = new Vector2(x,i);
                 forward.add(p);
             }
             
         }else{
-            for (i = y+1; i <= y+speed; i++){
+            for (i = y-size+1; i <= y+speed; i++){
                 Vector2 p = new Vector2(x,i);
                 forward.add(p);
             }
@@ -462,44 +459,40 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> right = new ArrayList<Vector2>();
         // move backward.
         if (x-size >= 0){
-            System.out.println(" East back");
-            for (i = x-1; i <= x-size; i--){
+            for (i = x-1; i >= x-size; i--){
                 Vector2 p = new Vector2(i,y);
     		back.add(p);     
             }
         }
-        
-        // move sideways.
-        if (y-1 >= 0){
-            System.out.println(" East left");    
+        // move sideways.           
+        if (y-1 >= 0){   
             int leftY = y-1;
             for (i = x; i > x-size; i--){
                 Vector2 p = new Vector2(i,leftY);
     		left.add(p);
             }
         }
+        // move sideways.            
         if (y+1 < 30){
-            System.out.println(" East right");
             int rightY = y+1;
             for (i = x; i > x-size; i--){
        		Vector2 p = new Vector2(i,rightY);
        		right.add(p);
             }
-        }    
-        
-        // move forward.
+        }
+        // move forward.        
         if (x + speed > 29){
-            for (i = x+1; i < 30; i++){
+            for (i = x-size+1; i < 30; i++){
                 Vector2 p = new Vector2(i,y);
                 forward.add(p);
             }
         }else{
-            System.out.println(" East forward");
-            for (i = x+1; i <= x+speed; i++){
+            for (i = x-size+1; i <= x+speed; i++){
                 Vector2 p = new Vector2(i,y);
                 forward.add(p);
             }
         }
+
         Positions positions = new Positions(back, forward, left, right);   
         return positions;
     }
@@ -538,12 +531,12 @@ public abstract class Ship implements java.io.Serializable {
         }  
         // move forward.
         if (x < speed){
-            for (i = x-1; i >= 0; i--){
+            for (i = x+size-1; i >= 0; i--){
                 Vector2 p = new Vector2(i,y);
                 forward.add(p);
             }
         }else{
-            for (i = x-1; i >= x-speed; i--){
+            for (i = x+size-1; i >= x-speed; i--){
                 Vector2 p = new Vector2(i,y);
                 forward.add(p);              
             }
@@ -828,8 +821,6 @@ public abstract class Ship implements java.io.Serializable {
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
                     for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
-                        System.out.print("j " + j);
-                        System.out.print( "  ");
                         System.out.println(i);     
                         lPath.add(p);                        
                     }
