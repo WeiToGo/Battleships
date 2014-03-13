@@ -319,6 +319,7 @@ public abstract class Ship implements java.io.Serializable {
         int speed = this.getCurrentSpeed();
         int size = this.getSize(); //need original size?
         Vector2 shipBow = this.getShipUnits()[0].getPosition();
+        System.out.println("current dir " + this.getDirection().toString());
         // I get an error if I don't add this part.
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         ArrayList<Vector2> forward = new ArrayList<Vector2>();
@@ -418,17 +419,17 @@ public abstract class Ship implements java.io.Serializable {
         
         // move sideways.
         if (x-1 >= 0){
-            int leftX = x-1;
+            int rightX = x-1;
             for (i = y; i > y-size; i--){
-                Vector2 p = new Vector2(leftX,i);
-                left.add(p);
+                Vector2 p = new Vector2(rightX,i);
+                right.add(p);
             }
         }
         if (x+1 < 30){
-            int rightX = x+1;
+            int leftX = x+1;
             for (i = y; i > y-size; i--){
-                Vector2 p = new Vector2(rightX,i);
-       		right.add(p);
+                Vector2 p = new Vector2(leftX,i);
+       		left.add(p);
             }
         }        
         // move forward.
@@ -516,17 +517,17 @@ public abstract class Ship implements java.io.Serializable {
         }
         // move sideways.
         if (y-1 >= 0){
-            int leftY = y-1;
+            int rightY = y-1;
             for (i = x; i < x+size; i++){
-    		Vector2 p = new Vector2(i,leftY);
-    		left.add(p);
+    		Vector2 p = new Vector2(i,rightY);
+    		right.add(p);
             }
         }
         if (y+1 < 30){
-            int rightY = y+1;
+            int leftY = y+1;
             for (i = x; i < x+size; i++){
-       		Vector2 p = new Vector2(i,rightY);
-       		right.add(p);
+       		Vector2 p = new Vector2(i,leftY);
+       		left.add(p);
             }
         }  
         // move forward.
@@ -592,7 +593,7 @@ public abstract class Ship implements java.io.Serializable {
         ShipUnit[] shipUnits = this.getShipUnits();
         ShipDirection direction = this.getDirection();
         int size = this.getSize();// need original size
- 
+        System.out.println("current direction " + direction.toString());
         switch (direction){
             case North: availableTurns = this.availableTurnNorth(shipUnits, size);
                 break;
@@ -820,8 +821,7 @@ public abstract class Ship implements java.io.Serializable {
                 k = 0;
                 for (i = yPivot+1; i <= yPivot+size-1; i++){
                     for (j = xPivot+1; j <= xPivot+size-1-k; j++){
-                        Vector2 p = new Vector2(j,i);
-                        System.out.println(i);     
+                        Vector2 p = new Vector2(j,i);    
                         lPath.add(p);                        
                     }
                     k++;
@@ -863,7 +863,7 @@ public abstract class Ship implements java.io.Serializable {
                 Vector2 p2 = new Vector2(xPivot-1, yPivot+1);
                 lPath.add(p1);
                 lPath.add(p2);
-                positions.setLeftPath(lPath);              
+                positions.setLeftPath(lPath);     
                 //right 90.
                 for (i = yPivot+1; i >= yPivot-1; i--){
                     Vector2 p = new Vector2(xPivot,i);
@@ -884,7 +884,7 @@ public abstract class Ship implements java.io.Serializable {
                     back.add(p);
                 }
                 d = ShipDirection.West;
-                positions.setBackDirection(d);                
+                positions.setBackDirection(d);    
                 positions.setBack(back);
             }               
                        
@@ -977,7 +977,7 @@ public abstract class Ship implements java.io.Serializable {
                 }
                 d = ShipDirection.North;
                 positions.setRightDirection(d);                
-                positions.setRight(right);                
+                positions.setRight(right);    
                 //rightpath
                 Vector2 p3 = new Vector2(xPivot-1, yPivot-1);
                 Vector2 p4 = new Vector2(xPivot+1, yPivot+1);
