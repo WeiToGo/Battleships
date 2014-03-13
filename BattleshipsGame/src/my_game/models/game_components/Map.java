@@ -790,6 +790,45 @@ public class Map implements java.io.Serializable {
     	}
     }
     
+    /**
+     * Checks whether the specified ship belongs to the blue player (player on the
+     * west side of the map, a.k.a. player0). If it does, returns true, otherwise
+     * returns false.
+     * @param s
+     * @return 
+     */
+    public boolean isBlue(Ship s) {
+        //player0 is blue
+        boolean found = false;
+        for(int i = 0; i < player0Ships.length && !found; i++) {
+            if(player0Ships[i] == s) {
+                found = true;
+            }
+        }
+        return found;
+    }
+    
+    /**
+     * Checks whether the specified base belongs to the blue player (player on the
+     * west side of the map, a.k.a. player0). If it does, returns true, otherwise
+     * returns false.
+     * @param b
+     * @return 
+     */
+    public boolean isBlue(Base b) {
+        return b == p0Base;
+    }
+    
+    /**
+     * Checks whether the specified ship belongs to the red player (player on the
+     * east side of the map, a.k.a. player1). If it does, returns true, otherwise
+     * returns false.
+     * @param s
+     * @return 
+     */
+    public boolean isRed(Ship s) {
+        return !isBlue(s);
+    }
     
     public void torpedoAttack(Ship attacker, Vector2 position){
     	

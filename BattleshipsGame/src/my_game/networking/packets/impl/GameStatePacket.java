@@ -20,7 +20,7 @@ public class GameStatePacket extends Packet {
     
     public GameStatePacket(GameState gs) {
         super(PacketTypes.GAMESTATE.getId());
-        
+    
         this.gs = new GameState(gs);
     }
     

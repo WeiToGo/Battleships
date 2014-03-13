@@ -16,6 +16,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
@@ -32,9 +33,9 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication {
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
-    private final static int BASE = 0, BLOCK = 1, BOW = 2;
+    private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
     
-    Spatial grid, shade, shipMain, shipBow;
+    Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid;
@@ -63,6 +64,7 @@ public class GameGUI extends SimpleApplication {
         loadGrid();
         loadLights();
         loadShip();
+        loadBase();
         
                 //Post processing
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
@@ -137,24 +139,53 @@ public class GameGUI extends SimpleApplication {
         rootNode.addLight(ambient1);
     }
     
+    /**
+     * Loads the spatials for all ship parts.
+     */
     private void loadShip() {
-        shipMain = assetManager.loadModel("/Models/ShipBlocks/ShipBlock.j3o");
-        shipMain.setMaterial(assetManager.loadMaterial("/Materials/shipMaterialDefault.j3m"));
-        shipMain.setLocalScale(0.95f, 1, 1);
+        blueShipBlock = assetManager.loadModel("/Models/ShipBlocks/ShipBlock.j3o");
+        blueShipBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+        blueShipBlock.setLocalScale(0.95f, 1, 1);
         
-        shipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
-        shipBow.setMaterial(assetManager.loadMaterial("/Materials/shipMaterialDefault.j3m"));
-        shipBow.setLocalScale(0.95f, 1, 1);
+        blueShipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
+        blueShipBow.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+        blueShipBow.setLocalScale(0.95f, 1, 1);
+        
+        
+        redShipBlock = assetManager.loadModel("/Models/ShipBlocks/ShipBlock.j3o");
+        redShipBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+        redShipBlock.setLocalScale(0.95f, 1, 1);
+        
+        redShipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
+        redShipBow.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+        redShipBow.setLocalScale(0.95f, 1, 1);
+    }
+    
+    private void loadBase() {
+        blueBase = assetManager.loadModel("/Models/BaseBlocks/BaseBlock.j3o");
+        blueBase.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+        blueBase.setLocalScale(0.95f, 1, 1);
+        
+        redBase = assetManager.loadModel("/Models/BaseBlocks/BaseBlock.j3o");
+        redBase.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+        redBase.setLocalScale(0.95f, 1, 1);
+        
     }
     
     private void drawShipPart(int x, int y, ShipDirection dir, int type) {
         Spatial shipPartInstance = null;
         switch(type) {
-            case BLOCK:
-                shipPartInstance = shipMain.clone();
+            case BLOCK_BLUE:
+                shipPartInstance = blueShipBlock.clone();
                 break;
-            case BOW:
-                shipPartInstance = shipBow.clone();
+            case BOW_BLUE:
+                shipPartInstance = blueShipBow.clone();
+                break;
+            case BLOCK_RED:
+                shipPartInstance = redShipBlock.clone();
+                break;
+            case BOW_RED:
+                shipPartInstance = redShipBow.clone();
                 break;
             default:
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, 
@@ -166,7 +197,7 @@ public class GameGUI extends SimpleApplication {
         shipPartInstance.setLocalTranslation(2 * (x - 15) + 1, 1, 2 * (y - 15) + 1);
         
         //set the rotation of the ship relative to its direction
-        Quaternion rotation = null;
+        Quaternion rotation = Quaternion.IDENTITY;
         switch(dir) {
             case West:
                 rotation = new Quaternion(new float[] {0f, (float) Math.PI / 2, 0f});
@@ -187,6 +218,27 @@ public class GameGUI extends SimpleApplication {
         shipPartInstance.setLocalRotation(rotation);
         field.attachChild(shipPartInstance);
         this.objectsGrid[x][y] = shipPartInstance;
+    }
+    
+    private void drawBasePart(int x, int y, int type) {
+        Spatial baseBlock = null;
+        switch(type) {
+            case BASE_BLUE:
+                baseBlock = blueBase.clone();
+                break;
+            case BASE_RED:
+                baseBlock = redBase.clone();
+                break;
+            default:
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null,                         
+                        new GameException("Unexpected base block type found!"));
+                break;
+        }
+        
+        baseBlock.setLocalTranslation(2 * (x - 15) + 1, 1, 2 * (y - 15) + 1);
+        baseBlock.setLocalRotation(Quaternion.IDENTITY);
+        field.attachChild(baseBlock);
+        this.objectsGrid[x][y] = baseBlock;
     }
     
     /**
@@ -220,7 +272,16 @@ public class GameGUI extends SimpleApplication {
                     switch(o.getObjectType()) {
                         case Ship:
                             ShipUnit s = (ShipUnit) o;
-                            drawShipPart(position.x, position.y, s.getShip().getDirection(), s.isBow() ? BOW : BLOCK);
+                            if(s.isBow()) {
+                                drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BOW_BLUE : BOW_RED);
+                            } else {
+                                drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BLOCK_BLUE : BLOCK_RED);
+                            }
+                            
+                            break;
+                        case Base:
+                            BaseUnit b = (BaseUnit) o;
+                            drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BASE_BLUE : BASE_RED);
                             break;
                         default:
                             //do nothing just yet
@@ -232,6 +293,10 @@ public class GameGUI extends SimpleApplication {
         
         //we are done with displaying the contents of the game state
     }
+
+
+
+
 
     /**
      * Interface used by GameGUI to communicate back to the controller which
