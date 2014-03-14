@@ -24,6 +24,7 @@ import my_game.util.Vector2;
 import my_game.util.GameException;
 import my_game.util.Misc;
 import my_game.util.Positions;
+import my_game.util.TurnPositions;
 
     
 /**
@@ -33,7 +34,7 @@ import my_game.util.Positions;
  * entities (GameServer and GameClient).
  */
 public class Game implements GameGUI.GameGuiListener {    
-
+    
     public enum PlayerType {
         Host, Client
     };
@@ -60,7 +61,8 @@ public class Game implements GameGUI.GameGuiListener {
     /** A reference to the game gui which is displaying the game itself. */
     private GameGUI gui;
     
-    private Positions highlight;
+    private Positions moveHighlight;
+    private TurnPositions turnHighlight;
     private boolean awaitingInput;
     private Vector2 input;
     
@@ -254,9 +256,10 @@ public class Game implements GameGUI.GameGuiListener {
         } else {
             this.selectedShip = null;
             gui.setButtonsEnabled(false);
-            if(highlight != null) {
-                gui.clearHighlight(highlight);
-                highlight = null;
+            if(moveHighlight != null || turnHighlight != null) {
+                gui.requestlearHighlight();
+                moveHighlight = null;
+                turnHighlight = null;
             }
         }
     }
@@ -276,6 +279,7 @@ public class Game implements GameGUI.GameGuiListener {
                     t.start();
                     break;
                 case Turn:
+                    Misc.log("Turning");
                     t = new Thread(new Runnable() {
                         public void run() {
                             turnAction(selectedShip);
@@ -324,10 +328,10 @@ public class Game implements GameGUI.GameGuiListener {
     
     public void moveAction(Ship s){
         //need to be called on the map object.
-        highlight = gameState.getMap().prepareMoveShip(s);
+        moveHighlight = gameState.getMap().prepareMoveShip(s);
 
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
-        gui.highlightPositions(highlight);
+        gui.highlightPositions(moveHighlight);
        
         synchronized(this) {
             try {
@@ -336,16 +340,16 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = false;
                 //check if the result is acceptable
                 
-                if(gameState.getMap().moveShip(s, input, highlight)) {
+                if(gameState.getMap().moveShip(s, input, moveHighlight)) {
                     gui.drawGameState(gameState);
                     
                     sendGameState();
                 }
                 
-                gui.clearHighlight(highlight);
+                gui.requestlearHighlight();
                 gui.setButtonsEnabled(false);
                 selectedShip = null;
-                highlight = null;
+                moveHighlight = null;
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
@@ -355,15 +359,33 @@ public class Game implements GameGUI.GameGuiListener {
     
     public void turnAction(Ship s){
         //need to be called on the map object.
-        //Positions highlight = map.prepareTurnShip(s);
-        
-        
+        turnHighlight = gameState.getMap().prepareTurnShip(s);
+
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
-        
-        
-        //map.turnShip(s,newPosition, highlight);
-        
-        // map update the ships position and repaint?        
+        gui.highlightPositions(turnHighlight);
+       
+        synchronized(this) {
+            try {
+                awaitingInput = true;
+                this.wait();
+                awaitingInput = false;
+                //check if the result is acceptable
+                
+                if(gameState.getMap().turnShip(s, input, turnHighlight)) {
+                    gui.drawGameState(gameState);
+                    
+                    sendGameState();
+                }
+                
+                gui.requestlearHighlight();
+                gui.setButtonsEnabled(false);
+                selectedShip = null;
+                moveHighlight = null;
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }      
     }
             
     private void attackAction(Ship s) {

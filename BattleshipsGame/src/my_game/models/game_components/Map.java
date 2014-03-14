@@ -488,11 +488,21 @@ public class Map implements java.io.Serializable {
         return highlightedTurns;
     }
     
-    public void turnShip(Ship ship, Vector2 newPosition, TurnPositions p){
+    public boolean turnShip(Ship ship, Vector2 newPosition, TurnPositions p){
+        boolean found = false;
+        for(Vector2 v: p.getAll()) {
+            if(v.equals(newPosition)) {
+                found = true;
+            }
+        }
+        if(!found) {
+            return false;
+        }
+        
         Turns shipPositions = getTurnPositions (newPosition, p);
         ArrayList <Vector2> t = shipPositions.positions;
         if (t == null){
-            return;
+            return false;
         }
         System.out.println("t size " + t.size());
     /*   for (Vector2 v: t){
@@ -508,6 +518,8 @@ public class Map implements java.io.Serializable {
             ship.turnTo(valid, newDirection);           
         }        
         
+        updateRadarVisibilityArrays();
+        return true;
     }
     /**
      * This method calculate all positions that need be checked in order move the

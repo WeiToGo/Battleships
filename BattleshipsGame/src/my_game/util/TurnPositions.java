@@ -36,6 +36,27 @@ public class TurnPositions {
         this.backward = back;
     }
     
+    /**
+     * 
+     * @return All highlight positions which should be displayed by the gui.
+     */
+    public ArrayList<Vector2> getAll() {
+        ArrayList<Vector2> list = new ArrayList<Vector2>();
+        ArrayList<Vector2> l = getLeft();
+        ArrayList<Vector2> r = getRight();
+        ArrayList<Vector2> b = getBackward();
+        if(l != null) {
+            list.addAll(l);
+        }
+        if(r != null) {
+            list.addAll(r);
+        }
+        if(b != null) {
+            list.addAll(b);
+        }
+        return list;
+    }
+    
     public ArrayList<Vector2> getLeft(){
         return this.left;
     }

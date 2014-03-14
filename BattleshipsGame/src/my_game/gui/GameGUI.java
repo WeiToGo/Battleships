@@ -40,6 +40,7 @@ import my_game.models.player_components.Player;
 import my_game.util.GameException;
 import my_game.util.Misc;
 import my_game.util.Positions;
+import my_game.util.TurnPositions;
 import my_game.util.Vector2;
 
 /**
@@ -91,7 +92,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     /**
      * The last highlight positions.
      */
-    private Positions highlightPos;
+    private ArrayList<Vector2> highlightPos;
     private boolean highlightPosUpdated, clearHighlight;
 
     /**
@@ -329,8 +330,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     /* *********************** END OF LOADERS ******************************** */
     
-    public void clearHighlight(Positions highlights) {
-        this.highlightPos = highlights;
+    public void requestlearHighlight() {
         this.clearHighlight = true;
     }
     
@@ -356,15 +356,17 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param highlight 
      */    
     public void highlightPositions(Positions highlights) {
-        this.highlightPos = highlights;
+        this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
     
+    public void highlightPositions(TurnPositions highlights) {
+        this.highlightPos = highlights.getAll();
+        this.highlightPosUpdated = true;
+    }
 
     private void highlightPositions() {
-        ArrayList<Vector2> list = highlightPos.getAll();
-        
-        for(Vector2 v: list) {
+        for(Vector2 v: highlightPos) {
                 drawHighlight(v.x, v.y);
         }
     }
@@ -409,13 +411,13 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             case West:
                 rotation = new Quaternion(new float[] {0f, (float) Math.PI / 2, 0f});
                 break;
-            case North:
+            case South:
                 rotation = new Quaternion(new float[] {0f, (float) Math.PI, 0f});
                 break;
             case East:
                 rotation = new Quaternion(new float[] {0f, (float) (3 * Math.PI) / 2, 0f});
                 break;
-            case South:
+            case North:
                 break;
             default:
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null,                         
