@@ -8,6 +8,7 @@ import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.ShipDirection;
 import my_game.models.ships_impl.Cruiser;
+import my_game.models.ships_impl.Destroyer;
 import java.util.ArrayList;
 import my_game.util.Range;
 import my_game.util.Vector2;
@@ -32,9 +33,9 @@ public class ShipTest {
         positions.add(p5);
   
         ShipDirection sd = ShipDirection.West;
-     //   Destroyer d = new Destroyer(1,positions, sd);
+        Destroyer d = new Destroyer(1,positions, sd);
         
-        Range r = c.getRadarRange();
+        Range r = d.getRadarRange();
         Vector2 tl = r.getTopLeft();
         Vector2 tr = r.getTopRight();
         Vector2 br = r.getBottomRight();
@@ -46,12 +47,12 @@ public class ShipTest {
         System.out.println("bl " + bl.x + " " + bl.y);
  */      
         System.out.println("****  test radar range *************");
-        ShipUnit[] su = c.getShipUnits();
+        ShipUnit[] su = d.getShipUnits();
         for (ShipUnit u: su){
             System.out.println(u.getPosition().x + "  " + u.getPosition().y);
         }
         System.out.println("**************************");
-        ArrayList<Vector2> visible = c.getRadarPositions();
+        ArrayList<Vector2> visible = d.getRadarPositions();
         for (Vector2 v: visible){
             System.out.println("visible " + v.x + "  " + v.y);
         }        
@@ -59,7 +60,7 @@ public class ShipTest {
      //   ShipUnit[] shipUnits = c.getShipUnits();
         
         System.out.println("****  test turn  *************");
-        TurnPositions allTurns = c.availableTurns();
+        TurnPositions allTurns = d.availableTurns();
         ArrayList<Vector2> left = allTurns.getLeft();
         ArrayList<Vector2> lp = allTurns.getLeftPath(); 
         ArrayList<Vector2> right = allTurns.getRight();   
