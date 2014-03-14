@@ -30,13 +30,6 @@ public class Destroyer extends Ship{
         super(pid);
         setShipType(ShipType.Destroyer);
         setSize(4);
-        
-        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
-        for (int i = 0; i < getSize(); i++){
-            tempShipUnits[i] = new ShipUnit(this);
-        }
-        setShipUnits(tempShipUnits);
-        
         setSpeed(8);
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
@@ -44,7 +37,7 @@ public class Destroyer extends Ship{
         setCannonDamage(1);
         setTorpedoDamage(1);
         setDirection(direction);
-        moveTo(position);        
+          
         weapons.add("cannon");
         weapons.add("torpedo");
         
@@ -59,6 +52,13 @@ public class Destroyer extends Ship{
         Range rr = new Range(new Vector2(-2,-1), new Vector2(5,-1), 
               new Vector2(5,1), new Vector2(-2,1));       
         setRadarRange(rr);
+        
+        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
+        for (int i = 0; i < getSize(); i++){
+            tempShipUnits[i] = new ShipUnit(this);
+        }
+        setShipUnits(tempShipUnits);
+        moveTo(position);      
     }
     
     public Destroyer(int pid) {

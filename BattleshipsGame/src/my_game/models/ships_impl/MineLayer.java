@@ -28,20 +28,13 @@ public class MineLayer extends Ship {
         super(pid);
         setShipType(ShipType.MineLayer);
         setSize(2);
-        
-        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
-        for (int i = 0; i < getSize(); i++){
-            tempShipUnits[i] = new ShipUnit(this);
-        }
-        setShipUnits(tempShipUnits);
-        
         setSpeed(6);
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(2);
         setCannonDamage(1);
         setDirection(direction);
-        moveTo(position);        
+        
         weapons.add("cannon");
         weapons.add("mine");
         Range cr = new Range(new Vector2(-2,-2), new Vector2(1,-2), 
@@ -50,6 +43,13 @@ public class MineLayer extends Ship {
         Range rr = new Range(new Vector2(-3,-2), new Vector2(2,-2), 
               new Vector2(2,2), new Vector2(-3,2));       
         setRadarRange(rr);
+        
+        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
+        for (int i = 0; i < getSize(); i++){
+            tempShipUnits[i] = new ShipUnit(this);
+        }
+        setShipUnits(tempShipUnits);
+        moveTo(position);        
      }
     
     public MineLayer(int pid) {

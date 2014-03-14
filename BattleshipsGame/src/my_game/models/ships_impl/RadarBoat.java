@@ -33,21 +33,14 @@ public class RadarBoat extends Ship {
 	public RadarBoat(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
         setShipType(ShipType.RadarBoat);
-        setSize(3);
-        
-        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
-        for (int i = 0; i < getSize(); i++){
-            tempShipUnits[i] = new ShipUnit(this);
-        }
-        setShipUnits(tempShipUnits);
-        
+        setSize(3);        
         setSpeed(3);
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(1);
         setCannonDamage(1);
         setDirection(direction);
-        moveTo(position);        
+        
         weapons.add("cannon");
         Range cr = new Range(new Vector2(-3,-1), new Vector2(1,-1), 
             new Vector2(1,1), new Vector2(-3,1));   
@@ -57,7 +50,15 @@ public class RadarBoat extends Ship {
         setRadarRange(rr);
         Range lrr = new Range(new Vector2(-1,-1), new Vector2(10,-1), 
               new Vector2(10,1), new Vector2(-1,1));       
-        setLongRadarRange(rr);        
+        setLongRadarRange(rr); 
+        
+                
+        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
+        for (int i = 0; i < getSize(); i++){
+            tempShipUnits[i] = new ShipUnit(this);
+        }
+        setShipUnits(tempShipUnits);
+        moveTo(position);        
      }
     
     public void setLongRadarRange(Range r){

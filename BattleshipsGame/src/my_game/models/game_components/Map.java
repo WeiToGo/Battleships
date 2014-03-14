@@ -824,7 +824,9 @@ public class Map implements java.io.Serializable {
     	GameObject target = getObjectAt(position);
     	
     	if(attacker.getClass() == new Cruiser(10000).getClass()){
-    		return((Cruiser) attacker).fireCannon(target);
+    	System.out.println("Attacker is a cruiser.");	
+            return((Cruiser) attacker).fireCannon(target);
+                
     	}
     	else if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
     		return ((TorpedoBoat) attacker).fireCannon(target);
