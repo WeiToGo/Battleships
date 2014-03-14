@@ -108,7 +108,7 @@ public class Game implements GameGUI.GameGuiListener {
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
             //TODO if the line below is commented, uncomment for proper behaviour
-            //this.net.sendGameState(gameState);
+            this.net.sendGameState(gameState);
             startGame();
         } else {
             //add a listener to the client
@@ -283,6 +283,12 @@ public class Game implements GameGUI.GameGuiListener {
     
     @Override
     public void onButtonPressed(Action action) {
+        if(awaitingInput) {
+            synchronized(this) {
+                input = null;
+                this.notifyAll();
+            }
+        }
         if(selectedShip != null) {
             //we can take an action, there's a ship already selected
             Thread t;
@@ -358,7 +364,7 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = false;
                 //check if the result is acceptable
                 
-                if(gameState.getMap().moveShip(s, input, moveHighlight)) {
+                if(input != null && gameState.getMap().moveShip(s, input, moveHighlight)) {
                     gui.drawGameState(gameState);
                     
                     Message m = new Message("Ship moved to new position " + input + ".", Message.MessageType.Game, player);
@@ -390,7 +396,7 @@ public class Game implements GameGUI.GameGuiListener {
                 this.wait();
                 awaitingInput = false;
 
-                if(gameState.getMap().turnShip(s, input, turnHighlight)) {
+                if(input != null && gameState.getMap().turnShip(s, input, turnHighlight)) {
                     gui.drawGameState(gameState);
                     
                     Message m = new Message("Ship turned to new position " + input + ".", Message.MessageType.Game, player);
@@ -424,26 +430,27 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = true;
                 this.wait();
                 awaitingInput = false;
-                //check if the result is acceptable
-                boolean found = false;
-                for(Vector2 v: weaponHighlight) {
-                    if(v.equals(input)) {
-                        found = true;
+                if(input != null) {
+                    //check if the result is acceptable
+                    boolean found = false;
+                    for(Vector2 v: weaponHighlight) {
+                        if(v.equals(input)) {
+                            found = true;
+                        }
+                    }
+
+                    GameObject targetHit = gameState.getMap().cannonAttack(s, input);
+                    if(targetHit != null && found) {
+                        Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
+                        //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
+                        gameState.addMessage(m);
+
+                        gui.drawGameState(gameState);
+                        sendGameState();
+                    } else {
+                        Misc.log("No hit.");
                     }
                 }
-
-                GameObject targetHit = gameState.getMap().cannonAttack(s, input);
-                if(targetHit != null && found) {
-                    Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
-                    //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
-                    gameState.addMessage(m);
-                    
-                    gui.drawGameState(gameState);
-                    sendGameState();
-                } else {
-                    Misc.log("No hit.");
-                }
-                
                 gui.requestlearHighlight();
                 gui.setButtonsEnabled(false);
                 selectedShip = null;
