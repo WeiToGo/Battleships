@@ -194,7 +194,11 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> visible = getRangePositions(r);
         return visible;
     }    
-          
+    
+    /**
+     * 
+     * @param target = the target GameObject 
+     */
     public void fireCannon(GameObject target) {
     	if (target.getClass() == new ShipUnit().getClass()){
 			((ShipUnit)target).setDamage(getCannonDamage());
