@@ -14,6 +14,7 @@ import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipDirection;
+import my_game.models.game_components.ShipUnit;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
@@ -27,8 +28,7 @@ import my_game.util.Positions;
  * both of these communicating amongst them via networking
  * entities (GameServer and GameClient).
  */
-public class Game implements GameGUI.GameGuiListener {
-    
+public class Game implements GameGUI.GameGuiListener {    
     public enum PlayerType {
         Host, Client
     };
@@ -49,6 +49,11 @@ public class Game implements GameGUI.GameGuiListener {
     
     private final ServerListener sListener;
     private final ClientListener cListener;
+    
+    /** This variable contains a ship selected by the user. */
+    private Ship selectedShip;
+    /** A reference to the game gui which is displaying the game itself. */
+    private GameGUI gui;
     
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
@@ -179,7 +184,7 @@ public class Game implements GameGUI.GameGuiListener {
     private void startGame() {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
-        GameGUI gui = new GameGUI(30, 30, this, this.player);
+        gui = new GameGUI(30, 30, this, this.player);
         gui.start();
         //now wait until the gui initializes
         synchronized(this) {
@@ -219,7 +224,22 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
-    
+    public void onMouseClick(int x, int y) {
+        //if it's the player's turn and there is a ship under the mouse cursor, select the ship
+        Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
+        Vector2 position = new Vector2(x, y);
+        if(playerWithTurn == player && gameState.getMap().isShip(position)) {
+            //mark the ship as selected and enable the gui buttons
+            ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
+            Ship ship = s.getShip();
+            this.selectedShip = ship;
+            gui.setButtonsEnabled(true);
+            System.out.println("Ship " + selectedShip + " selected.");
+        } else {
+            this.selectedShip = null;
+            gui.setButtonsEnabled(false);
+        }
+    }
     /* *********************************************************************** */
     
     

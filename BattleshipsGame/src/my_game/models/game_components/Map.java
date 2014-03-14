@@ -699,6 +699,14 @@ public class Map implements java.io.Serializable {
     }
     
     /**
+     * @param position 
+     * @return True if at the specified position there is a ship, otherwise false.
+     */
+    public boolean isShip(Vector2 position) {
+        return this.getObjectAt(position) instanceof ShipUnit;
+    }
+    
+    /**
      * If there is no object at the specified position in the grid, isClear()
      * returns true. Otherwise, it returns false.
      * @param position

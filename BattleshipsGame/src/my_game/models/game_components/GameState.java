@@ -87,6 +87,21 @@ public class GameState implements java.io.Serializable {
         return this.map;
     }
     
+    public int getPlayerTurn() {
+        return this.playerTurn;
+    }
+    
+    /**
+     * Returns the player with the specified index.
+     * West/blue player has index 0. 
+     * East/red player has index 1.
+     * @param index
+     * @return 
+     */
+    public Player getPlayer(int index) {
+        return player[index];
+    }
+    
     /* TEST ONLY */
     public Ship[] getShipsP0(){
         return player0Ships;
