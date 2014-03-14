@@ -108,7 +108,7 @@ public class Game implements GameGUI.GameGuiListener {
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
             //TODO if the line below is commented, uncomment for proper behaviour
-            this.net.sendGameState(gameState);
+            //this.net.sendGameState(gameState);
             startGame();
         } else {
             //add a listener to the client
