@@ -1,0 +1,14 @@
+Material My Material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        Shininess : 8
+        DiffuseMap : Textures/baseRedTextureDestroyed.png
+        GlowMap : Textures/ShipGlow.png
+        UseMaterialColors : true
+        Ambient  : 0.3 0.3 0.3 1
+        Diffuse  : 1.0 1.0 1.0 1.0
+        Specular : 1.0 1.0 1.0 1.0
+        SpecularMap : Textures/SpecularMap.png
+     }
+    AdditionalRenderState {
+    }
+}

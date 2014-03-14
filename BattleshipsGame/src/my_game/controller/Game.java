@@ -250,7 +250,7 @@ public class Game implements GameGUI.GameGuiListener {
         Vector2 position = new Vector2(x, y);
         
         Misc.log((playerWithTurn.equals(player)) + " and " + gameState.getMap().isShip(position));
-        if(playerWithTurn == player && gameState.getMap().isShip(position)) {
+        if(playerWithTurn == player && gameState.getMap().isShip(position) && ! awaitingInput) {
             //mark the ship as selected and enable the gui buttons
             ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
             Ship ship = s.getShip();
@@ -385,8 +385,7 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = true;
                 this.wait();
                 awaitingInput = false;
-                //check if the result is acceptable
-                
+
                 if(gameState.getMap().turnShip(s, input, turnHighlight)) {
                     gui.drawGameState(gameState);
                     
@@ -409,6 +408,9 @@ public class Game implements GameGUI.GameGuiListener {
     private void attackAction(Ship s) {
         //need to be called on the map object.
         weaponHighlight = s.getCannonPositions();
+        for(Vector2 v: weaponHighlight) {
+            Misc.log(v.toString());
+        }
 
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
         gui.highlightPositions(weaponHighlight);
@@ -419,14 +421,20 @@ public class Game implements GameGUI.GameGuiListener {
                 this.wait();
                 awaitingInput = false;
                 //check if the result is acceptable
-                Misc.log("input received");
-                
+                boolean found = false;
+                for(Vector2 v: weaponHighlight) {
+                    if(v.equals(input)) {
+                        found = true;
+                    }
+                }
+
                 GameObject targetHit = gameState.getMap().cannonAttack(s, input);
-                if(targetHit != null) {
-                    gui.drawGameState(gameState);
-                    
+                if(targetHit != null && found) {
                     Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
+                    //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
                     gameState.addMessage(m);
+                    
+                    gui.drawGameState(gameState);
                     sendGameState();
                 } else {
                     Misc.log("No hit.");

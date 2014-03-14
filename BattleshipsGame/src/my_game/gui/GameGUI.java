@@ -58,7 +58,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     };
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
-    private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
+    private final static int BASE = 0, BLOCK = 1, BOW = 2, RED = 3, BLUE = 4, NEW = 5, DAMAGED = 6, DESTROYED = 7;
     /** The height at which buttons are displayed. */
     private final static float BUTTONS_Y = 15;
     /** The gap between buttons. */
@@ -68,7 +68,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
     
-    Spatial grid, highlight, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
+    Spatial grid, highlight, shade, blueShipBlock, blueShipBow, 
+            redShipBlock, redShipBow, blueBase, redBase, rock;
     
     /** Interface buttons and other pictures. */
     Picture blackBar, moveButton, turnButton, shootCannonButton;
@@ -401,26 +402,46 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         }
     }
     
-    private void drawShipPart(int x, int y, ShipDirection dir, int type) {
+    private void drawShipPart(int x, int y, ShipDirection dir, int type, int colour, int damage) {
         Spatial shipPartInstance = null;
         switch(type) {
-            case BLOCK_BLUE:
+            case BLOCK:
                 shipPartInstance = blueShipBlock.clone();
                 break;
-            case BOW_BLUE:
+            case BOW:
                 shipPartInstance = blueShipBow.clone();
-                break;
-            case BLOCK_RED:
-                shipPartInstance = redShipBlock.clone();
-                break;
-            case BOW_RED:
-                shipPartInstance = redShipBow.clone();
                 break;
             default:
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, 
                         new GameException("Unexpected ship unit type in drawShipPart(...)!"));
                 break;
         }
+        
+        switch(colour) {
+            case RED:
+                if(damage == NEW) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+                } else if(damage == DAMAGED) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialRed.j3m"));
+                } else {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialRed.j3m"));
+                }
+                break;
+            case BLUE:
+                if(damage == NEW) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+                } else if(damage == DAMAGED) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialBlue.j3m"));
+                } else {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialBlue.j3m"));
+                }
+                break;
+            default:
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, 
+                        new GameException("Unexpected colour!"));
+                break;
+        }
+        
         //position the ship unit within the grid
         
         shipPartInstance.setLocalTranslation(2 * (x - 15) + 1, 1, 2 * (y - 15) + 1);
@@ -449,14 +470,26 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.objectsGrid[x][y] = shipPartInstance;
     }
     
-    private void drawBasePart(int x, int y, int type) {
-        Spatial baseBlock = null;
-        switch(type) {
-            case BASE_BLUE:
-                baseBlock = blueBase.clone();
+    private void drawBasePart(int x, int y, int colour, int damage) {
+        Spatial baseBlock = blueBase.clone();
+        switch(colour) {
+            case RED:
+                if(damage == NEW) {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+                } else if(damage == DAMAGED) {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialRed.j3m"));
+                } else {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialRed.j3m"));
+                }
                 break;
-            case BASE_RED:
-                baseBlock = redBase.clone();
+            case BLUE:
+                if(damage == NEW) {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+                } else if(damage == DAMAGED) {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialBlue.j3m"));
+                } else {
+                    baseBlock.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialBlue.j3m"));
+                }
                 break;
             default:
                 Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null,                         
@@ -563,16 +596,32 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                         switch(o.getObjectType()) {
                             case Ship:
                                 ShipUnit s = (ShipUnit) o;
-                                if(s.isBow()) {
-                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BOW_BLUE : BOW_RED);
+                                int damage = 0;
+                                if(s.isHealthy()) {
+                                    damage = NEW;
+                                } else if(s.isDestoryed()) {
+                                    damage = DESTROYED;
                                 } else {
-                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), m.isBlue(s.getShip()) ? BLOCK_BLUE : BLOCK_RED);
+                                    damage = DAMAGED;
+                                }
+                                if(s.isBow()) {
+                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), BOW, m.isBlue(s.getShip()) ? BLUE : RED, damage);
+                                } else {
+                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), BLOCK, m.isBlue(s.getShip()) ? BLUE : RED, damage);
                                 }
 
                                 break;
                             case Base:
                                 BaseUnit b = (BaseUnit) o;
-                                drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BASE_BLUE : BASE_RED);
+                                damage = 0;
+                                if(b.isHealthy()) {
+                                    damage = NEW;
+                                } else if(b.isDestoryed()) {
+                                    damage = DESTROYED;
+                                } else {
+                                    damage = DAMAGED;
+                                }
+                                drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BLUE : RED, damage);
                                 break;
                             case CoralReef:
                                 CoralUnit c = (CoralUnit) o;

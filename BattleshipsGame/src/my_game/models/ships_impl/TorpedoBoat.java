@@ -29,12 +29,6 @@ public class TorpedoBoat extends Ship {
         setShipType(ShipType.TorpedoBoat);
         setSize(3);
         
-        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
-        for (int i = 0; i < getSize(); i++){
-            tempShipUnits[i] = new ShipUnit(this);
-        }
-        setShipUnits(tempShipUnits);
-        
         setSpeed(9);
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
@@ -42,7 +36,7 @@ public class TorpedoBoat extends Ship {
         setCannonDamage(1);
         setTorpedoDamage(1);
         setDirection(direction);
-        moveTo(position);        
+       
         weapons.add("cannon");
         weapons.add("torpedo");
         
@@ -57,6 +51,13 @@ public class TorpedoBoat extends Ship {
         Range rr = new Range(new Vector2(-1,-1), new Vector2(4,-1), 
               new Vector2(4,1), new Vector2(-1,1));       
         setRadarRange(rr);
+                
+        ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
+        for (int i = 0; i < getSize(); i++){
+            tempShipUnits[i] = new ShipUnit(this);
+        }
+        setShipUnits(tempShipUnits);
+         moveTo(position);        
      }
 
     public TorpedoBoat(int pid) {
