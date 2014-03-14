@@ -5,6 +5,7 @@
 package my_game.gui;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.font.BitmapText;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
@@ -69,6 +70,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     /** Interface buttons and other pictures. */
     Picture blackBar, moveButton, turnButton, shootCannonButton;
+    /** Text showing messages and other info. */
+    BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
     boolean moveActivated, turnActivated, shootCannonActivated;
     
@@ -320,6 +323,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         shootCannonButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(shootCannonButton);
+        //**************************
+        //init. the text for the chat log
+        chatText = new BitmapText(guiFont, false);  
+        chatText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
+        chatText.setColor(ColorRGBA.White);                             // font color
+        chatText.setText("You can write any string here.");             // the text
+        chatText.setLocalTranslation(getButtonWidth() * 7, chatText.getLineHeight() + getButtonGap(), 0); // position
+        chatText.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(chatText);
+        
     }
     
     private void loadHighlight() {

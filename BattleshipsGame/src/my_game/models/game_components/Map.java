@@ -1052,6 +1052,8 @@ public class Map implements java.io.Serializable {
             //make visible every grid cell around the base unit
             Vector2 pos = u.getPosition();
             makeVisibleAllNeighbours(pos, player0Visibility);
+            //add only the base blocks as visible to the other player
+            player1Visibility[pos.x][pos.y] = true;
             
         }
         player1Visibility = generateRadarVisibility(player1Ships);
@@ -1059,7 +1061,18 @@ public class Map implements java.io.Serializable {
             //make visible every grid cell around the base unit
             Vector2 pos = u.getPosition();
             makeVisibleAllNeighbours(pos, player1Visibility);
-            
+            //add only the base blocks as visible to the other player
+            player0Visibility[pos.x][pos.y] = true;
+        }
+        //add all obstacles as visible
+        for(int x = 0; x < WIDTH; x++) {
+            for(int y = 0; y < HEIGHT; y++) {
+                if(grid[x][y] instanceof CoralUnit) {
+                    //make the corals visible
+                    player0Visibility[x][y] = true;
+                    player1Visibility[x][y] = true;
+                }
+            }
         }
     }
 
