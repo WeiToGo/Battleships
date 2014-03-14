@@ -1,6 +1,10 @@
 package my_game.networking.packets.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.networking.packets.Packet;
+import my_game.networking.packets.PacketHandler;
 
 /**
  * The hello packet is used to send
@@ -28,8 +32,13 @@ public class HelloPacket extends Packet {
 
 	@Override
 	public byte[] getData() {
-		//TODO Avoid using ~ as separator so that it can be used in passwords
-		return ("00" + this.username + "#").getBytes();
+            try {
+                //TODO Avoid using ~ as separator so that it can be used in passwords
+                return ("00" + this.username + PacketHandler.PACKET_SEPARATOR).getBytes("ISO-8859-1");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HelloPacket.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
 	}
 
 	

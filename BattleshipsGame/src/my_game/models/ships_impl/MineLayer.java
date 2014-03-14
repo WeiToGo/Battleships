@@ -55,17 +55,18 @@ public class MineLayer extends Ship {
     public MineLayer(int pid) {
 		super(pid);
 	}
+/*
 
     public int getCannonDamage() {
 	return cannonDamage;
     }
 
-	void setCannonDamage(int cannonDamage) {
+    public void setCannonDamage(int cannonDamage) {
 	this.cannonDamage = cannonDamage;
     } 
     
     
-    public boolean fireCannon(GameObject target) {
+    public void fireCannon(GameObject target) {
         boolean result = false;
 	   
         if(target.getClass() == new CoralUnit().getClass()) {
@@ -77,9 +78,8 @@ public class MineLayer extends Ship {
             target.getClass() == new Mine().getClass()) {
                 result = true;
         }
-	   
-        return result;
-    }  
+        //return result;
+    }  */
     
     public boolean layMine(GameObject target) {
         throw new UnsupportedOperationException("Not yet implemented");

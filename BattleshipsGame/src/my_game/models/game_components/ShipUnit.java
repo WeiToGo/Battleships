@@ -32,6 +32,14 @@ public class ShipUnit extends GameObject implements java.io.Serializable {
         return ship;
     }
     
+    /**
+     * @return True if this ShipUnit is the bow of the ship that it belongs to,
+     * otherwise returns false.
+     */
+    public boolean isBow() {
+        return (this.ship.getShipUnits()[0] == this);
+    }
+    
     public Vector2 getPosition(){
         Vector2 posCopy = new Vector2(this.position);
         return posCopy;

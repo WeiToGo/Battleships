@@ -2,7 +2,7 @@ package my_game.util;
 
 import my_game.models.game_components.ShipDirection;
 
-public class Range {
+public class Range implements java.io.Serializable {
 	
 	private Vector2 topLeft; 
 	private Vector2 topRight; 

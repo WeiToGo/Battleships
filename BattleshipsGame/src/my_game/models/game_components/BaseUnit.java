@@ -51,4 +51,8 @@ public class BaseUnit extends GameObject implements java.io.Serializable {
     public Vector2 getPosition(){
         return this.position;
     }
+    
+    public Base getBase() {
+        return this.base;
+    }
 }

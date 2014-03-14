@@ -27,8 +27,8 @@ import my_game.util.Positions;
  * both of these communicating amongst them via networking
  * entities (GameServer and GameClient).
  */
-public class Game {
-
+public class Game implements GameGUI.GameGuiListener {
+    
     public enum PlayerType {
         Host, Client
     };
@@ -88,7 +88,8 @@ public class Game {
             //init game state
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
-            this.net.sendGameState(gameState);
+            //TODO if the line below is commented, uncomment for proper behaviour
+            //this.net.sendGameState(gameState);
             startGame();
         } else {
             //add a listener to the client
@@ -97,17 +98,23 @@ public class Game {
             
             net.addNetListener(cListener);
             
+            System.out.println("Client will now wait to receive game state.");
             //You are a client. Wait to receive a game state from server
-            while(!receivedNewGamestate) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            synchronized(player) {
+                while(!receivedNewGamestate) {
+                    try {
+                        player.wait();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
             
+            System.out.println("Client received a game state.");
             gameState = new GameState(this.receivedGameState);
             receivedNewGamestate = false;
+            //replace the partial information about this player in the gamestate with the full info
+            gameState.setPlayer(1, player);
             
             startGame();
         }
@@ -131,8 +138,12 @@ public class Game {
         }
 
         public void onGameStateReceive(GameState gs) {
-            receivedGameState = gs;
-            receivedNewGamestate = true;
+            //use player as a common synchronization object
+            synchronized(player) {
+                receivedGameState = gs;
+                receivedNewGamestate = true;
+                player.notifyAll();
+            }
         }
         
     }
@@ -155,27 +166,37 @@ public class Game {
         }
 
         public void onGameStateReceive(GameState gs) {
-            receivedGameState = gs;
-            receivedNewGamestate = true;
+            //use player as a common synchronization object
+            synchronized(player) {
+                receivedGameState = gs;
+                receivedNewGamestate = true;
+                player.notifyAll();
+            }
         }
         
     }
     
-    private static void startGame() {
+    private void startGame() {
         //MAIN GAME LOOP PSEUDO
         //init and display GUI
-        GameGUI gui = new GameGUI(30, 30);
+        GameGUI gui = new GameGUI(30, 30, this, this.player);
         gui.start();
-        
-        // get all ships of this player
-        
+        //now wait until the gui initializes
+        synchronized(this) {
+            try {
+                this.wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        gui.drawGameState(this.gameState);
         //positioning phase
         //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
         
         //LOOP 
         Ship s; // get the ship we want to position from GUI
         //get the new position we want to move that ship around the base;
-        Vector2 newPosition;
+
         // calls positionShip
         //gameState.positionShip(s, newPosition);
         
@@ -192,6 +213,21 @@ public class Game {
         //repeat until game over
     }
     
+
+    /* **************  GameGuiListener implemented methods ******************* */
+    
+    @Override
+    public void initializeComplete() {
+        //if someone is waiting on this monitor, notify that gui is initialized
+        synchronized(this) {
+            this.notifyAll();
+        }
+    }
+    
+    
+    /* *********************************************************************** */
+    
+
 
     
     /**
@@ -242,10 +278,5 @@ public class Game {
     	//can only be called by destroyer and torpedo boat
     	//TO DO: highlight the available ship and torpedoRange to GUI pass the (user selected)attacker and targeting position to map
     	//map.TorpedoAttack(Ship attacker, Vector2 position)
-    }
-    
-    
-    public static void main(String[] args) {
-        startGame();
     }
 }
