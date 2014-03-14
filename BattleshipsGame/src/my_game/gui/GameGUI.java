@@ -22,6 +22,8 @@ import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.ui.Picture;
+import com.sun.javafx.geom.PickRay;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,10 +47,21 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
+    /** The height at which buttons are displayed. */
+    private final static float BUTTONS_Y = 15;
+    /** The gap between buttons. */
+    private float BUTTONS_GAP = 15;
+    
+    private final static float BAR_HEIGHT_RATIO = 14.5454f, BUTTON_HEIGHT_RATIO = 26.1818181818f, BUTTON_WIDTH_RATIO = 16;
     
     private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
     
     Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
+    
+    /** Interface buttons and other pictures. */
+    Picture blackBar, moveButton, turnButton, shootCannonButton;
+    /** Flags keeping track on the state of the three buttons. */
+    boolean moveActivated, turnActivated, shootCannonActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid;
@@ -84,6 +97,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     @Override
     public void simpleInitApp() {
         
+        setDisplayStatView(false); setDisplayFps(false);
+        
         loadTerrain();
         loadGrid();
         loadLights();
@@ -91,6 +106,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         loadBase();
         loadRock();
         loadRadar();
+        loadHUD();
         
                 //Post processing
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
@@ -114,11 +130,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
         
-        //report to the guiListener that init. is complete so he can now send requests to the gui
-        guiListener.initializeComplete();
-        
         inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addListener(this, new String[]{"CLICK"});
+        
+        //report to the guiListener that init. is complete so he can now send requests to the gui
+        guiListener.initializeComplete();
     }
 
     @Override
@@ -126,6 +142,22 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         if(this.gameStateUpdated) {
             drawGameState();
             gameStateUpdated = false;
+        }
+        
+        if(moveActivated) {
+            this.moveButton.setImage(assetManager, "/Interface/moveEnabled.png", true);
+        } else {
+            this.moveButton.setImage(assetManager, "/Interface/moveDisabled.png", true);
+        }
+        if(turnActivated) {
+            this.turnButton.setImage(assetManager, "/Interface/turnEnabled.png", true);
+        } else {
+            this.turnButton.setImage(assetManager, "/Interface/turnDisabled.png", true);
+        }
+        if(shootCannonActivated) {
+            this.shootCannonButton.setImage(assetManager, "/Interface/attackEnabled.png", true);
+        } else {
+            this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
         }
     }
     
@@ -213,6 +245,53 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         shade = assetManager.loadModel("Models/ShaderBlock/Cube.mesh.xml"); 
         shade.setMaterial(assetManager.loadMaterial("Materials/shade.j3m"));
         shade.setQueueBucket(RenderQueue.Bucket.Transparent);
+    }
+    
+    private void loadHUD() {
+        //load the black bar on the bottom of the window
+        blackBar = new Picture("Bar");
+        blackBar.setImage(assetManager, "/Interface/blackbar.png", true);
+        blackBar.setWidth(settings.getWidth());
+        float height = settings.getHeight() / BAR_HEIGHT_RATIO;
+        blackBar.setHeight(height);
+        blackBar.setPosition(0, 0);
+        
+        blackBar.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(blackBar);
+        
+        moveButton = new Picture("MoveButton");
+        moveButton.setImage(assetManager, "/Interface/moveDisabled.png", true);
+        float width = settings.getWidth() / BUTTON_WIDTH_RATIO;
+        moveButton.setWidth(width);
+        height = settings.getHeight() / BUTTON_HEIGHT_RATIO;
+        moveButton.setHeight(height);
+        float resolutionAdjustedGap = BUTTONS_GAP * (settings.getWidth() / 2560.0f);
+        float resolutionAdjustedY = BUTTONS_Y * (settings.getHeight() / 1440.0f);
+        
+        moveButton.setPosition(resolutionAdjustedGap, resolutionAdjustedY);
+        
+        moveButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(moveButton);
+        //*************************
+        turnButton = new Picture("TurnButton");
+        turnButton.setImage(assetManager, "/Interface/turnDisabled.png", true);
+        
+        turnButton.setWidth(width);
+        turnButton.setHeight(height);
+        turnButton.setPosition(2 * resolutionAdjustedGap + width , resolutionAdjustedY);
+        
+        turnButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(turnButton);
+        //*************************
+        shootCannonButton = new Picture("TurnButton");
+        shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
+        
+        shootCannonButton.setWidth(width);
+        shootCannonButton.setHeight(height);
+        shootCannonButton.setPosition(3 * resolutionAdjustedGap +  2 * width , resolutionAdjustedY);
+        
+        shootCannonButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(shootCannonButton);
     }
     
     /* *********************** END OF LOADERS ******************************** */
@@ -374,33 +453,60 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         //we are done with displaying the contents of the game state
     }
 
+    /**
+     * @return The height of the UI bar element at the bottom of the screen.
+     */
+    private float getBarHeight() {
+        return settings.getHeight() / BAR_HEIGHT_RATIO;
+    }
+    
     public void onAction(String name, boolean isPressed, float tpf) {
         if(name == "CLICK" && isPressed) {
             // Convert screen click to 3d position
             Vector2f click2d = inputManager.getCursorPosition();
-            Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
-            Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                    // Aim the ray from the clicked spot forwards.
-            Ray ray = new Ray(click3d, dir);
-            Vector3f clickOnGridPlane = new Vector3f();
-            ray.intersectsWherePlane(gridPlane, clickOnGridPlane);
-            
-            int x, y;
-            
-            if(clickOnGridPlane.x < 0) {
-                x = (( ( (int) clickOnGridPlane.x) / 6) + 14);
+            if(click2d.y > getBarHeight()) {
+                //This is a click inside the gaming area, treat as ship selection
+                
+                Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
+                Vector3f dir = cam.getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+                        // Aim the ray from the clicked spot forwards.
+                Ray ray = new Ray(click3d, dir);
+                Vector3f clickOnGridPlane = new Vector3f();
+                ray.intersectsWherePlane(gridPlane, clickOnGridPlane);
+
+                int x, y;
+
+                if(clickOnGridPlane.x < 0) {
+                    x = (( ( (int) clickOnGridPlane.x) / 6) + 14);
+                } else {
+                    x = (( ( (int) clickOnGridPlane.x + 6) / 6) + 14);
+                }
+                if(clickOnGridPlane.z < 0) {
+                    y =  (( ( (int) clickOnGridPlane.z) / 6) + 14);
+                } else {
+                    y =  (( ( (int) clickOnGridPlane.z + 6) / 6) + 14);
+                }
+
+                guiListener.onMouseClick(x, y);
             } else {
-                x = (( ( (int) clickOnGridPlane.x + 6) / 6) + 14);
+                //this is a click in the black bar area, treat as a click on one of 
+                //the ui buttons
+                
             }
-            if(clickOnGridPlane.z < 0) {
-                y =  (( ( (int) clickOnGridPlane.z) / 6) + 14);
-            } else {
-                y =  (( ( (int) clickOnGridPlane.z + 6) / 6) + 14);
-            }
-            
-            System.out.println("Click event: " + x + ";" + y);
         }
     }
+
+    /**
+     * Enables and disables the buttons of the game gui.
+     * @param active 
+     */
+    public void setButtonsEnabled(boolean active) {
+        this.moveActivated = active;
+        this.shootCannonActivated = active;
+        this.turnActivated = active;
+    }
+
+
 
     /**
      * Interface used by GameGUI to communicate back to the controller which
@@ -412,5 +518,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
          * is complete.
          */
         public void initializeComplete();
+        
+        /**
+         * This method is called when the player clicks on the screen.
+         * @param x
+         * @param y 
+         */
+        public void onMouseClick(int x, int y);
     }
 }
