@@ -298,11 +298,11 @@ public abstract class Ship implements java.io.Serializable {
         xEnd = bowPosition.x + tr.x;
         yStart = bowPosition.y + tl.y;
         yEnd = bowPosition.y + bl.y;
-/*        System.out.println("xStart " + xStart);
+   /*     System.out.println("xStart " + xStart);
         System.out.println("xEnd" + xEnd);
         System.out.println("yStart " + yStart);
         System.out.println("yStart " + yEnd);
-  */      
+     */   
         for (i = xStart; i <= xEnd; i++){
             for (j = yStart; j <= yEnd; j++){
                 p = new Vector2(i,j);
@@ -352,7 +352,6 @@ public abstract class Ship implements java.io.Serializable {
             ShipUnit su = shipUnits[i];
             newPosition.get(j);
             su.setPosition(newPosition.get(j));
-     //       System.out.println("move to " +newPosition.get(j).x + " " + newPosition.get(j).y);
             i++;
             j++;
         }
@@ -367,7 +366,6 @@ public abstract class Ship implements java.io.Serializable {
         int speed = this.getCurrentSpeed();
         int size = this.getSize(); //need original size?
         Vector2 shipBow = this.getShipUnits()[0].getPosition();
-        System.out.println("current dir " + this.getDirection().toString());
         // I get an error if I don't add this part.
         ArrayList<Vector2> back = new ArrayList<Vector2>();
         ArrayList<Vector2> forward = new ArrayList<Vector2>();
@@ -699,6 +697,10 @@ public abstract class Ship implements java.io.Serializable {
                     Vector2 p = new Vector2(i,yPivot);
                     right.add(p);
                 }
+                for (int w = 0; w < right.size(); w++){
+                    Vector2 v = right.get(w);                 
+                }
+                
                 d = ShipDirection.East;
                 positions.setRight(right);
                 positions.setRightDirection(d);

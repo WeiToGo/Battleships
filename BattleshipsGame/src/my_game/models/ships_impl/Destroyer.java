@@ -45,10 +45,10 @@ public class Destroyer extends Ship{
             new Vector2(4,4), new Vector2(-7,4));   
         setCannonRange(cr);
         
-        Range tr = new Range(new Vector2(0,1), new Vector2(0,11),
+    /*    Range tr = new Range(new Vector2(0,1), new Vector2(0,11),
         		new Vector2(0,11), new Vector2(0,1));
         setTorpedoRange(tr);
-        
+   */     
         Range rr = new Range(new Vector2(-2,-1), new Vector2(5,-1), 
               new Vector2(5,1), new Vector2(-2,1));       
         setRadarRange(rr);

@@ -150,7 +150,6 @@ public class Map implements java.io.Serializable {
             //maybe not necessary but just in case the rule changes.
             ArrayList<Vector2> validBack = new ArrayList<Vector2>();
             for (int i = 0; i < back.size(); i++) {
-                System.out.println(" HERE " + back.get(i).x + " " + back.get(i).y);
                 if (!isSelf(ship, back.get(i))) {
                     if (!isVisibleObstacle(ship, back.get(i))) {
                         validBack.add(back.get(i));
@@ -225,10 +224,6 @@ public class Map implements java.io.Serializable {
             return false;
         }
         Moves shipPositions = getMovePositions (newPosition, p);
-    /*    for (Vector2 v : shipPositions.getPositions()){
-            System.out.println(" getPos " + v.x + " " + v.y);
-        }
-   */
         ArrayList<Vector2> valide = new ArrayList<Vector2>();
         valide = validateMove(ship, shipPositions);
         
@@ -431,12 +426,11 @@ public class Map implements java.io.Serializable {
         TurnPositions highlightedTurns = new TurnPositions(null,null,null,null,null);
         // highlight a particular turn only if all positions on the path are clear.
         ArrayList<Vector2> left = allTurns.getLeft();
-   //     System.out.println("left == " + left.get(0).x + " " + left.get(0).y);
-   //     System.out.println("left == " + left.get(1).x + " " + left.get(1).y);        
+        
         ArrayList<Vector2> leftPath = allTurns.getLeftPath();
         ShipDirection ld = allTurns.getLeftDirection();
         boolean canMoveLeft = true;
-        if(left != null && leftPath != null){
+        if(left != null && leftPath != null){       
             for (int i = 0; i < left.size(); i++) {
                 if (!isSelf(ship, left.get(i))) {
                     if (isVisibleObstacle(ship, left.get(i))) {
@@ -450,7 +444,6 @@ public class Map implements java.io.Serializable {
                 }
             }
             if (canMoveLeft) {
-                System.out.println(" CAN TURN left");
                 highlightedTurns.setLeft(left);
                 highlightedTurns.setLeftPath(leftPath);
                 highlightedTurns.setLeftDirection(ld);
@@ -459,10 +452,9 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> right = allTurns.getRight();
         ArrayList<Vector2> rightPath = allTurns.getRightPath();
         ShipDirection rd = allTurns.getRightDirection();
-    //    System.out.println("right == " + right.get(0).x + " " + right.get(0).y);
-    //    System.out.println("right == " + right.get(1).x + " " + right.get(1).y);  
+  
         boolean canMoveRight = true;
-        if (right != null && rightPath != null){
+        if (right != null && rightPath != null){       
             for (int i = 0; i < right.size(); i++) {
                 if (!isSelf(ship, right.get(i))) {
                     if (isVisibleObstacle(ship, right.get(i))) {
@@ -470,24 +462,22 @@ public class Map implements java.io.Serializable {
                     }
                 }
             }
+            
             for (int i = 0; i < rightPath.size(); i++) {
                 if (isVisibleObstacle(ship, rightPath.get(i))) {
                     canMoveRight = false;
                 }
             }
             if (canMoveRight) {
-                System.out.println(" CAN TURN right");
                 highlightedTurns.setRight(right);
                 highlightedTurns.setRightPath(rightPath);
                 highlightedTurns.setRightDirection(rd);
             }
         }
         ArrayList<Vector2> back = allTurns.getBackward();
-    //    System.out.println("back size " + back.size());
         ShipDirection bd = allTurns.getBackDirection();
         if (back != null){
             if (canMoveLeft && canMoveRight) {
-                System.out.println(" CAN TURN BACKWARD");
                 highlightedTurns.setBack(back);
                 highlightedTurns.setBackDirection(bd);
             }
@@ -505,14 +495,14 @@ public class Map implements java.io.Serializable {
         }
         if(!found) {
             return false;
-        }
-        System.out.println(" TURN POS == " + newPosition.x + " " + newPosition.y);
+        }      
         Turns shipPositions = getTurnPositions (newPosition, p);
+        ArrayList<Vector2> po = shipPositions.positions;       
         ArrayList <Vector2> t = shipPositions.positions;
         if (t == null){
             return false;
         }
-        System.out.println("t size " + t.size());
+
     /*   for (Vector2 v: t){
             System.out.println("turnpositions " + v.x + " " + v.y);
         }
@@ -520,6 +510,7 @@ public class Map implements java.io.Serializable {
         Turns validTurns = validateTurn(ship, shipPositions);
         // find the new ship direction
         ArrayList <Vector2> valid = validTurns.getTurns();
+      
         ShipDirection newDirection = validTurns.getNewDirection();
         if (valid != null){
             this.updateShipPositions(ship, valid);    
@@ -543,29 +534,25 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> leftPath = new ArrayList<Vector2>();
         ArrayList<Vector2> rightPath = new ArrayList<Vector2>();
         ArrayList<Vector2> left = positions.getLeft();
-        if (left != null){        
+        if (left != null){       
             leftPath = positions.getLeftPath();
             ShipDirection ld = positions.getLeftDirection();
-            for (Vector2 v : left) {
-                if (v.x == p.x && v.y == p.y) {
-                    turns.setTurns(left);
-                    turns.setPath(leftPath);
-                    turns.setNewDirection(ld);
-                    return turns;
-                }
+            if (left.get(0).equals(p)){
+                turns.setTurns(left);
+                turns.setPath(leftPath);
+                turns.setNewDirection(ld);
+                return turns;
             }
         }
         ArrayList<Vector2> right = positions.getRight();
         if (right != null){
             rightPath = positions.getRightPath();
             ShipDirection rd = positions.getRightDirection();
-            for (Vector2 v : right) {
-                if (v.x == p.x && v.y == p.y) {
-                    turns.setTurns(right);
-                    turns.setPath(rightPath);
-                    turns.setNewDirection(rd);
-                    return turns;
-                }
+            if (right.get(0).equals(p)) {
+                turns.setTurns(right);
+                turns.setPath(rightPath);
+                turns.setNewDirection(rd);
+                return turns;
             }  
         }
         ArrayList<Vector2> back = positions.getBackward();
@@ -662,7 +649,6 @@ public class Map implements java.io.Serializable {
             }
             ArrayList<Vector2> visible = s.getRadarPositions();            
             for (Vector2 v: visible){
-               // System.out.println("visible " +v.x + " " + v.y);
                 if (v.equals(p)){
                     isVisibleObstacle = true;
                     break;
