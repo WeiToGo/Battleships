@@ -170,7 +170,7 @@ public abstract class Ship implements java.io.Serializable {
     }
     
     public void setTorpedoRange(Range r){
-        this.cannonRange = r;
+        this.torpedoRange = r;
     }
     
     public void setRadarRange(Range r){
@@ -291,7 +291,6 @@ public abstract class Ship implements java.io.Serializable {
         Vector2 tr = r.getTopRight();
         Vector2 bl = r.getBottomLeft();
         Vector2 sp = bowPosition;
-        Vector2 p;
        int xStart, xEnd, yStart, yEnd, i,j;
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         xStart = bowPosition.x + tl.x;
@@ -305,7 +304,7 @@ public abstract class Ship implements java.io.Serializable {
      */   
         for (i = xStart; i <= xEnd; i++){
             for (j = yStart; j <= yEnd; j++){
-                p = new Vector2(i,j);
+                Vector2 p = new Vector2(i,j);
                 positions.add(p);
             }
         }

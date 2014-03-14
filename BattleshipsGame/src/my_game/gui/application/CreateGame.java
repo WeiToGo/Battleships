@@ -55,7 +55,7 @@ public class CreateGame
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirmation.fxml"));
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirm.fxml"));
         	} catch (IOException e) {
         		// TODO Auto-generated catch block
         		e.printStackTrace();
@@ -77,7 +77,7 @@ public class CreateGame
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirmation.fxml"));
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirm.fxml"));
         	} catch (IOException e) {
         		// TODO Auto-generated catch block
         		e.printStackTrace();

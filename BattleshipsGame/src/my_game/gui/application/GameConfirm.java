@@ -24,7 +24,7 @@ import my_game.networking.server.GameServer;
 import my_game.util.GameException;
 
 
-public class GameConfirmation
+public class GameConfirm
     implements Initializable {
 
     @FXML //  fx:id="myButton"
@@ -73,7 +73,7 @@ public class GameConfirmation
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 if(otherPlayerVote) {
@@ -179,7 +179,7 @@ public class GameConfirmation
 
         public void onReefReceive(CoralReef reef) {
             //Server is not supposed to receive this, something went wrong
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
         }
 
         public void onVoteReceive(boolean vote) {
@@ -189,7 +189,7 @@ public class GameConfirmation
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
         
     }
@@ -212,7 +212,7 @@ public class GameConfirmation
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
     }
 }

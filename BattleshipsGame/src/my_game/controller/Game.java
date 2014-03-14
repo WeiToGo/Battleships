@@ -188,8 +188,12 @@ public class Game implements GameGUI.GameGuiListener {
             //use player as a common synchronization object
             synchronized(player) {
                 receivedGameState = gs;
+                receivedGameState.setPlayer(1, player);
                 receivedNewGamestate = true;
                 player.notifyAll();
+            }
+            if(gui != null) {
+                gui.drawGameState(receivedGameState);
             }
         }
         
