@@ -35,7 +35,7 @@ public class ShipTest {
         ShipDirection sd = ShipDirection.West;
         Destroyer d = new Destroyer(1,positions, sd);
         
-        Range r = d.getRadarRange();
+        Range r = d.getCannonRange();
         Vector2 tl = r.getTopLeft();
         Vector2 tr = r.getTopRight();
         Vector2 br = r.getBottomRight();

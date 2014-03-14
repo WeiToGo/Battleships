@@ -123,56 +123,63 @@ public class Map implements java.io.Serializable {
         //if there is any obstacle on left or right, the ship can't move sideways.
         ArrayList<Vector2> left = allMoves.getLeft();
         boolean canMove = true;
-        for (int i = 0; i < left.size(); i++){
-            if (isVisibleObstacle(ship, left.get(i))){
-                canMove = false;
+        if (left != null){
+            for (int i = 0; i < left.size(); i++) {
+                if (isVisibleObstacle(ship, left.get(i))) {
+                    canMove = false;
+                }
             }
-        }
-        
-        if (canMove){
-           highlightedMoves.setLeft(left);
+            if (canMove) {
+                highlightedMoves.setLeft(left);
+            }
         }
         ArrayList<Vector2> right = allMoves.getRight();
         canMove = true;
-        for (int i = 0; i < right.size(); i++){
-            if (isVisibleObstacle(ship, right.get(i))){
-                canMove = false;
+        if (right != null){
+            for (int i = 0; i < right.size(); i++) {
+                if (isVisibleObstacle(ship, right.get(i))) {
+                    canMove = false;
+                }
             }
-        }
-        if (canMove){
-            highlightedMoves.setRight(right);
-        }
-              
+            if (canMove) {
+                highlightedMoves.setRight(right);
+            }
+        }      
         ArrayList<Vector2> back = allMoves.getBackward();
-        //maybe not necessary but just in case the rule changes.
-        ArrayList<Vector2> validBack = new ArrayList<Vector2>();
-        for (int i = 0; i < back.size(); i++){
-            if (!isSelf(ship,back.get(i))){            
-                if (!isVisibleObstacle(ship, back.get(i))) {
+        if (back != null){
+            //maybe not necessary but just in case the rule changes.
+            ArrayList<Vector2> validBack = new ArrayList<Vector2>();
+            for (int i = 0; i < back.size(); i++) {
+                System.out.println(" HERE " + back.get(i).x + " " + back.get(i).y);
+                if (!isSelf(ship, back.get(i))) {
+                    if (!isVisibleObstacle(ship, back.get(i))) {
+                        validBack.add(back.get(i));
+                    }
+                } else {
                     validBack.add(back.get(i));
                 }
-            }else{
-                validBack.add(back.get(i));
             }
+            highlightedMoves.setBack(validBack);
         }
-        highlightedMoves.setBack(validBack);
         // if there is an obstacle in front, the ship can't move beyond that obstacle.
         ArrayList<Vector2> forward = allMoves.getForward();
-        ArrayList<Vector2> validForward = new ArrayList<Vector2>();
-        for (int i = 0; i < forward.size(); i++){
-            if (!isSelf(ship,forward.get(i))){            
-                if (!isVisibleObstacle(ship, forward.get(i))) {
-                    validForward.add(forward.get(i));
-                } else if (isVisibleObstacle(ship, forward.get(i))) {
-                    break;
+        if (forward != null){
+            ArrayList<Vector2> validForward = new ArrayList<Vector2>();
+            for (int i = 0; i < forward.size(); i++) {
+                if (!isSelf(ship, forward.get(i))) {
+                    if (!isVisibleObstacle(ship, forward.get(i))) {
+                        validForward.add(forward.get(i));
+                    } else if (isVisibleObstacle(ship, forward.get(i))) {
+                        break;
+                    } else {
+                        //shouldn't happen
+                    }
                 } else {
-                    //shouldn't happen
+                    validForward.add(forward.get(i));
                 }
-            }else{
-                validForward.add(forward.get(i));
             }
-        }       
-        highlightedMoves.setForward(validForward);         
+        highlightedMoves.setForward(validForward);   
+        }
         return highlightedMoves;
     }
     
@@ -424,8 +431,8 @@ public class Map implements java.io.Serializable {
         TurnPositions highlightedTurns = new TurnPositions(null,null,null,null,null);
         // highlight a particular turn only if all positions on the path are clear.
         ArrayList<Vector2> left = allTurns.getLeft();
-        System.out.println("left == " + left.get(0).x + " " + left.get(0).y);
-        System.out.println("left == " + left.get(1).x + " " + left.get(1).y);        
+   //     System.out.println("left == " + left.get(0).x + " " + left.get(0).y);
+   //     System.out.println("left == " + left.get(1).x + " " + left.get(1).y);        
         ArrayList<Vector2> leftPath = allTurns.getLeftPath();
         ShipDirection ld = allTurns.getLeftDirection();
         boolean canMoveLeft = true;
@@ -443,6 +450,7 @@ public class Map implements java.io.Serializable {
                 }
             }
             if (canMoveLeft) {
+                System.out.println(" CAN TURN left");
                 highlightedTurns.setLeft(left);
                 highlightedTurns.setLeftPath(leftPath);
                 highlightedTurns.setLeftDirection(ld);
@@ -451,8 +459,8 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> right = allTurns.getRight();
         ArrayList<Vector2> rightPath = allTurns.getRightPath();
         ShipDirection rd = allTurns.getRightDirection();
-        System.out.println("right == " + right.get(0).x + " " + right.get(0).y);
-        System.out.println("right == " + right.get(1).x + " " + right.get(1).y);  
+    //    System.out.println("right == " + right.get(0).x + " " + right.get(0).y);
+    //    System.out.println("right == " + right.get(1).x + " " + right.get(1).y);  
         boolean canMoveRight = true;
         if (right != null && rightPath != null){
             for (int i = 0; i < right.size(); i++) {
@@ -468,6 +476,7 @@ public class Map implements java.io.Serializable {
                 }
             }
             if (canMoveRight) {
+                System.out.println(" CAN TURN right");
                 highlightedTurns.setRight(right);
                 highlightedTurns.setRightPath(rightPath);
                 highlightedTurns.setRightDirection(rd);
@@ -477,17 +486,8 @@ public class Map implements java.io.Serializable {
     //    System.out.println("back size " + back.size());
         ShipDirection bd = allTurns.getBackDirection();
         if (back != null){
-            for (int i = 0; i < right.size(); i++) {
-                if (isVisibleObstacle(ship, right.get(i))) {
-                    canMoveRight = false;//can also use canMoveLeft.
-                }
-            }
-            for (int i = 0; i < rightPath.size(); i++) {
-                if (isVisibleObstacle(ship, rightPath.get(i))) {
-                    canMoveRight = false;
-                }
-            }
             if (canMoveLeft && canMoveRight) {
+                System.out.println(" CAN TURN BACKWARD");
                 highlightedTurns.setBack(back);
                 highlightedTurns.setBackDirection(bd);
             }
@@ -506,7 +506,7 @@ public class Map implements java.io.Serializable {
         if(!found) {
             return false;
         }
-        System.out.println("p == " + newPosition.x + " " + newPosition.y);
+        System.out.println(" TURN POS == " + newPosition.x + " " + newPosition.y);
         Turns shipPositions = getTurnPositions (newPosition, p);
         ArrayList <Vector2> t = shipPositions.positions;
         if (t == null){
@@ -656,8 +656,11 @@ public class Map implements java.io.Serializable {
             isVisibleObstacle = true;
 
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
-            ArrayList<Vector2> visible = s.getRadarPositions();
-            
+            ShipUnit su = (ShipUnit)o;
+            if (su.getShip().getPlayerID()== s.getPlayerID()){
+                return true;
+            }
+            ArrayList<Vector2> visible = s.getRadarPositions();            
             for (Vector2 v: visible){
                // System.out.println("visible " +v.x + " " + v.y);
                 if (v.equals(p)){

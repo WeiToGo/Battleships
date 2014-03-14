@@ -449,7 +449,8 @@ public abstract class Ship implements java.io.Serializable {
      * @param size The size of the ship
      * @return 
      */         
-    private Positions availableMoveSouth(Vector2 bow, int size, int speed){
+    private Positions availableMoveSouth(Vector2 bow, int size, int speed){    
+
         int x = bow.x;
         int y = bow.y;
         int i, j = 0;
@@ -459,48 +460,44 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> right = new ArrayList<Vector2>();
         // move backward.
         if (y-size >= 0){
-            for (i = y-1; i <= y-size; i--){
+            for (i = y-1; i >= y-size; i--){
                 Vector2 p = new Vector2(x,i);
     		back.add(p);     
             }
-        for (int k = 0; k < back.size(); i++){
-            System.out.println("back   == " + back.get(k).x + " " + back.get(k).y);
-            }            
-        }   
-        
-        // move sideways.
-        if (x-1 >= 0){
-            int rightX = x-1;
-            for (i = y; i > y-size; i--){
-                Vector2 p = new Vector2(rightX,i);
-                right.add(p);
-            }
         }
-        if (x+1 < 30){
-            int leftX = x+1;
+        // move sideways.           
+        if (x-1 >= 0){   
+            int leftX = x-1;
             for (i = y; i > y-size; i--){
                 Vector2 p = new Vector2(leftX,i);
-       		left.add(p);
+    		left.add(p);
             }
-        }        
-        // move forward.
+        }
+        // move sideways.            
+        if (x+1 < 30){
+            int rightX = x+1;
+            for (i = y; i > y-size; i--){
+       		Vector2 p = new Vector2(rightX,i);
+       		right.add(p);
+            }
+        }
+        // move forward.        
         if (y + speed > 29){
             for (i = y-size+1; i < 30; i++){
-        	Vector2 p = new Vector2(x,i);
+                Vector2 p = new Vector2(x,i);
                 forward.add(p);
             }
-            
         }else{
             for (i = y-size+1; i <= y+speed; i++){
                 Vector2 p = new Vector2(x,i);
                 forward.add(p);
             }
         }
-        Positions positions = new Positions(back, forward, left, right);
-        return positions;
 
-    }
-    
+        Positions positions = new Positions(back, forward, left, right);   
+        return positions;
+       
+}    
     private Positions availableMoveEast(Vector2 bow, int size, int speed){
         int x = bow.x;
         int y = bow.y;
