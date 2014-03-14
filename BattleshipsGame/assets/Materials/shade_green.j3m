@@ -1,6 +1,6 @@
 Material My Material : Common/MatDefs/Misc/Unshaded.j3md {
      MaterialParameters {
-        Color : 0.0 0.0 0.6 0.2
+        Color : 0.0 0.8 0.0 0.2
         VertexColor : false
      }
     AdditionalRenderState {

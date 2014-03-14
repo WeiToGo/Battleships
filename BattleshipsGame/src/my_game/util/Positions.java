@@ -20,6 +20,27 @@ public class Positions {
         this.right = r;
     }
     
+    public ArrayList<Vector2> getAll() {
+        ArrayList<Vector2> list = new ArrayList<Vector2>();
+        ArrayList<Vector2> f = getForward();
+        ArrayList<Vector2> b = getBackward();
+        ArrayList<Vector2> l = getLeft();
+        ArrayList<Vector2> r = getRight();
+        if(f != null) {
+            list.addAll(f);
+        }
+        if(b != null) {
+            list.addAll(b);
+        }
+        if(l != null) {
+            list.addAll(l);
+        }
+        if(r != null) {
+            list.addAll(r);
+        }
+        return list;
+    }
+    
     public ArrayList<Vector2> getBackward(){
         return this.backward;
     }

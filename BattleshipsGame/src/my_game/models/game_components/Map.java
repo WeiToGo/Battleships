@@ -42,6 +42,9 @@ public class Map implements java.io.Serializable {
 
     public Map(Map m) {
         //shallow copy grid and visibility arrays
+        player0Visibility = new boolean[WIDTH][HEIGHT];
+        player1Visibility = new boolean[WIDTH][HEIGHT];
+        
         for(int i = 0; i < WIDTH; i++) {
             for(int j = 0; j < HEIGHT; j++) {
                 grid[i][j] = m.grid[i][j];
@@ -204,7 +207,16 @@ public class Map implements java.io.Serializable {
      * @throws GameException 
      */
 //    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
-    public void moveShip(Ship ship,Vector2 newPosition, Positions p) {
+    public boolean moveShip(Ship ship,Vector2 newPosition, Positions p) {
+        boolean found = false;
+        for(Vector2 v: p.getAll()) {
+            if(v.equals(newPosition)) {
+                found = true;
+            }
+        }
+        if(!found) {
+            return false;
+        }
         Moves shipPositions = getMovePositions (newPosition, p);
     /*    for (Vector2 v : shipPositions.getPositions()){
             System.out.println(" getPos " + v.x + " " + v.y);
@@ -221,8 +233,12 @@ public class Map implements java.io.Serializable {
  */       if (valide != null){
             this.updateShipPositions(ship, valide);    
             ship.moveTo(valide);           
+        } else {
+            return false;
         }
-
+        
+        this.updateRadarVisibilityArrays();
+        return true;
     }
     
     /**
@@ -1034,6 +1050,11 @@ public class Map implements java.io.Serializable {
             for(Vector2 point: visibleCells) {
                 try {
                     array[point.x][point.y] = true;
+                } catch(ArrayIndexOutOfBoundsException ignore) {}
+            }
+            for(ShipUnit su: s.getShipUnits()) {
+                try {
+                    array[su.getPosition().x][su.getPosition().y] = true;
                 } catch(ArrayIndexOutOfBoundsException ignore) {}
             }
         }

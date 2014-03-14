@@ -24,9 +24,11 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import com.sun.javafx.geom.PickRay;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.Position;
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
@@ -36,6 +38,8 @@ import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Player;
 import my_game.util.GameException;
+import my_game.util.Misc;
+import my_game.util.Positions;
 import my_game.util.Vector2;
 
 /**
@@ -44,6 +48,10 @@ import my_game.util.Vector2;
  * @author Ivo Parvanov
  */
 public class GameGUI extends SimpleApplication implements ActionListener {    
+   
+    public enum Action {
+        Move, Turn, Attack
+    };
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE_BLUE = 0, BLOCK_BLUE = 1, BOW_BLUE = 2, BASE_RED = 3, BLOCK_RED = 4, BOW_RED = 5;
@@ -56,7 +64,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
     
-    Spatial grid, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
+    Spatial grid, highlight, shade, blueShipBlock, blueShipBow, redShipBlock, redShipBow, blueBase, redBase, rock;
     
     /** Interface buttons and other pictures. */
     Picture blackBar, moveButton, turnButton, shootCannonButton;
@@ -64,9 +72,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     boolean moveActivated, turnActivated, shootCannonActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
-    Spatial[][] objectsGrid;
+    Spatial[][] objectsGrid, highlightsGrid;
     /** A node containing the game field: grid, ships, bases and corals. */
-    Node field;
+    Node field, highlightNode;
     Vector3f translation;
     Quaternion rotation;
     Vector3f direction;
@@ -80,6 +88,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     /** Reference to the player running the instance of this GUI. This variable
      * is used for determining the radar visibility, chat log and controls. */
     private Player player;
+    /**
+     * The last highlight positions.
+     */
+    private Positions highlightPos;
+    private boolean highlightPosUpdated, clearHighlight;
 
     /**
      * 
@@ -90,6 +103,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      */
     public GameGUI(int width, int height, GameGuiListener g, Player p) {
         objectsGrid = new Spatial[width][height];
+        highlightsGrid = new Spatial[width][height];
         guiListener = g;
         this.player = p;
     }
@@ -107,6 +121,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         loadRock();
         loadRadar();
         loadHUD();
+        loadHighlight();
         
                 //Post processing
         FilterPostProcessor fpp=new FilterPostProcessor(assetManager);
@@ -144,6 +159,13 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             gameStateUpdated = false;
         }
         
+        if(this.highlightPosUpdated) {
+            highlightPositions();
+            highlightPosUpdated = false;
+        }
+        if(clearHighlight) {
+            clearHighlight();
+        }
         if(moveActivated) {
             this.moveButton.setImage(assetManager, "/Interface/moveEnabled.png", true);
         } else {
@@ -178,6 +200,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         field.setLocalScale(3, 1.5f, 3);
         field.setLocalTranslation(0, 0.4f, 0);
         rootNode.attachChild(field);
+        
+        highlightNode = new Node("Field");
+        highlightNode.setLocalScale(3, 1.5f, 3);
+        highlightNode.setLocalTranslation(0, 0.4f, 0);
+        rootNode.attachChild(highlightNode);
     }
     
     private void loadLights() {
@@ -294,9 +321,63 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         guiNode.attachChild(shootCannonButton);
     }
     
+    private void loadHighlight() {
+        highlight = assetManager.loadModel("Models/ShaderBlock/Cube.mesh.xml");
+        highlight.setMaterial(assetManager.loadMaterial("Materials/shade_green.j3m"));
+        highlight.setQueueBucket(RenderQueue.Bucket.Translucent);
+    }
+    
     /* *********************** END OF LOADERS ******************************** */
     
+    public void clearHighlight(Positions highlights) {
+        this.highlightPos = highlights;
+        this.clearHighlight = true;
+    }
     
+    /**
+     * Clears the highlight in the spaces specified in the highlight Positions object.
+     * @param highlight 
+     */
+    private void clearHighlight() {        
+        for(int x = 0; x < highlightsGrid.length; x++) {
+            for(int y = 0; y < highlightsGrid[0].length; y++) {
+                Spatial tmp = highlightsGrid[x][y];
+                highlightsGrid[x][y] = null;
+            }
+        }
+        
+        highlightNode.detachAllChildren();
+        clearHighlight = false;
+        highlightPos = null;
+    }
+    
+    /**
+     * Displays a highlight over the specified position.
+     * @param highlight 
+     */    
+    public void highlightPositions(Positions highlights) {
+        this.highlightPos = highlights;
+        this.highlightPosUpdated = true;
+    }
+    
+
+    private void highlightPositions() {
+        ArrayList<Vector2> list = highlightPos.getAll();
+        
+        for(Vector2 v: list) {
+                drawHighlight(v.x, v.y);
+        }
+    }
+    
+    private void drawHighlight(int x, int y) {
+        if(x >= 0 && y >= 0 && x < gameState.getMap().WIDTH && y < gameState.getMap().HEIGHT) {
+            Spatial highlightInstance = highlight.clone();
+                    // x-axis columns; y-axis rows
+            highlightInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
+            highlightNode.attachChild(highlightInstance);
+            this.highlightsGrid[x][y] = highlightInstance;
+        }
+    }
     
     private void drawShipPart(int x, int y, ShipDirection dir, int type) {
         Spatial shipPartInstance = null;
@@ -406,6 +487,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * called in the simpleUpdate(...) method and not by an external class and thread.
      */
     private void drawGameState() {
+        field.detachAllChildren();
+        clearHighlight();
+        field.attachChild(grid);
+        
         //draw map objects 
         Map m = gameState.getMap();
         //get the radar visibility for the current player
@@ -460,6 +545,34 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         return settings.getHeight() / BAR_HEIGHT_RATIO;
     }
     
+    /**
+     * @return The width of every button in the UI.
+     */
+    private float getButtonWidth() {
+        return settings.getWidth() / BUTTON_WIDTH_RATIO;
+    }
+    
+    /**
+     * @return The height of every button in the UI.
+     */
+    private float getButtonHeight() {
+        return settings.getHeight() / BUTTON_HEIGHT_RATIO;
+    }
+    
+    /**
+     * @return The gap between buttons adjusted for the current resolution.
+     */
+    private float getButtonGap() {
+        return BUTTONS_GAP * (settings.getWidth() / 2560.0f);
+    }
+    
+    /**
+     * @return The height at which every button is placed, adjusted for the current resolution.
+     */
+    private float getButtonY() {
+        return BUTTONS_Y * (settings.getHeight() / 1440.0f);
+    }
+    
     public void onAction(String name, boolean isPressed, float tpf) {
         if(name == "CLICK" && isPressed) {
             // Convert screen click to 3d position
@@ -490,8 +603,32 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                 guiListener.onMouseClick(x, y);
             } else {
                 //this is a click in the black bar area, treat as a click on one of 
-                //the ui buttons
+                //the ui buttons; find out which button was pressed
+                float x = click2d.x;
+                float y = click2d.y;
                 
+                //first find out if we are within the range of buttons on the y axis
+                if(y >= this.getButtonY() && y <= this.getButtonHeight() + this.getButtonY()) {
+                    //we are in vertical range of buttons
+                    //find out which button is clicked
+                    float width = this.getButtonWidth() + this.getButtonGap();
+                    //index is the number of button widths from the 0 x-coord. to the clicked x-coord.
+                    int index = (int) (x / width);
+                    switch(index) {
+                        case 0:
+                            //move button is pressed
+                            guiListener.onButtonPressed(Action.Move);
+                            break;
+                        case 1:
+                            guiListener.onButtonPressed(Action.Turn);
+                            break;
+                        case 2:
+                            guiListener.onButtonPressed(Action.Attack);
+                            break;
+                        default:
+                            //ignore clicks outside the buttons
+                    }
+                }
             }
         }
     }
@@ -525,5 +662,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
          * @param y 
          */
         public void onMouseClick(int x, int y);
+
+        /**
+         * This method is called whenever an action button is pressed in the gui.
+         * @param action
+         */
+        public void onButtonPressed(Action action);
     }
 }
