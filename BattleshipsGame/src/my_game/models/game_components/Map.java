@@ -412,61 +412,67 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> leftPath = allTurns.getLeftPath();
         ShipDirection ld = allTurns.getLeftDirection();
         boolean canMoveLeft = true;
-        for (int i = 0; i < left.size(); i++){
-            if(!isSelf(ship,left.get(i))){
-                if (isVisibleObstacle(ship, left.get(i))) {
+        if(left != null && leftPath != null){
+            for (int i = 0; i < left.size(); i++) {
+                if (!isSelf(ship, left.get(i))) {
+                    if (isVisibleObstacle(ship, left.get(i))) {
+                        canMoveLeft = false;
+                    }
+                }
+            }
+            for (int i = 0; i < leftPath.size(); i++) {
+                if (isVisibleObstacle(ship, leftPath.get(i))) {
                     canMoveLeft = false;
                 }
             }
-        }
-        for (int i = 0; i < leftPath.size(); i++){
-            if (isVisibleObstacle(ship, leftPath.get(i))){
-                canMoveLeft = false;
+            if (canMoveLeft) {
+                highlightedTurns.setLeft(left);
+                highlightedTurns.setLeftPath(leftPath);
+                highlightedTurns.setLeftDirection(ld);
             }
         }
-        if (canMoveLeft){
-           highlightedTurns.setLeft(left);
-           highlightedTurns.setLeftPath(leftPath);
-           highlightedTurns.setLeftDirection(ld);
-        }    
         ArrayList<Vector2> right = allTurns.getRight();
         ArrayList<Vector2> rightPath = allTurns.getRightPath();
         ShipDirection rd = allTurns.getRightDirection();
      //   System.out.println("right size " + right.size());
         boolean canMoveRight = true;
-        for (int i = 0; i < right.size(); i++){
-            if(!isSelf(ship,right.get(i))){
-                if (isVisibleObstacle(ship, right.get(i))) {
+        if (right != null && rightPath != null){
+            for (int i = 0; i < right.size(); i++) {
+                if (!isSelf(ship, right.get(i))) {
+                    if (isVisibleObstacle(ship, right.get(i))) {
+                        canMoveRight = false;
+                    }
+                }
+            }
+            for (int i = 0; i < rightPath.size(); i++) {
+                if (isVisibleObstacle(ship, rightPath.get(i))) {
                     canMoveRight = false;
                 }
             }
-        }
-        for (int i = 0; i < rightPath.size(); i++){
-            if (isVisibleObstacle(ship, rightPath.get(i))){
-                canMoveRight = false;
+            if (canMoveRight) {
+                highlightedTurns.setRight(right);
+                highlightedTurns.setRightPath(rightPath);
+                highlightedTurns.setRightDirection(rd);
             }
-        }
-        if (canMoveRight){
-           highlightedTurns.setRight(right);
-           highlightedTurns.setRightPath(rightPath);
-           highlightedTurns.setRightDirection(rd);
         }
         ArrayList<Vector2> back = allTurns.getBackward();
     //    System.out.println("back size " + back.size());
         ShipDirection bd = allTurns.getBackDirection();
-        for (int i = 0; i < right.size(); i++){
-            if (isVisibleObstacle(ship, right.get(i))){
-                canMoveRight = false;//can also use canMoveLeft.
+        if (back != null){
+            for (int i = 0; i < right.size(); i++) {
+                if (isVisibleObstacle(ship, right.get(i))) {
+                    canMoveRight = false;//can also use canMoveLeft.
+                }
             }
-        }
-        for (int i = 0; i < rightPath.size(); i++){
-            if (isVisibleObstacle(ship, rightPath.get(i))){
-                canMoveRight = false;
+            for (int i = 0; i < rightPath.size(); i++) {
+                if (isVisibleObstacle(ship, rightPath.get(i))) {
+                    canMoveRight = false;
+                }
             }
-        }
-        if (canMoveLeft && canMoveRight){
-           highlightedTurns.setBack(back);
-           highlightedTurns.setBackDirection(bd);
+            if (canMoveLeft && canMoveRight) {
+                highlightedTurns.setBack(back);
+                highlightedTurns.setBackDirection(bd);
+            }
         }
         // careful in Game, path are NOT highlighted. 
         return highlightedTurns;

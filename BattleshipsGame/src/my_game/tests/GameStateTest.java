@@ -71,15 +71,16 @@ public class GameStateTest {
 
         System.out.println(map.toString());            
   */
+        System.out.println("size  " + p1ships.length);
         /**   TEST move  */
-        Ship s = p1ships[8];
+        Ship s = p1ships[0];
         Positions p = map.prepareMoveShip(s);
         ArrayList<Vector2> target = p.getForward();
         Vector2 v = target.get(4); 
-        map.moveShip(s,v,p);
+/*        map.moveShip(s,v,p);
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());   
-/*
+
        System.out.println("***********************************");        
         p = map.prepareMoveShip(s);
         target = p.getLeft();
@@ -106,7 +107,7 @@ public class GameStateTest {
         System.out.println(map.toString());  
   */      
         /**   TEST turn  */
-        s = p1ships[8];
+        s = p1ships[0];
         TurnPositions pTurn = map.prepareTurnShip(s);
         ArrayList<Vector2> left = pTurn.getLeft();
         ArrayList<Vector2> right = pTurn.getRight();
@@ -116,7 +117,7 @@ public class GameStateTest {
         System.out.println("back size " + back.size());
  */    
         v = null;
-        if(left != null) v = left.get(0); 
+       // if(left != null) v = left.get(0); 
         if(right != null) v = right.get(0); 
         if(back != null) v = back.get(0); 
         
@@ -125,7 +126,7 @@ public class GameStateTest {
             System.out.println(" turn to " + v.x + " " + v.y);
             System.out.println(map.toString());
         }else{
-            System.out.println("MOVE BLOCKED");
+            System.out.println("TURN BLOCKED");
         }
   
         System.out.println("***********************************");          
@@ -137,16 +138,17 @@ public class GameStateTest {
             System.out.println(" move to " + v.x + " " + v.y);
             System.out.println(map.toString());
         }else{
-            System.out.println("TURN BLOCKED");
+            System.out.println("MOVE BLOCKED");
         }
-   /*     System.out.println("***********************************");        
+        System.out.println("***********************************");        
         pTurn = map.prepareTurnShip(s);        
-        v = new Vector2(21,15);
+        left = pTurn.getLeft();
+        if(left != null) v = left.get(0);
         map.turnShip(s,v,pTurn);
-        System.out.println(" turn to 21,15");
+        System.out.println(" turn to " + v.x + " " + v.y);
         System.out.println(map.toString());          
                
                 
-    */
+    
     }    
 }
