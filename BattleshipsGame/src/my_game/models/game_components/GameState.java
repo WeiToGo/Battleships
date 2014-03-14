@@ -5,9 +5,11 @@
 package my_game.models.game_components;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.player_components.ChatLog;
+import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.models.ships_impl.*;
 import my_game.util.GameException;
@@ -77,6 +79,19 @@ public class GameState implements java.io.Serializable {
         map = new Map(reef, player0Ships, player1Ships, player0Base, player1Base);
         //init chat
         chatLog = new ChatLog();
+    }
+    
+    /**
+     * Returns a list of all messages received by a given player.
+     * @param p
+     * @return 
+     */
+    public List<Message> getChatLog(Player p) {
+        return this.chatLog.getMessages(p);
+    }
+    
+    public void addMessage(Message m) {
+        chatLog.addMessage(m);
     }
     
     /**

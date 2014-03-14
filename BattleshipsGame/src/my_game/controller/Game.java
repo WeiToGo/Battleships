@@ -5,6 +5,7 @@
 package my_game.controller;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.Position;
@@ -17,6 +18,7 @@ import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
+import my_game.models.player_components.Message;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
@@ -34,7 +36,7 @@ import my_game.util.TurnPositions;
  * entities (GameServer and GameClient).
  */
 public class Game implements GameGUI.GameGuiListener {    
-    
+       
     public enum PlayerType {
         Host, Client
     };
@@ -60,9 +62,11 @@ public class Game implements GameGUI.GameGuiListener {
     private Ship selectedShip;
     /** A reference to the game gui which is displaying the game itself. */
     private GameGUI gui;
-    
+    //// DIFFERENT TYPES OF HIGHLIGHTS
     private Positions moveHighlight;
     private TurnPositions turnHighlight;
+    private ArrayList<Vector2> weaponHighlight;
+    //////*************************************
     private boolean awaitingInput;
     private Vector2 input;
     
@@ -263,8 +267,12 @@ public class Game implements GameGUI.GameGuiListener {
             gui.setButtonsEnabled(false);
             if(moveHighlight != null || turnHighlight != null) {
                 gui.requestlearHighlight();
+                //clear all highlights too
                 moveHighlight = null;
                 turnHighlight = null;
+                if(weaponHighlight != null)
+                    weaponHighlight.clear();
+                weaponHighlight = null;
             }
         }
     }
@@ -284,7 +292,6 @@ public class Game implements GameGUI.GameGuiListener {
                     t.start();
                     break;
                 case Turn:
-                    Misc.log("Turning");
                     t = new Thread(new Runnable() {
                         public void run() {
                             turnAction(selectedShip);
@@ -350,6 +357,8 @@ public class Game implements GameGUI.GameGuiListener {
                 if(gameState.getMap().moveShip(s, input, moveHighlight)) {
                     gui.drawGameState(gameState);
                     
+                    Message m = new Message("Ship moved to new position " + input + ".", Message.MessageType.Game, player);
+                    gameState.addMessage(m);
                     sendGameState();
                 }
                 
@@ -381,6 +390,8 @@ public class Game implements GameGUI.GameGuiListener {
                 if(gameState.getMap().turnShip(s, input, turnHighlight)) {
                     gui.drawGameState(gameState);
                     
+                    Message m = new Message("Ship turned to new position " + input + ".", Message.MessageType.Game, player);
+                    gameState.addMessage(m);
                     sendGameState();
                 }
                 
@@ -396,7 +407,40 @@ public class Game implements GameGUI.GameGuiListener {
     }
             
     private void attackAction(Ship s) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        //need to be called on the map object.
+        weaponHighlight = s.getCannonPositions();
+
+        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        gui.highlightPositions(weaponHighlight);
+       
+        synchronized(this) {
+            try {
+                awaitingInput = true;
+                this.wait();
+                awaitingInput = false;
+                //check if the result is acceptable
+                Misc.log("input received");
+                
+                GameObject targetHit = gameState.getMap().cannonAttack(s, input);
+                if(targetHit != null) {
+                    gui.drawGameState(gameState);
+                    
+                    Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
+                    gameState.addMessage(m);
+                    sendGameState();
+                } else {
+                    Misc.log("No hit.");
+                }
+                
+                gui.requestlearHighlight();
+                gui.setButtonsEnabled(false);
+                selectedShip = null;
+                moveHighlight = null;
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } 
     }
         
     public void fireCannon(GameObject unit){

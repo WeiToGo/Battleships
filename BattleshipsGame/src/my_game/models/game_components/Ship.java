@@ -199,21 +199,32 @@ public abstract class Ship implements java.io.Serializable {
      * 
      * @param target = the target GameObject 
      */
-    public void fireCannon(GameObject target) {
+    public GameObject fireCannon(GameObject target) {
+        GameObject objectHit = null;
+        if(target == null) {
+            return null;
+        }
     	if (target.getClass() == new ShipUnit().getClass()){
-			((ShipUnit)target).setDamage(getCannonDamage());
+			ShipUnit su = ((ShipUnit)target);
+                        su.setDamage(getCannonDamage());
+                        objectHit = su;
 			if (((ShipUnit)target).isDestoryed()){
 				((ShipUnit)target).getShip().hitUpdate();
 			}
 		}
 		
 		if (target.getClass() == new BaseUnit().getClass()){
-			((BaseUnit)target).setDamage();
+                    BaseUnit bu = ((BaseUnit)target);
+			bu.setDamage();
+                        objectHit = bu;
 		}
 		
 		if (target.getClass() == new Mine().getClass()){
-			((Mine)target).setDestoryed(true);
+                    Mine m = ((Mine)target);
+			m.setDestoryed(true);
+                        objectHit = m;
 		}
+                return objectHit;
     }
     
     /**

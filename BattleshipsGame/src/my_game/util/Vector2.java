@@ -22,4 +22,9 @@ public class Vector2 implements java.io.Serializable {
             return false;
         }
     }
+    
+    @Override
+    public String toString() {
+        return x + "," + y;
+    }
 }
