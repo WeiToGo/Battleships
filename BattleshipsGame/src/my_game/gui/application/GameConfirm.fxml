@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="pane" minHeight="463.0" minWidth="603.0" prefHeight="477.0" prefWidth="617.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.GameConfirmation">
+<AnchorPane fx:id="pane" minHeight="463.0" minWidth="603.0" prefHeight="477.0" prefWidth="617.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.GameConfirm">
   <!-- TODO Add Nodes -->
   <children>
     <ImageView id="Dark blue sea" fx:id="background" fitHeight="477.0" fitWidth="617.0" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
