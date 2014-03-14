@@ -807,30 +807,30 @@ public class Map implements java.io.Serializable {
      * specific fireCannon function; finally Map checks if the target is a mine and if so Map removes it.
      * @param attacker = user selected ship that perform the attack operation
      * @param position = the aiming grid on the Map where the target lies
+     * @return The ship which is hit by the cannon, or null if no ship was hit.
      */
-    public void cannonAttack(Ship attacker, Vector2 position){
+    public GameObject cannonAttack(Ship attacker, Vector2 position){
     	GameObject target = getObjectAt(position);
     	
     	if(attacker.getClass() == new Cruiser(10000).getClass()){
-    		((Cruiser) attacker).fireCannon(target);
+    		return((Cruiser) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
-    		((TorpedoBoat) attacker).fireCannon(target);
+    		return ((TorpedoBoat) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new Destroyer(10000).getClass()){
-    		((Destroyer) attacker).fireCannon(target);
+    		return ((Destroyer) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new MineLayer(10000).getClass()){
-    		((MineLayer) attacker).fireCannon(target);
+    		return ((MineLayer) attacker).fireCannon(target);
     	}
     	else if(attacker.getClass() == new RadarBoat(10000).getClass()){
-    		((RadarBoat) attacker).fireCannon(target);
+    		return ((RadarBoat) attacker).fireCannon(target);
     	}
-    	else return;
-    	
-    	if (target.getClass() == new Mine().getClass()){
+    	else if (target.getClass() == new Mine().getClass()){
     		setObjectAt(position, null);
     	}
+        return null;
     }
     
     /**
@@ -1123,5 +1123,23 @@ public class Map implements java.io.Serializable {
         try {
             player0Visibility[pos.x][pos.y + 1] = true;
         } catch(IndexOutOfBoundsException ignore){}
+    }
+
+    /**
+     * Returns the coordinates of the specified object if it is found in
+     * the grid.
+     * @param targetHit
+     * @return 
+     */
+    public Vector2 objectCoordinates(GameObject object) {
+        boolean found = false;
+        for(int x = 0; x < WIDTH && ! found; x++) {
+            for(int y = 0; y < HEIGHT && !found; y++) {
+                if(grid[x][y] == object) {
+                    return new Vector2(x, y);
+                }
+            }
+        }
+        return null;
     }
 }

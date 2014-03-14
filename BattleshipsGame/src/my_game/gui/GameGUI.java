@@ -26,6 +26,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import com.sun.javafx.geom.PickRay;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +38,7 @@ import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
+import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.util.GameException;
 import my_game.util.Misc;
@@ -328,7 +330,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         chatText = new BitmapText(guiFont, false);  
         chatText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
         chatText.setColor(ColorRGBA.White);                             // font color
-        chatText.setText("You can write any string here.");             // the text
+        chatText.setText("");                                            // the text
         chatText.setLocalTranslation(getButtonWidth() * 7, chatText.getLineHeight() + getButtonGap(), 0); // position
         chatText.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(chatText);
@@ -377,7 +379,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
-
+    
+    public void highlightPositions(ArrayList<Vector2> highlights) {
+        this.highlightPos = highlights;
+        this.highlightPosUpdated = true;
+    }
+    
     private void highlightPositions() {
         for(Vector2 v: highlightPos) {
                 drawHighlight(v.x, v.y);
@@ -486,6 +493,34 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     }
     
     /**
+     * Displays the messages of a chatlog
+     * @param chatLog 
+     */
+    private void drawChatLog(List<Message> chatLog) {
+        //for now only display the last message
+        Message m = null;
+        if(chatLog.size() > 0) {
+          m = chatLog.get(chatLog.size() - 1);
+
+          switch(m.getMessageType()) {
+              case Game:
+                  chatText.setColor(ColorRGBA.Cyan);
+                  break;
+              case NetworkError:
+                  chatText.setColor(ColorRGBA.Red);
+                  break;
+              case Chat:
+                  chatText.setColor(ColorRGBA.White);
+                  break;
+              case NetworkInfo:
+                  chatText.setColor(ColorRGBA.DarkGray);
+          }
+
+          chatText.setText(m.text);
+        }
+    }
+    
+    /**
      * Renders on the map all objects in the provided game state. Also populates
      * the chat log with the messages contained in the game state.
      * @param gs
@@ -505,6 +540,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         field.detachAllChildren();
         clearHighlight();
         field.attachChild(grid);
+        
+        //display the last message of the chatLog in the chatText
+        //TODO make this show the whole chat log scrollable
+        drawChatLog(gameState.getChatLog(player));
         
         //draw map objects 
         Map m = gameState.getMap();
