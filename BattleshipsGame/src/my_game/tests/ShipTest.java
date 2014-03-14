@@ -32,7 +32,7 @@ public class ShipTest {
         positions.add(p5);
   
         ShipDirection sd = ShipDirection.West;
-        Cruiser c = new Cruiser(1,positions, sd);
+     //   Destroyer d = new Destroyer(1,positions, sd);
         
         Range r = c.getRadarRange();
         Vector2 tl = r.getTopLeft();

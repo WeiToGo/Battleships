@@ -424,7 +424,8 @@ public class Map implements java.io.Serializable {
         TurnPositions highlightedTurns = new TurnPositions(null,null,null,null,null);
         // highlight a particular turn only if all positions on the path are clear.
         ArrayList<Vector2> left = allTurns.getLeft();
-    //    System.out.println("left size " + left.size());
+        System.out.println("left == " + left.get(0).x + " " + left.get(0).y);
+        System.out.println("left == " + left.get(1).x + " " + left.get(1).y);        
         ArrayList<Vector2> leftPath = allTurns.getLeftPath();
         ShipDirection ld = allTurns.getLeftDirection();
         boolean canMoveLeft = true;
@@ -450,7 +451,8 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> right = allTurns.getRight();
         ArrayList<Vector2> rightPath = allTurns.getRightPath();
         ShipDirection rd = allTurns.getRightDirection();
-     //   System.out.println("right size " + right.size());
+        System.out.println("right == " + right.get(0).x + " " + right.get(0).y);
+        System.out.println("right == " + right.get(1).x + " " + right.get(1).y);  
         boolean canMoveRight = true;
         if (right != null && rightPath != null){
             for (int i = 0; i < right.size(); i++) {
@@ -504,7 +506,7 @@ public class Map implements java.io.Serializable {
         if(!found) {
             return false;
         }
-        
+        System.out.println("p == " + newPosition.x + " " + newPosition.y);
         Turns shipPositions = getTurnPositions (newPosition, p);
         ArrayList <Vector2> t = shipPositions.positions;
         if (t == null){

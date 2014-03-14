@@ -452,7 +452,10 @@ public abstract class Ship implements java.io.Serializable {
                 Vector2 p = new Vector2(x,i);
     		back.add(p);     
             }
-        }
+        for (int k = 0; k < back.size(); i++){
+            System.out.println("back   == " + back.get(k).x + " " + back.get(k).y);
+            }            
+        }   
         
         // move sideways.
         if (x-1 >= 0){
