@@ -33,7 +33,7 @@ public class GameTest {
 
         CoralReef reef = new CoralReef();
         GameServer server = new GameServer(player0, "testServer");
-
+        
         try {
             Game g = new Game(player0, player1, reef, server, Game.PlayerType.Host, "testGame");
         } catch(Exception e) {

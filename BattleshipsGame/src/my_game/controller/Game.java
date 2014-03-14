@@ -7,7 +7,9 @@ package my_game.controller;
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.Position;
 import my_game.gui.GameGUI;
+import my_game.gui.GameGUI.Action;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
@@ -20,8 +22,10 @@ import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
 import my_game.util.Vector2;
 import my_game.util.GameException;
+import my_game.util.Misc;
 import my_game.util.Positions;
 
+    
 /**
  * This class is a controller of the game. One instance
  * of this class runs at the host and one at the client, 
@@ -29,6 +33,7 @@ import my_game.util.Positions;
  * entities (GameServer and GameClient).
  */
 public class Game implements GameGUI.GameGuiListener {    
+
     public enum PlayerType {
         Host, Client
     };
@@ -55,9 +60,12 @@ public class Game implements GameGUI.GameGuiListener {
     /** A reference to the game gui which is displaying the game itself. */
     private GameGUI gui;
     
+    private Positions highlight;
+    private boolean awaitingInput;
+    private Vector2 input;
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
-        this(player, opponent, reef, net, playerType, name, -1);
+        this(player, opponent, reef, net, playerType, name, 0);
     }
     
     /**
@@ -229,24 +237,82 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
+    @Override
     public void onMouseClick(int x, int y) {
         //if it's the player's turn and there is a ship under the mouse cursor, select the ship
         Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
         Vector2 position = new Vector2(x, y);
+        
+        Misc.log((playerWithTurn.equals(player)) + " and " + gameState.getMap().isShip(position));
         if(playerWithTurn == player && gameState.getMap().isShip(position)) {
             //mark the ship as selected and enable the gui buttons
             ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
             Ship ship = s.getShip();
             this.selectedShip = ship;
             gui.setButtonsEnabled(true);
-            System.out.println("Ship " + selectedShip + " selected.");
+            Misc.log("Clicked on ship.");
+        } else if (awaitingInput) {
+            synchronized(this) {
+                input = new Vector2(position);
+                this.notifyAll();
+            }
         } else {
             this.selectedShip = null;
             gui.setButtonsEnabled(false);
+            if(highlight != null) {
+                gui.clearHighlight(highlight);
+                highlight = null;
+            }
         }
     }
+    
+    @Override
+    public void onButtonPressed(Action action) {
+        if(selectedShip != null) {
+            //we can take an action, there's a ship already selected
+            Thread t;
+            switch(action) {
+                case Move:
+                    t = new Thread(new Runnable() {
+                        public void run() {
+                            moveAction(selectedShip);
+                        }
+                    });
+                    t.start();
+                    break;
+                case Turn:
+                    t = new Thread(new Runnable() {
+                        public void run() {
+                            turnAction(selectedShip);
+                        }
+                    });
+                    t.start();
+                    break;
+                case Attack:
+                    t = new Thread(new Runnable() {
+                        public void run() {
+                            attackAction(selectedShip);
+                        }
+                    });
+                    t.start();
+                    break;
+                default:
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Unknown action encountered."));
+                    break;
+            }
+        }
+    }
+    
+
     /* *********************************************************************** */
     
+    
+    /**
+     * Places the provided ship at the specified coordinates of the map.
+     * @param s
+     * @param x
+     * @param y 
+     */
 
 
     
@@ -263,23 +329,42 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
-    // TODO Different methods to modify and control the game satate
-    
     public void moveAction(Ship s){
         //need to be called on the map object.
-        //Positions highlight = map.prepareMoveShip(s);
+        highlight = gameState.getMap().prepareMoveShip(s);
 
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
-        
-        
-        //map.moveShip(s,newPosition, highlight); move calls updateMap
-        
+        gui.highlightPositions(highlight);
+       
+        synchronized(this) {
+            try {
+                awaitingInput = true;
+                this.wait();
+                awaitingInput = false;
+                //check if the result is acceptable
+                
+                if(gameState.getMap().moveShip(s, input, highlight)) {
+                    gui.drawGameState(gameState);
+                    
+                    sendGameState();
+                }
+                
+                gui.clearHighlight(highlight);
+                gui.setButtonsEnabled(false);
+                selectedShip = null;
+                highlight = null;
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     public void turnAction(Ship s){
         //need to be called on the map object.
         //Positions highlight = map.prepareTurnShip(s);
-
+        
+        
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
         
         
@@ -288,6 +373,10 @@ public class Game implements GameGUI.GameGuiListener {
         // map update the ships position and repaint?        
     }
             
+    private void attackAction(Ship s) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+        
     public void fireCannon(GameObject unit){
     	//can be called by any type of ship
     	//TO DO: highlight the available ship and cannonRange to GUI pass the (user selected)attacker and targeting position to map
@@ -298,5 +387,12 @@ public class Game implements GameGUI.GameGuiListener {
     	//can only be called by destroyer and torpedo boat
     	//TO DO: highlight the available ship and torpedoRange to GUI pass the (user selected)attacker and targeting position to map
     	//map.TorpedoAttack(Ship attacker, Vector2 position)
+    }
+    
+    /**
+     * Sends the game state to other connected players.
+     */
+    private void sendGameState() {
+        net.sendGameState(this.gameState);
     }
 }

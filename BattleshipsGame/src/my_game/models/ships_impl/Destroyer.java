@@ -73,6 +73,12 @@ public class Destroyer extends Ship{
     	this.torpedoDamage = torpedoDamage;
     }
     
+	/**
+	 * There are three sub cases: target is ShipUnit, BaseUnit or Mine.
+	 * For ShipUnit case the function will first check if it hits from the side(another closed unit will be hit)
+	 * For mine case it will change the indicator in Mine that it is destroyed 
+	 * @param target = the target GameObject 
+	 */
     public void fireTorpedo(GameObject target) {
     	if (target.getClass() == new ShipUnit().getClass()){
 			Ship tempShip = ((ShipUnit)target).getShip();

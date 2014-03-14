@@ -42,6 +42,9 @@ public class Map implements java.io.Serializable {
 
     public Map(Map m) {
         //shallow copy grid and visibility arrays
+        player0Visibility = new boolean[WIDTH][HEIGHT];
+        player1Visibility = new boolean[WIDTH][HEIGHT];
+        
         for(int i = 0; i < WIDTH; i++) {
             for(int j = 0; j < HEIGHT; j++) {
                 grid[i][j] = m.grid[i][j];
@@ -204,7 +207,16 @@ public class Map implements java.io.Serializable {
      * @throws GameException 
      */
 //    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
-    public void moveShip(Ship ship,Vector2 newPosition, Positions p) {
+    public boolean moveShip(Ship ship,Vector2 newPosition, Positions p) {
+        boolean found = false;
+        for(Vector2 v: p.getAll()) {
+            if(v.equals(newPosition)) {
+                found = true;
+            }
+        }
+        if(!found) {
+            return false;
+        }
         Moves shipPositions = getMovePositions (newPosition, p);
     /*    for (Vector2 v : shipPositions.getPositions()){
             System.out.println(" getPos " + v.x + " " + v.y);
@@ -221,8 +233,12 @@ public class Map implements java.io.Serializable {
  */       if (valide != null){
             this.updateShipPositions(ship, valide);    
             ship.moveTo(valide);           
+        } else {
+            return false;
         }
-
+        
+        this.updateRadarVisibilityArrays();
+        return true;
     }
     
     /**
@@ -779,6 +795,13 @@ public class Map implements java.io.Serializable {
         }
     }
     
+    /**
+     * This function is an interface for Map to access the concrete attack action; as a controller Map takes two inputs
+     * then finds out what ship type the attacker is and get the GameObject at the specific location; then it invokes the
+     * specific fireCannon function; finally Map checks if the target is a mine and if so Map removes it.
+     * @param attacker = user selected ship that perform the attack operation
+     * @param position = the aiming grid on the Map where the target lies
+     */
     public void cannonAttack(Ship attacker, Vector2 position){
     	GameObject target = getObjectAt(position);
     	
@@ -863,6 +886,14 @@ public class Map implements java.io.Serializable {
         return null;
     }
     
+    
+    /**
+     * This function is an interface for Map to access the concrete attack action; as a controller Map takes two inputs
+     * then finds out what ship type the attacker is and get the GameObject at the specific location; then it invokes the
+     * specific fireCannon function; finally Map checks if the target is a mine and if so Map removes it.
+     * @param attacker = user selected ship that perform the attack operation
+     * @param position = the aiming grid on the Map where the target lies 
+     */
     public void torpedoAttack(Ship attacker, Vector2 position){
     	
     	ShipDirection d = attacker.getDirection();
@@ -1040,6 +1071,11 @@ public class Map implements java.io.Serializable {
             for(Vector2 point: visibleCells) {
                 try {
                     array[point.x][point.y] = true;
+                } catch(ArrayIndexOutOfBoundsException ignore) {}
+            }
+            for(ShipUnit su: s.getShipUnits()) {
+                try {
+                    array[su.getPosition().x][su.getPosition().y] = true;
                 } catch(ArrayIndexOutOfBoundsException ignore) {}
             }
         }
