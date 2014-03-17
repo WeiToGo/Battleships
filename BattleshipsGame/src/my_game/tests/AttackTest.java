@@ -6,9 +6,9 @@ import my_game.models.game_components.Base;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.Ship;
-import my_game.models.game_components.ShipDirection;
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
+import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 
 public class AttackTest {

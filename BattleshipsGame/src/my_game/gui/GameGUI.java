@@ -25,24 +25,27 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import com.sun.javafx.geom.PickRay;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.text.Position;
+
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
-import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.util.GameException;
 import my_game.util.Misc;
 import my_game.util.Positions;
+import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
 import my_game.util.Vector2;
 

@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.models.ships_impl.*;
 import my_game.util.GameException;
+import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 /**
  * The state of a game describes a game fully.

@@ -1,7 +1,6 @@
 
 package my_game.util;
 import java.util.ArrayList;
-import my_game.models.game_components.ShipDirection;
 /**
  * This class contains 5 arraylists of positions involved when turning a ship.
  * @author wei

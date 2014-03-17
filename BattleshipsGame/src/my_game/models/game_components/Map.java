@@ -7,6 +7,7 @@ package my_game.models.game_components;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
 import my_game.models.ships_impl.MineLayer;
@@ -15,6 +16,7 @@ import my_game.models.ships_impl.TorpedoBoat;
 import my_game.util.GameException;
 import my_game.util.Moves;
 import my_game.util.Positions;
+import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
 import my_game.util.Vector2;
@@ -831,6 +833,37 @@ public class Map implements java.io.Serializable {
     	}
         return null;
     }
+    
+    public GameObject layMine(Ship mineLayer, Vector2 position) {
+    	if(mineLayer.getClass() != new MineLayer(10000).getClass())
+    		return null;
+    	
+    	
+    	if(getObjectAt(position) != null)
+    		return null;
+    	
+    	Mine mine = new Mine();
+    	mine.setPosition(position);
+    	
+    	Vector2[] zone = mine.getMineZone();
+    	int count = 0;
+    	for(Vector2 temp: zone) {
+    		if(getObjectAt(temp) != null)
+    			count++;
+    	}
+    	
+    	if(count > 1)
+    		return null;
+    	
+    	mine.setActive(true);
+    	setObjectAt(position, mine);
+    	for(Vector2 temp: zone) {
+    		setObjectAt(position, new MineZone(true, position, mine));
+    	}
+    	
+    	return mine;
+    }
+    
     
     /**
      * Checks whether the specified ship belongs to the blue player (player on the
