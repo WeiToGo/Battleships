@@ -4,7 +4,6 @@
  */
 package my_game.util;
 import java.util.ArrayList;
-import my_game.models.game_components.ShipDirection;
 /**
  *
  * @author wei

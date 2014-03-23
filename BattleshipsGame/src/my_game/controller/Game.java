@@ -8,7 +8,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.text.Position;
+
 import my_game.gui.GameGUI;
 import my_game.gui.GameGUI.Action;
 import my_game.models.game_components.GameObject;
@@ -16,12 +18,12 @@ import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
-import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
+import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 import my_game.util.GameException;
 import my_game.util.Misc;

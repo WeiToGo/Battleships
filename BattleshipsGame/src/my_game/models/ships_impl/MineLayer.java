@@ -11,9 +11,9 @@ import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
-import my_game.models.game_components.ShipDirection;
 import my_game.models.game_components.ShipUnit;
 import my_game.util.Range;
+import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 import my_game.util.Range;
 
@@ -22,7 +22,7 @@ import my_game.util.Range;
  */
 public class MineLayer extends Ship {
     
-    private int cannonDamage;
+	private int mineNum;
     
     public MineLayer(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);
@@ -55,34 +55,65 @@ public class MineLayer extends Ship {
     public MineLayer(int pid) {
 		super(pid);
 	}
-/*
 
-    public int getCannonDamage() {
-	return cannonDamage;
+    public Vector2[] getMineDropPickupZone() {
+		Vector2 pos = this.getShipUnits()[0].getPosition();
+    	int x = pos.x;
+		int y = pos.y;
+		Vector2[] range = new Vector2[6];
+		ShipDirection direction = this.getDirection(); 
+		
+		if (direction == ShipDirection.North || direction == ShipDirection.East){
+			if (direction == ShipDirection.North){
+				x = pos.y;
+				y = pos.x;
+			}
+			
+			range[0] = new Vector2(x-1, y-1) ;
+			range[1] = new Vector2(x, y-1) ;
+			range[2] = new Vector2(x-2, y) ;
+			range[3] = new Vector2(x+1, y) ;
+			range[4] = new Vector2(x-1, y+1) ;
+			range[5] = new Vector2(x, y+1) ;
+		}
+		else{
+			if (direction == ShipDirection.South){
+				x = pos.y;
+				y = pos.x;
+			}
+			
+			range[0] = new Vector2(x+1, y-1) ;
+			range[1] = new Vector2(x, y-1) ;
+			range[2] = new Vector2(x+2, y) ;
+			range[3] = new Vector2(x-1, y) ;
+			range[4] = new Vector2(x+1, y+1) ;
+			range[5] = new Vector2(x, y+1) ;
+		}
+		return range;
+	}
+    
+    public boolean hasMine() {
+    	return mineNum > 0;
     }
-
-    public void setCannonDamage(int cannonDamage) {
-	this.cannonDamage = cannonDamage;
+    
+    public Mine layMine(Vector2 pos) {
+        Mine mine = new Mine();
+    	mine.setActive(true);
+        mine.setPosition(pos);
+        if(mineNum > 0) {
+        	mineNum--;
+        }
+        else{
+        	mine = null;
+        }
+        return mine;
     } 
     
+    public void pickupMine(Mine mine){
+    	mine.setActive(false);
+    	mine.setPosition(null);
+    	mineNum++;
+    }
     
-    public void fireCannon(GameObject target) {
-        boolean result = false;
-	   
-        if(target.getClass() == new CoralUnit().getClass()) {
-            result = false;
-        }
-	
-        if(target.getClass() == new ShipUnit().getClass() ||
-            target.getClass() == new BaseUnit().getClass() ||
-            target.getClass() == new Mine().getClass()) {
-                result = true;
-        }
-        //return result;
-    }  */
-    
-    public boolean layMine(GameObject target) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }  
     
 }

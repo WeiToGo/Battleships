@@ -6,6 +6,7 @@ package my_game.models.game_components;
 import java.util.ArrayList;
 
 import my_game.util.Range;
+import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 import my_game.util.Positions;
 import my_game.util.TurnPositions;

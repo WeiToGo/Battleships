@@ -1,6 +1,5 @@
 package my_game.util;
 
-import my_game.models.game_components.ShipDirection;
 
 public class Range implements java.io.Serializable {
 	
