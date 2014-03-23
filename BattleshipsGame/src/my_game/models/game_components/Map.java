@@ -306,7 +306,7 @@ public class Map implements java.io.Serializable {
     /**
      * This method checks if there are obstacles or mines in the positions,
      * if there are obstacles, the move should stop right before the obstacle,
-     * if there is a mine, touchedMine is called. 
+     * if there is a mine, touchMine is called. 
      * @param p The array of positions to validate.
      * @return The new positions that the ship will be moved to. It would be the 
      * same than the input is all positions are clear.
@@ -315,9 +315,10 @@ public class Map implements java.io.Serializable {
         //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
         ArrayList<Vector2> moves = p.getPositions();
+        ShipUnit[] shipUnits = s.getShipUnits();
         Vector2 obstacle, mine; 
         int shipSize = s.getSize();
-        int i;
+        int i, count;
         ShipUnit[] damagedUnits = new ShipUnit[2];
         if (p.getMoveDirection() == null){
             Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null, 
@@ -332,12 +333,13 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             break;
                         }
-                        if (isMine(v)) {
+                        if (isMine(v) || isMineZone(v)) {
                             mine = v;
-                            //get first 2 shipUnits?
-                            touchedMine(mine, damagedUnits);
-                            return moves;
-                        } else {
+                            damagedUnits[0] = shipUnits[0];
+                            damagedUnits[1] = shipUnits[1];
+                            touchMine(mine, damagedUnits);
+                            return moves;                                                      
+                        }else{
                             forwardmoves.add(v);
                         }
                     }
@@ -352,36 +354,45 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v)) {
+                        if (isMine(v) || isMineZone(v)) {
                             mine = v;
-                            //get last 2 shipUnits?
-                            touchedMine(mine, damagedUnits);
-                            return null;
+                            damagedUnits[0] = shipUnits[shipUnits.length-2];
+                            damagedUnits[1] = shipUnits[shipUnits.length-1];
+                            touchMine(mine, damagedUnits);
+                            return null;                            
                         }
-                    }    
+                    }
                 case L:
+                    count = 0;
                     for (Vector2 v : moves) {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v)) {
+                        if (isMine(v) || isMineZone(v)) {
                             mine = v;
-                            //get last 2 shipUnits?
-                            touchedMine(mine, damagedUnits);
-                            return null;
+                            damagedUnits[0] = shipUnits[count];
+                            damagedUnits[1] = shipUnits[count+1];
+                            touchMine(mine, damagedUnits);
+                            return null;                            
+                        }else{
+                           count++;
                         }
                     }
                     break;
                 case R:
+                    count = 0;
                     for (Vector2 v : moves) {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v)) {
+                        if (isMine(v) || isMineZone(v)) {
                             mine = v;
-                            //get last 2 shipUnits?
-                            touchedMine(mine, damagedUnits);
-                            return null;
+                            damagedUnits[0] = shipUnits[count];
+                            damagedUnits[1] = shipUnits[count+1];
+                            touchMine(mine, damagedUnits);
+                            return null;                            
+                        }else{
+                           count++;
                         }
                     }
                     break;
@@ -594,10 +605,12 @@ public class Map implements java.io.Serializable {
             if (isHiddenObstacle(s,v)){
                 canTurn = false;
                 break; // don't turn if there is an obstacle.
-            }else if (isMine(v)){
+            /*don't need to check for mine because turning always touches a mine 
+                zone first. */
+            }else if (isMineZone(v)){
                 mine = v;
                 damagedUnits = getDamagedUnits(mine,s);
-                touchedMine(mine, damagedUnits);
+                touchMine(mine, damagedUnits);
                 canTurn = false;
                 break;
             }
@@ -620,7 +633,7 @@ public class Map implements java.io.Serializable {
                 }
                 damagedUnits[0] = s1;
                 damagedUnits[1] = s2;
-                touchedMine(mine, damagedUnits);
+                touchMine(mine, damagedUnits);
                 canTurn = false;
                 break;
             }else{
@@ -774,15 +787,19 @@ public class Map implements java.io.Serializable {
         }
         return isMine;
     }
-    
-    public void touchedMine(Vector2 mineZone, ShipUnit[] damagedUnits){
-        GameObject mine = getObjectAt(mineZone);
-        //assume we can get the actual mine which is at the center of this mineZone,
-        // and we destroyed it.
-        for (ShipUnit s: damagedUnits){
-            s.setDamage(1);
-        }    
-    }
+   
+    public boolean isMineZone(Vector2 p){
+        boolean isMineZone = false;
+        GameObject o = this.getObjectAt(p);  
+        if (o == null){
+            return false;
+        }        
+        if (o.getObjectType().compareTo(GameObject.GameObjectType.MineZone) == 0){
+            isMineZone = true;
+        }
+        return isMineZone;
+    }    
+
     
     /**
      * @param position 
@@ -1105,33 +1122,7 @@ public class Map implements java.io.Serializable {
         }
         return sb.toString();
     }
-
-    public String toStringTry() {
-        //just print out the map grid where obstacles are '#', empty spaces are '*'
-        //and other objects are 'o'
-        StringBuilder sb = new StringBuilder();
-        GameObject o;
-        Vector2 v;
-        for(int y = 0; y < HEIGHT; y++) { //first y so that we go horizontal line by line in the grid
-            for(int x = 0; x < WIDTH; x++){ 
-                v = new Vector2(x,y);
-                o = this.getObjectAt(v);
-                if(o == null) {
-                    sb.append("-");
-                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef) == 0) {
-                    sb.append("C");
-                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.Ship) == 0) {
-                    sb.append("S");
-                } else if(o.getObjectType().compareTo(GameObject.GameObjectType.Base) == 0) {
-                    sb.append("B");                    
-                } else {
-                    sb.append("o");
-                }
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
-    }    
+    
 
     /**
      * Recalculates the visibility of every grid cell for every player and

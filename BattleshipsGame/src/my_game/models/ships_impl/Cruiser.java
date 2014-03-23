@@ -6,10 +6,6 @@ package my_game.models.ships_impl;
 
 import java.util.ArrayList;
 
-import my_game.models.game_components.BaseUnit;
-import my_game.models.game_components.CoralUnit;
-import my_game.models.game_components.GameObject;
-import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.util.Range;
