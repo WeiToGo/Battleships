@@ -9,5 +9,5 @@ package my_game.models.game_components;
  * @author wei
  */
     public enum ShipDirection {
-        North, East, South, West;
+        North, East, South, West, NoDirection;
     };

@@ -16,7 +16,7 @@ import my_game.util.TurnPositions;
 public abstract class Ship implements java.io.Serializable {
     
     public enum ShipType {
-        Cruiser, Destroyer, TorpedoBoat, MineLayer, RadarBoat
+        Cruiser, Destroyer, TorpedoBoat, MineLayer, RadarBoat, KamikazeBoat
     };
     
    

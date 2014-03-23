@@ -1,8 +1,12 @@
 package my_game.gui.application;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -81,7 +85,12 @@ public class JoinGame
             @Override
             public void handle(ActionEvent event) {
                 ServerInfo server = taview.getSelectionModel().getSelectedItem();
-                Main.getClient().connect(server.ipAddress);
+                try {
+                    Main.getClient().connect(InetAddress.getByName("142.157.71.64"));
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(JoinGame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                    
                 
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
@@ -92,7 +101,7 @@ public class JoinGame
                     e.printStackTrace();
                 }
                 
-                if (server != null) {
+                if (true) {
                     Stage previousStage = Main.getStage();
                     previousStage.close();
                     Scene scene = new Scene(page);

@@ -588,41 +588,100 @@ public class Map implements java.io.Serializable {
         Vector2 obstacle, mine;   
         ShipUnit[] damagedUnits = new ShipUnit[2];
 
-  //      if (!s.hasFlexibleTurn()){
-            for (Vector2 v: turnPath){
-                if (isHiddenObstacle(s,v)){
-                    canTurn = false;
-                    break; // don't turn if there is an obstacle.
-                }else if (isMine(v)){
-                    mine = v;
-                    //get 2 shipUnits
-                    touchedMine(mine, damagedUnits);
-                    canTurn = false;
-                    break;
-                }
+        for (Vector2 v: turnPath){
+            if (isHiddenObstacle(s,v)){
+                canTurn = false;
+                break; // don't turn if there is an obstacle.
+            }else if (isMine(v)){
+                mine = v;
+                damagedUnits = getDamagedUnits(mine,s);
+                touchedMine(mine, damagedUnits);
+                canTurn = false;
+                break;
             }
-            for (Vector2 v: turns){
-                if (isHiddenObstacle(s,v)){
-                    canTurn = false;
-                    break; // don't turn if there is an obstacle.
-                }else if (isMine(v)){
-                    mine = v;
-                    //get 2 shipUnits
-                    touchedMine(mine, damagedUnits);
-                    canTurn = false;
-                    break;
+        }
+        //keep a count of cleared positions.
+        int count = 0;
+        for (Vector2 v: turns){
+            if (isHiddenObstacle(s,v)){
+                canTurn = false;
+                break; // don't turn if there is an obstacle.
+            }else if (isMine(v)){
+                mine = v;
+                ShipUnit s1,s2;
+                if (count == s.getSize()-1){
+                    s1 = s.getShipUnits()[count-1];
+                    s2 = s.getShipUnits()[count];
+                }else{
+                    s1 = s.getShipUnits()[count];
+                    s2 = s.getShipUnits()[count+1];
                 }
-            }            
-            if (canTurn){
-                valid.setTurns(turns);
-                valid.setPath(turnPath);
-                valid.setNewDirection(d);
+                damagedUnits[0] = s1;
+                damagedUnits[1] = s2;
+                touchedMine(mine, damagedUnits);
+                canTurn = false;
+                break;
+            }else{
+                //if there is nothing, increment count
+                count++;
             }
-            
-   //     }else{
+        }            
+        if (canTurn){
+            valid.setTurns(turns);
+            valid.setPath(turnPath);
+            valid.setNewDirection(d);
+        } 
+        
         return valid;
     }
 
+    /**
+     * 
+     * @param minePosition
+     * @param s
+     * @param turnPath True if the mine is on turn path, false if the mine is at 
+     * the new position of the ship.
+     * @return 
+     */
+    private ShipUnit[] getDamagedUnits(Vector2 minePosition, Ship s){
+        ShipUnit[] shipUnits = s.getShipUnits();
+        ShipUnit[] damagedUnits = new ShipUnit[2];  
+        ShipUnit s1 = new ShipUnit();
+        ShipUnit s2 = new ShipUnit();
+        int size = s.getSize();
+        if (s.hasFlexibleTurn()){
+            Vector2 p0 = shipUnits[0].getPosition();
+            Vector2 p2 = shipUnits[shipUnits.length-1].getPosition();
+            if (minePosition.x == p0.x || minePosition.y == p0.y){
+                s1 = shipUnits[0];
+                s2 = shipUnits[1];
+            }else if (minePosition.x == p2.x || minePosition.y == p2.y){
+                s1 = shipUnits[1];
+                s2 = shipUnits[2];
+            }else{
+                //shouldn't happen
+            }
+        }else{
+            Vector2 pivot = shipUnits[shipUnits.length-1].getPosition();
+            int distance = getDistance(pivot,minePosition);
+            s1 = shipUnits[size-distance];
+            s2 = shipUnits[size-distance+1];
+        }
+        
+        damagedUnits[0] = s1;
+        damagedUnits[1] = s2;
+        return damagedUnits;
+    }
+    
+    /**
+     * This method returns the Euclidean distance between 2 positions.
+     * It's used by validateTurn to figure out the ship units to be destroyed by
+     * the mine.
+     */
+    private int getDistance(Vector2 v1, Vector2 v2){
+        int distance = Math.abs(v1.x-v2.x) + Math.abs(v1.y-v2.y);
+        return distance;
+    }
     /**
      * This method checks if there is any visible obstacle at a position for 
      * a given ship. (Including Mine for minelayers)
