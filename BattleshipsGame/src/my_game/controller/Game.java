@@ -464,6 +464,10 @@ public class Game implements GameGUI.GameGuiListener {
         } 
     }
         
+    public void layMine(Vector2 pos){
+    	//map.layMine(Ship mineLayer, Vector2 position)
+    }
+    
     public void fireCannon(GameObject unit){
     	//can be called by any type of ship
     	//TO DO: highlight the available ship and cannonRange to GUI pass the (user selected)attacker and targeting position to map

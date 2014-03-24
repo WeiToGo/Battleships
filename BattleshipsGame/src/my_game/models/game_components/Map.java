@@ -940,6 +940,36 @@ public class Map implements java.io.Serializable {
     	return mine;
     }
     
+    public void touchMine(Vector2 mineZone, ShipUnit[] damagedUnits){
+        GameObject temp = getObjectAt(mineZone);
+        //assume we can get the actual mine which is at the center of this mineZone,
+        // and we destroyed it.
+        for (ShipUnit s: damagedUnits){
+            s.setDamage(1);
+        }
+        
+        if(temp.getClass() == new Mine().getClass()){
+        	((Mine)temp).setDestoryed(true);
+        	setObjectAt(mineZone, null);
+        	for(Vector2 mz: ((Mine)temp).getMineZone()){
+        		setObjectAt(mz, null);
+        	}
+        }
+        else{ //temp is a MineZone
+        	Mine mine = ((MineZone)temp).getMine();
+        	mine.setDestoryed(true);
+        	setObjectAt(mineZone, null);
+        	for(Vector2 mz: mine.getMineZone()){
+        		setObjectAt(mz, null);
+        	}
+        }
+    }
+    
+    public void pickupMine(MineLayer mineLayer, Vector2 pos) {
+    	Mine mine = (Mine)getObjectAt(pos);
+    	mineLayer.pickupMine(mine);
+    	setObjectAt(pos, null);
+    }
     
     /**
      * Checks whether the specified ship belongs to the blue player (player on the
