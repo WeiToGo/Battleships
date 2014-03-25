@@ -349,7 +349,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     
     /* *********************** END OF LOADERS ******************************** */
     
-    public void requestlearHighlight() {
+    /**
+     * Sets a flag in the GameGUI which will clear all highlights at the next update.
+     */
+    public void requestClearHighlight() {
         this.clearHighlight = true;
     }
     

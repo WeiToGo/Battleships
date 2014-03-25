@@ -423,6 +423,13 @@ public class GameState implements java.io.Serializable {
         }
     }    
     
+    /**
+     * @return True if the game is over, otherwise false.
+     */
+    public boolean gameOver() {
+        return this.phase.equals(GamePhase.GameOver);
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

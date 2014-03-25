@@ -200,44 +200,6 @@ public class Game implements GameGUI.GameGuiListener {
         }
         
     }
-    
-    private void startGame() {
-        //MAIN GAME LOOP PSEUDO
-        //init and display GUI
-        gui = new GameGUI(30, 30, this, this.player);
-        gui.start();
-        //now wait until the gui initializes
-        synchronized(this) {
-            try {
-                this.wait();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        gui.drawGameState(this.gameState);
-        //positioning phase
-        //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
-        
-        //LOOP 
-        Ship s; // get the ship we want to position from GUI
-        //get the new position we want to move that ship around the base;
-
-        // calls positionShip
-        //gameState.positionShip(s, newPosition);
-        
-        //END LOOP when user finishes positioning the ships.
-        
-        //main game loop
-            //if your turn
-                //activate actions in gui
-                //wait to receive an action
-                //process action
-                //end turn
-            //else
-                //wait for other player to finish turn
-        //repeat until game over
-    }
-    
 
     /* **************  GameGuiListener implemented methods ******************* */
     
@@ -272,7 +234,7 @@ public class Game implements GameGUI.GameGuiListener {
             this.selectedShip = null;
             gui.setButtonsEnabled(false);
             if(moveHighlight != null || turnHighlight != null) {
-                gui.requestlearHighlight();
+                gui.requestClearHighlight();
                 //clear all highlights too
                 moveHighlight = null;
                 turnHighlight = null;
@@ -337,6 +299,33 @@ public class Game implements GameGUI.GameGuiListener {
      * @param y 
      */
 
+        
+    /**
+     * Initialises the gui and sets up the game.
+     */
+    private void startGame() {
+        //init and display GUI
+        gui = new GameGUI(30, 30, this, this.player);
+        gui.start();
+        //now wait until the gui initializes
+        synchronized(this) {
+            try {
+                this.wait();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        gui.drawGameState(this.gameState);
+        //positioning phase
+        gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+    }
+    
+    /**
+     * This method is responsible of displaying the game over interface.
+     */
+    private void gameOver() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     
     /**
@@ -352,33 +341,38 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
+    
+    private void endTurn() {
+        sendGameState();
+        if(gameState.gameOver()) {
+            gameOver();
+        }
+        //TODO insert other stuff to do at the end of a turn
+        
+    }
+    
     public void moveAction(Ship s){
-        //need to be called on the map object.
+        //gather the available move positions for the specified ship
         moveHighlight = gameState.getMap().prepareMoveShip(s);
-
-        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        //pass these positions to the gui to be displayed
         gui.highlightPositions(moveHighlight);
        
-        synchronized(this) {
+        synchronized(this) {    //synchronized because we are waiting the 'awaitingInput' flag to be changed
             try {
                 awaitingInput = true;
                 this.wait();
                 awaitingInput = false;
-                //check if the result is acceptable
                 
+                //check if the result is acceptable
                 if(input != null && gameState.getMap().moveShip(s, input, moveHighlight)) {
-                    gui.drawGameState(gameState);
-                    
+                    //action successfully executed
+                    gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship moved to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
-                    sendGameState();
+                    endTurn();
                 }
-                
-                gui.requestlearHighlight();
-                gui.setButtonsEnabled(false);
-                selectedShip = null;
-                moveHighlight = null;
-
+                //clear up the gui
+                clearGUI();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -386,10 +380,9 @@ public class Game implements GameGUI.GameGuiListener {
     }
     
     public void turnAction(Ship s){
-        //need to be called on the map object.
+        //gather all positions where the specified ship can turn to
         turnHighlight = gameState.getMap().prepareTurnShip(s);
-
-        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        //provide these positions to gui for displaying
         gui.highlightPositions(turnHighlight);
        
         synchronized(this) {
@@ -399,18 +392,14 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = false;
 
                 if(input != null && gameState.getMap().turnShip(s, input, turnHighlight)) {
-                    gui.drawGameState(gameState);
-                    
+                    //action successfully executed
+                    gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship turned to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
-                    sendGameState();
+                    endTurn();
                 }
-                
-                gui.requestlearHighlight();
-                gui.setButtonsEnabled(false);
-                selectedShip = null;
-                moveHighlight = null;
-
+                //clear gui
+                clearGUI();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -448,20 +437,28 @@ public class Game implements GameGUI.GameGuiListener {
                         gameState.addMessage(m);
 
                         gui.drawGameState(gameState);
-                        sendGameState();
+                        endTurn();
                     } else {
                         Misc.log("No hit.");
                     }
                 }
-                gui.requestlearHighlight();
-                gui.setButtonsEnabled(false);
-                selectedShip = null;
-                moveHighlight = null;
+                //clear gui
+                clearGUI();
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
         } 
+    }
+    
+    /**
+     * A small helper method that clears the gui at the end of an action.
+     */
+    private void clearGUI() {
+        gui.requestClearHighlight();
+        gui.setButtonsEnabled(false);
+        selectedShip = null;
+        moveHighlight = null;
     }
         
     public void layMine(Vector2 pos){
