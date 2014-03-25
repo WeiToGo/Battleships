@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
 import my_game.models.player_components.Player;
@@ -17,6 +19,7 @@ import my_game.networking.packets.impl.CoralReefPacket;
 import my_game.networking.packets.impl.GameStatePacket;
 import my_game.networking.packets.impl.HelloPacket;
 import my_game.networking.packets.impl.ServerInfoPacket;
+import my_game.networking.packets.impl.SilentPacket;
 import my_game.networking.packets.impl.VotePacket;
 import my_game.util.Misc;
 
@@ -66,7 +69,7 @@ public class GameServer implements NetworkEntity {
      * work and start waiting for another client to connect, unless it is
      * stopped by setting serverRunning to false.
      */
-    private boolean clientConnected;
+    private boolean clientConnected, invalidReceived;
     
     private Player connectedPlayer;
     
@@ -138,13 +141,9 @@ public class GameServer implements NetworkEntity {
      *
      * @param data data to send to the client.
      */
-    public void sendData(byte[] data, DataOutputStream output) {
+    public void sendData(byte[] data, DataOutputStream output) throws IOException {
         //send packet
-        try {
-            output.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        output.write(data);
     }
 
     /**
@@ -152,6 +151,9 @@ public class GameServer implements NetworkEntity {
      */
     public void stopServer() {
         serverRunning = false;
+        closeServer();  //call this to finalize the closing of all sockets and
+        //data streams once the main loop has finished => no one is still listening 
+        //on the sockets.
     }
 
     public void setOpponent(Player p) {
@@ -167,7 +169,11 @@ public class GameServer implements NetworkEntity {
 
     public void sendGameState(GameState gs) {
         GameStatePacket p = new GameStatePacket(gs);
-        this.sendData(p.getData(), out);
+        try {
+            this.sendData(p.getData(), out);
+        } catch (IOException ex) {
+            Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Player getConnectedPlayer() {
@@ -182,6 +188,10 @@ public class GameServer implements NetworkEntity {
         return clientConnected;
     }
 
+    public void invalidPacket() {
+        invalidReceived = true;
+    }
+    
     /**
      * Sends a CoralReef object to the connected client to this server.
      * Doesn't send anything if the server is not running or there is no 
@@ -190,7 +200,11 @@ public class GameServer implements NetworkEntity {
      */
     public void sendCoralReefToListeners(CoralReef reef) {
         CoralReefPacket packet = new CoralReefPacket(reef);
-        this.sendData(packet.getData(), out);
+        try {
+            this.sendData(packet.getData(), out);
+        } catch (IOException ex) {
+            Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void sendVoteToListeners(boolean vote) {
@@ -201,7 +215,11 @@ public class GameServer implements NetworkEntity {
 
     public void sendVote(boolean vote) {
         VotePacket v = new VotePacket(vote);
-        this.sendData(v.getData(), out);
+        try {
+            this.sendData(v.getData(), out);
+        } catch (IOException ex) {
+            Logger.getLogger(GameServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -241,20 +259,28 @@ public class GameServer implements NetworkEntity {
                     while (clientConnected) {
                         //construct packet object to save received data into
                         byte[] data = new byte[24576];
-
+                        
                         //wait to receive a packet
                         in.read(data);
+                        
+                        if(invalidReceived) {
+                            //test if connection is still alive by sending silent
+                            try {
+                                sendData(new SilentPacket().getData(), out);
+                            } catch(IOException e) {
+                                clientConnected = false;
+                                Misc.log("Client disconnected.");
+                            } finally {
+                                invalidReceived = false;
+                            }
+                        }
                         //handle packet
                         packetHandler.handlePacket(data);
                     }
-                    clientConnected = false;
                     connectedPlayer = null;
                     //end of thread
                 } catch (IOException ignore) {}
             }   //serverRunning == false, endwhile
-            closeServer();  //call this to finalize the closing of all sockets and
-            //data streams once the main loop has finished => no one is still listening 
-            //on the sockets.
         }
     }
 

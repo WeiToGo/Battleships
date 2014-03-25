@@ -121,6 +121,17 @@ public class GameConfirm
         returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                //non javafx stuff
+                //close server/client on return
+                if(Main.isServer) {
+                    Main.getServer().stopServer();
+                    Main.setServer(null);
+                } else {
+                    Main.getClient().stopClient();
+                    Main.setClient(null);
+                }
+                //****************
+                
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
                 try {

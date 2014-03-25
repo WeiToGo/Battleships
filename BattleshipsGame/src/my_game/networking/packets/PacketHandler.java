@@ -80,9 +80,13 @@ public class PacketHandler {
                                 System.out.println("Game state packet received." + g.getGameState());
                                 net.sendGameStateToListeners(g.getGameState());
                                 break;
+                            case SILENT:
+                                break;
                             default:
                             case INVALID:
-                                    Misc.log("[PKT_HAND]: Invalid packet received - code: " + typeCode);
+                                    Misc.log("[PKT_HAND]: Invalid packet received - code: " + typeCode + ", length: " + data.length);
+                                    net.invalidPacket();
+                                    break;
                             }
                         }
                     } catch (UnsupportedEncodingException ex) {

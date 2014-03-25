@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javax.swing.JOptionPane;
 import my_game.networking.ServerInfo;
 import my_game.networking.ServerListListener;
@@ -71,10 +72,13 @@ public class JoinGame
         ipAddressCol.setCellValueFactory(new PropertyValueFactory<ServerInfo,String>("ipAddressString"));
         taview.getColumns().addAll(serverNameCol, playerNameCol, ipAddressCol);
         taview.setItems(list);
-        c.getLANServersList(new ServerListListener() {
-
+        
+        final Thread serverLookupThread;    //This is the thread on which the server lookup is running
+        serverLookupThread = GameClient.getLANServersList(new ServerListListener() {
             public void addServerInfo(ServerInfo si) {
-                list.add(si);
+                if(!list.contains(si)) {
+                    list.add(si);
+                }
             }
         });
         
@@ -85,10 +89,9 @@ public class JoinGame
             @Override
             public void handle(ActionEvent event) {
                 ServerInfo server = taview.getSelectionModel().getSelectedItem();
-                try {
-                    Main.getClient().connect(InetAddress.getByName("142.157.71.64"));
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(JoinGame.class.getName()).log(Level.SEVERE, null, ex);
+                if(server != null) {
+                    serverLookupThread.interrupt();
+                    Main.getClient().connect(server.ipAddress);
                 }
                     
                 
@@ -107,6 +110,7 @@ public class JoinGame
                     Scene scene = new Scene(page);
                     primaryStage.setScene(scene);
                     primaryStage.setTitle("Battleship");
+                    primaryStage.initStyle(StageStyle.UNDECORATED);
                     primaryStage.show();
                     Main.setStage(primaryStage);
                 } else {
@@ -120,6 +124,13 @@ public class JoinGame
         returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                //non javafx client stopping stuff
+                if(Main.getClient() != null) {
+                    Main.getClient().stopClient();
+                    Main.setClient(null);
+                }
+                serverLookupThread.interrupt();
+                //**************************
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
                 try {
