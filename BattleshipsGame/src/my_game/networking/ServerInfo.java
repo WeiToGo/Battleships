@@ -48,4 +48,19 @@ public class ServerInfo {
     public String toString() {
         return ("server: " + serverName + "| " + playerName + ":" + ipAddress.toString());
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if(o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        ServerInfo other = (ServerInfo) o;
+        if(serverName.equals(other.serverName) &&
+                playerName.equals(other.playerName) &&
+                ipAddress.equals(other.ipAddress)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

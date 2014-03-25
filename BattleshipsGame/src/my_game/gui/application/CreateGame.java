@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 public class CreateGame
@@ -66,6 +67,7 @@ public class CreateGame
         	Scene scene = new Scene(page);
         	primaryStage.setScene(scene);
         	primaryStage.setTitle("Battleship");
+                primaryStage.initStyle(StageStyle.UNDECORATED);
         	primaryStage.show();
         	Main.setStage(primaryStage);
         }
@@ -94,6 +96,7 @@ public class CreateGame
             	Scene scene = new Scene(page);
             	primaryStage.setScene(scene);
             	primaryStage.setTitle("Battleship");
+                primaryStage.initStyle(StageStyle.UNDECORATED);
             	primaryStage.show();
             	Main.setStage(primaryStage);
         	}

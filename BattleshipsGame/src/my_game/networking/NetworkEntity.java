@@ -65,4 +65,6 @@ public interface NetworkEntity {
          * @param l 
          */
         public void removeNetListener(NetEntityListener l);
+
+    public void invalidPacket();
 }
