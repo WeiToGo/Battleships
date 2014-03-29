@@ -119,9 +119,13 @@ public class Map implements java.io.Serializable {
      * @return An array of positions that are highlighted on the map.
      */
     public Positions prepareMoveShip(Ship ship){
+        Positions highlightedMoves = new Positions(null,null,null,null);        
+        if (ship.getShipType().compareTo(Ship.ShipType.KamikazeBoat)==0){
+            highlightedMoves = prepareMoveKam(ship);
+            return highlightedMoves;
+        }         
         Positions allMoves = ship.availableMoves(); 
-        //not sure if it's a good idea.
-        Positions highlightedMoves = new Positions(null,null,null,null);
+        //not sure if it's a good idea.               
         //if there is any obstacle on left or right, the ship can't move sideways.
         ArrayList<Vector2> left = allMoves.getLeft();
         boolean canMove = true;
@@ -183,7 +187,30 @@ public class Map implements java.io.Serializable {
         }
         return highlightedMoves;
     }
-    
+    /**
+     * A special method to prepare moves for the KamikazeBoat.
+     * @param ship
+     * @return 
+     */
+    private Positions prepareMoveKam(Ship ship){
+        Positions highlightedMoves = new Positions(null,null,null,null);
+        ArrayList<Vector2> moves = ship.availableMovesKam();
+        System.out.println("kam size " + moves.size());
+        System.out.println("moves " + moves.get(0).x + " " + moves.get(0).y); 
+
+        if (moves.size() > 0){
+            for (int i = 0; i < moves.size(); i++){
+//            for (Vector2 p: moves){
+                if(isVisibleObstacle(ship, moves.get(i)) || isSelf(ship,moves.get(i))){
+                    moves.remove(moves.get(i));
+                }
+            }
+            // since we don't need to differentiate different directions, just set
+            //to forward as default.
+            highlightedMoves.setForward(moves);
+        }
+        return highlightedMoves;
+    }    
     /**
      * Checks if a positions is occupied by itself.
      * @param selfPos
@@ -217,6 +244,10 @@ public class Map implements java.io.Serializable {
 //    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
     public boolean moveShip(Ship ship,Vector2 newPosition, Positions p) {
         boolean found = false;
+        if (ship.getShipType().compareTo(Ship.ShipType.KamikazeBoat)== 0){
+            boolean b = moveShipKamikaze(ship, newPosition);
+            return b;
+        }
         for(Vector2 v: p.getAll()) {
             if(v.equals(newPosition)) {
                 found = true;
@@ -228,13 +259,7 @@ public class Map implements java.io.Serializable {
         Moves shipPositions = getMovePositions (newPosition, p);
         ArrayList<Vector2> valide = new ArrayList<Vector2>();
         valide = validateMove(ship, shipPositions);
-        
- /*       try{
-        }catch (GameException e){
-            Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null,
-                    new GameException("move error"));
-        }
- */       if (valide != null){
+        if (valide != null){
             this.updateShipPositions(ship, valide);    
             ship.moveTo(valide);           
         } else {
@@ -244,6 +269,25 @@ public class Map implements java.io.Serializable {
         this.updateRadarVisibilityArrays();
         return true;
     }
+    private boolean moveShipKamikaze(Ship ship, Vector2 p){
+        Vector2 mine;
+        ShipUnit[] damagedUnits = new ShipUnit[2];
+        if (isMine(p) || isMineZone(p)) {
+            mine = p;
+            damagedUnits[0] = ship.getShipUnits()[0];
+            damagedUnits[1] = null;
+            touchMine(mine, damagedUnits); 
+            return false;
+        }else{
+            ArrayList<Vector2> positions = new ArrayList<Vector2>();
+            positions.add(p);
+            this.updateShipPositions(ship, positions);
+            ship.moveToKam(p);
+            this.updateRadarVisibilityArrays();
+            return true;
+        }
+     
+    }    
     
     /**
      * This method calcule all positions that need be checked in order move the

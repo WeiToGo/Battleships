@@ -256,7 +256,12 @@ public class GameState implements java.io.Serializable {
             position.add(v);
         }        
         RadarBoat r = new RadarBoat(pid, position, d);   
-        Ship[] ships = new Ship[10];
+        position.clear();
+        Vector2 kam = new Vector2(0,9);
+        position.add(kam);
+        KamikazeBoat k = new KamikazeBoat(pid,position,d);
+        
+        Ship[] ships = new Ship[11];
         ships[0]= c1;
         ships[1]= c2;
         ships[2]= d1;
@@ -267,6 +272,7 @@ public class GameState implements java.io.Serializable {
         ships[7]= m1;
         ships[8]= m2;
         ships[9]= r;
+        ships[10] = k;
                        
         return ships;
     }
@@ -344,8 +350,12 @@ public class GameState implements java.io.Serializable {
             Vector2 v = new Vector2(x,y);
             position.add(v);
         }        
-        RadarBoat r = new RadarBoat(pid, position, d);   
-        Ship[] ships = new Ship[10];
+        RadarBoat r = new RadarBoat(pid, position, d);  
+        position.clear();
+        Vector2 kam = new Vector2(29,9);
+        position.add(kam);
+        KamikazeBoat k = new KamikazeBoat(pid,position,d);        
+        Ship[] ships = new Ship[11];
         ships[0]= c1;
         ships[1]= c2;
         ships[2]= d1;
@@ -356,6 +366,7 @@ public class GameState implements java.io.Serializable {
         ships[7]= m1;
         ships[8]= m2;
         ships[9]= r;
+        ships[10] = k;
                        
         return ships;
     }  

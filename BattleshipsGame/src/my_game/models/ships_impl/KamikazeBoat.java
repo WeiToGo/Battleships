@@ -23,7 +23,7 @@ public class KamikazeBoat extends Ship{
     	super(pid);    
     }
 
-    public KamikazeBoat(int pid, ArrayList<Vector2> position){
+    public KamikazeBoat(int pid, ArrayList<Vector2> position, ShipDirection d){
         super(pid);
         setShipType(Ship.ShipType.KamikazeBoat);
         setSize(1);
@@ -31,8 +31,8 @@ public class KamikazeBoat extends Ship{
         setCurrentSize(getSize());
         setCurrentSpeed(getSpeed());
         setArmour(2);
-       // setCannonDamage(2);
-        setDirection(ShipDirection.NoDirection);
+        // set to east because it needs to have a valid direction to use the range methods.
+        setDirection(d);
               
       //  weapons.add("cannon");
         Range rr = new Range(new Vector2(-2,-2), new Vector2(2,-2), 
@@ -53,7 +53,8 @@ public class KamikazeBoat extends Ship{
     public void setExplosionRange(Range r){
         this.explosionRange = r;
     }
-    
-    
-    
+    public Range getExplosionRange() {
+    	return explosionRange;
+    } 
+  
 }

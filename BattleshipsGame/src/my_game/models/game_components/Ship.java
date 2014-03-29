@@ -4,7 +4,7 @@
  */
 package my_game.models.game_components;
 import java.util.ArrayList;
-
+import my_game.models.ships_impl.KamikazeBoat;
 import my_game.util.Range;
 import my_game.util.ShipDirection;
 import my_game.util.Vector2;
@@ -242,11 +242,11 @@ public abstract class Ship implements java.io.Serializable {
         Range newRange;
         ShipDirection d = this.getDirection();
         Vector2 shipPosition = this.getShipUnits()[0].getPosition();
-        ArrayList<Vector2> visible = new ArrayList<Vector2>();   
+        ArrayList<Vector2> rangePositions = new ArrayList<Vector2>();   
         ArrayList<Vector2> filtered = new ArrayList<Vector2>();
         switch (d){
             case East:
-                visible = this.generateRangePositions(r,shipPosition);
+                rangePositions = this.generateRangePositions(r,shipPosition);
                 break;
             //counter-clock
             case North: 
@@ -255,7 +255,7 @@ public abstract class Ship implements java.io.Serializable {
                 newbr = new Vector2(-(tr.y), tr.x);
                 newbl = new Vector2(-(br.y), br.x);
                 newRange = new Range(newtl,newtr,newbr,newbl);                
-                visible = this.generateRangePositions(newRange,shipPosition);
+                rangePositions = this.generateRangePositions(newRange,shipPosition);
                 break;
             //clock-wise    
             case South: 
@@ -264,7 +264,7 @@ public abstract class Ship implements java.io.Serializable {
                 newbr = new Vector2(bl.y, -(bl.x));
                 newbl = new Vector2(tl.y, -(tl.x));
                 newRange = new Range(newtl,newtr,newbr,newbl);
-                visible = this.generateRangePositions(newRange,shipPosition);
+                rangePositions = this.generateRangePositions(newRange,shipPosition);
                 break;
             //180 deg.
             case West: 
@@ -273,11 +273,11 @@ public abstract class Ship implements java.io.Serializable {
                 newbr = new Vector2(-(tl.x), -(tl.y));
                 newbl = new Vector2(-(tr.x), -(tr.y));
                 newRange = new Range(newtl,newtr,newbr,newbl);                
-                visible = this.generateRangePositions(newRange,shipPosition);
+                rangePositions = this.generateRangePositions(newRange,shipPosition);
                 break;
         } 
-        filtered = filterRangePositions(visible);
-        return visible;
+        filtered = filterRangePositions(rangePositions);
+        return rangePositions;
 
     }
     /**
@@ -292,7 +292,7 @@ public abstract class Ship implements java.io.Serializable {
         Vector2 tr = r.getTopRight();
         Vector2 bl = r.getBottomLeft();
         Vector2 sp = bowPosition;
-       int xStart, xEnd, yStart, yEnd, i,j;
+        int xStart, xEnd, yStart, yEnd, i,j;
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         xStart = bowPosition.x + tl.x;
         xEnd = bowPosition.x + tr.x;
@@ -355,6 +355,31 @@ public abstract class Ship implements java.io.Serializable {
             i++;
             j++;
         }
+    }
+    
+    /**
+     * This method updates each ShipUnit to the new position for the Kamikaze ship
+     */
+    public void moveToKam(Vector2 newPosition){
+        // assert ship is  KamikazeNoat? 
+        ShipUnit shipUnit = this.getShipUnits()[0];
+        shipUnit.setPosition(newPosition);
+    }      
+    public ArrayList<Vector2> availableMovesKam(){
+        ArrayList<Vector2> moves = new ArrayList<Vector2>();
+        KamikazeBoat k = (KamikazeBoat)this;
+        //explosion range is the same than move range. 
+        Range r = k.getExplosionRange();
+        moves = getRangePositions(r);
+        if (moves != null){
+            for (int i = 0; i < moves.size(); i++){                
+                if (moves.get(i).x > 29 || moves.get(i).x < 0 || moves.get(i).y < 0
+                        || moves.get(i).y > 29){
+                    moves.remove(moves.get(i));
+                }
+            }
+        }
+        return moves;
     }
     
     /**

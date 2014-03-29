@@ -8,6 +8,7 @@ import my_game.models.game_components.ShipUnit;
 import my_game.models.game_components.Map;
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
+import my_game.models.ships_impl.KamikazeBoat;
 
 import java.util.ArrayList;
 
@@ -29,15 +30,16 @@ public class ShipTest {
         Vector2 p4 = new Vector2(6,1); 
         Vector2 p5 = new Vector2(7,1);         
         positions.add(p1);
-        positions.add(p2);
+   /*     positions.add(p2);
         positions.add(p3);
         positions.add(p4);
         positions.add(p5);
-  
+  */
         ShipDirection sd = ShipDirection.West;
         Destroyer d = new Destroyer(1,positions, sd);
-        
+        KamikazeBoat k = new KamikazeBoat(1,positions, sd);
         Range r = d.getCannonRange();
+        Range kr = k.getExplosionRange();
         Vector2 tl = r.getTopLeft();
         Vector2 tr = r.getTopRight();
         Vector2 br = r.getBottomRight();
@@ -48,7 +50,17 @@ public class ShipTest {
         System.out.println("br " + br.x + " " + br.y);         
         System.out.println("bl " + bl.x + " " + bl.y);
  */      
-        System.out.println("****  test radar range *************");
+        System.out.println("****  test kamikaze move *************");
+        ShipUnit[] units = k.getShipUnits();
+        for (ShipUnit u: units){
+            System.out.println(u.getPosition().x + "  " + u.getPosition().y);
+        }        
+        ArrayList<Vector2> moves = k.availableMovesKam();
+        System.out.println("moves  === ");
+        for (Vector2 v: moves){
+            System.out.println(v.x + "  " + v.y);
+        }         
+ /*       System.out.println("****  test radar range *************");
         ShipUnit[] su = d.getShipUnits();
         for (ShipUnit u: su){
             System.out.println(u.getPosition().x + "  " + u.getPosition().y);
@@ -103,5 +115,6 @@ public class ShipTest {
             System.out.println(b.get(i).y);        
         }        
         }
-    }    
+  */
+    }
 }
