@@ -86,7 +86,7 @@ public class TorpedoBoat extends Ship {
 			((ShipUnit)target).setDamage(getTorpedoDamage());
 			ShipDirection dire = tempShip.getDirection();
 			
-			if (((ShipUnit)target).isDestoryed()){	
+			if (((ShipUnit)target).isDestroyed()){	
 				tempShip.hitUpdate();
 			}
 			
@@ -108,7 +108,7 @@ public class TorpedoBoat extends Ship {
 					if (neighbor != null) {
 						full++;
 						neighbor.setDamage(getTorpedoDamage());
-						if (neighbor.isDestoryed()){	
+						if (neighbor.isDestroyed()){	
 							tempShip.hitUpdate();
 	    				}
 					}	
@@ -118,7 +118,7 @@ public class TorpedoBoat extends Ship {
 					ShipUnit neighbor = units.get(index + 1);  
 					if (neighbor != null) {
 						neighbor.setDamage(getTorpedoDamage());
-						if (neighbor.isDestoryed()){	
+						if (neighbor.isDestroyed()){	
 							tempShip.hitUpdate();
 	    				}
 					}
@@ -134,7 +134,5 @@ public class TorpedoBoat extends Ship {
 			((Mine)target).setDestoryed(true);
 		}
     }  
-
-
     
 }

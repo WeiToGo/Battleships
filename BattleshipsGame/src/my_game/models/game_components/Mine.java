@@ -10,7 +10,8 @@ public class Mine extends GameObject {
 	private Vector2 position;
 
 	public Mine() {
-		super();
+            super();
+            this.type = GameObjectType.Mine;
 	}
 
 	public boolean isActive() {

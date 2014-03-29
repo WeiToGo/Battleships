@@ -54,40 +54,39 @@ public class MineLayer extends Ship {
 	}
 
     public Vector2[] getMineDropPickupZone() {
-		Vector2 pos = this.getShipUnits()[0].getPosition();
+        Vector2 pos = this.getShipUnits()[0].getPosition();
     	int x = pos.x;
-		int y = pos.y;
-		Vector2[] range = new Vector2[6];
-		ShipDirection direction = this.getDirection(); 
+        int y = pos.y;
+	Vector2[] range = new Vector2[6];
+	ShipDirection direction = this.getDirection(); 
 		
-		if (direction == ShipDirection.North || direction == ShipDirection.East){
-			if (direction == ShipDirection.North){
-				x = pos.y;
-				y = pos.x;
-			}
-			
-			range[0] = new Vector2(x-1, y-1) ;
-			range[1] = new Vector2(x, y-1) ;
-			range[2] = new Vector2(x-2, y) ;
-			range[3] = new Vector2(x+1, y) ;
-			range[4] = new Vector2(x-1, y+1) ;
-			range[5] = new Vector2(x, y+1) ;
-		}
-		else{
-			if (direction == ShipDirection.South){
-				x = pos.y;
-				y = pos.x;
-			}
-			
-			range[0] = new Vector2(x+1, y-1) ;
-			range[1] = new Vector2(x, y-1) ;
-			range[2] = new Vector2(x+2, y) ;
-			range[3] = new Vector2(x-1, y) ;
-			range[4] = new Vector2(x+1, y+1) ;
-			range[5] = new Vector2(x, y+1) ;
-		}
-		return range;
+	if (direction == ShipDirection.North || direction == ShipDirection.East){
+            if (direction == ShipDirection.North){
+		x = pos.y;
+		y = pos.x;
+            }
+		
+            range[0] = new Vector2(x-1, y-1) ;
+            range[1] = new Vector2(x, y-1) ;
+            range[2] = new Vector2(x-2, y) ;
+            range[3] = new Vector2(x+1, y) ;
+            range[4] = new Vector2(x-1, y+1) ;
+            range[5] = new Vector2(x, y+1) ;
+	}else{
+            if (direction == ShipDirection.South){
+                x = pos.y;
+		y = pos.x;
+            }		
+	
+            range[0] = new Vector2(x+1, y-1) ;
+            range[1] = new Vector2(x, y-1) ;
+            range[2] = new Vector2(x+2, y) ;
+            range[3] = new Vector2(x-1, y) ;
+            range[4] = new Vector2(x+1, y+1) ;
+            range[5] = new Vector2(x, y+1) ;
 	}
+	return range;
+    }
     
     public boolean hasMine() {
     	return mineNum > 0;

@@ -71,8 +71,8 @@ public class GameStateTest {
         System.out.println(map.toString());            
   
         System.out.println("size  " + p1ships.length);
-   */   /**   TEST move  */
-        Ship s = p1ships[10];
+    */   /**   TEST move  */
+    /*    Ship s = p1ships[10];
         Positions p = map.prepareMoveShip(s);
         ArrayList<Vector2> target = p.getForward();
         Vector2 v = target.get(0);
@@ -85,34 +85,45 @@ public class GameStateTest {
         map.moveShip(s,v,p);      
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());           
-
-    /*   System.out.println("***********************************");        
-        p = map.prepareMoveShip(s);
-        target = p.getBackward();
+*/
+    /*    System.out.println("***********************************");        
+        Ship s = p1ships[9];
+        Positions p = map.prepareMoveShip(s);
+        ArrayList<Vector2> target = p.getForward();
         if (target != null){
-            v = target.get(target.size()-1);
+            Vector2 v = target.get(target.size()-1);
             map.moveShip(s, v, p);
-            System.out.println(" move to " + v.x + " " + v.y);
+       //     System.out.println(" move to " + v.x + " " + v.y);
             System.out.println(map.toString());
         }
-
-/*        p = map.prepareMoveShip(s);
-        target = p.getForward();
-        v = target.get(target.size()/2); 
-        map.moveShip(s,v,p);
-        System.out.println(" move to " + v.x + " " + v.y);
+       
+   */
+       Ship s = p0ships[8]; 
+        map.layMine(s, new Vector2(6,18));
+        System.out.println(map.toString());       
+        Ship s2 = p0ships[9]; 
+        Positions p = map.prepareMoveShip(s2);
+        ArrayList<Vector2>  target = p.getForward();
+        for (Vector2 v2: target){
+      //      System.out.println(" move to " + v2.x + " " + v2.y);
+        }        
+        Vector2 v = target.get(target.size()-1); 
+        System.out.println(" move to " + v.x + " " + v.y);        
+        map.moveShip(s2,v,p);
+ //       System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());          
-        
-        System.out.println("***********************************");        
+       
+ /*       System.out.println("***********************************");        
         p = map.prepareMoveShip(s);
         target = p.getBackward();
         v = target.get(target.size()/2); 
         map.moveShip(s,v,p);
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());  
-  */      
+   */     
         /**   TEST turn  */
-     /* s = p1ships[7];
+        
+  /*    s = p1ships[7];
         TurnPositions pTurn = map.prepareTurnShip(s);
         ArrayList<Vector2> left = pTurn.getLeft();
         ArrayList<Vector2> right = pTurn.getRight();

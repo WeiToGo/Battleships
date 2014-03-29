@@ -195,9 +195,6 @@ public class Map implements java.io.Serializable {
     private Positions prepareMoveKam(Ship ship){
         Positions highlightedMoves = new Positions(null,null,null,null);
         ArrayList<Vector2> moves = ship.availableMovesKam();
-        System.out.println("kam size " + moves.size());
-        System.out.println("moves " + moves.get(0).x + " " + moves.get(0).y); 
-
         if (moves.size() > 0){
             for (int i = 0; i < moves.size(); i++){
 //            for (Vector2 p: moves){
@@ -257,11 +254,14 @@ public class Map implements java.io.Serializable {
             return false;
         }
         Moves shipPositions = getMovePositions (newPosition, p);
-        ArrayList<Vector2> valide = new ArrayList<Vector2>();
-        valide = validateMove(ship, shipPositions);
-        if (valide != null){
-            this.updateShipPositions(ship, valide);    
-            ship.moveTo(valide);           
+        ArrayList<Vector2> valid = new ArrayList<Vector2>();
+        valid = validateMove(ship, shipPositions);
+        for (Vector2 v: valid){
+            System.out.println("valid " + v.x + " " + v.y);
+        }
+        if (valid != null){
+            this.updateShipPositions(ship, valid);    
+            ship.moveTo(valid);           
         } else {
             return false;
         }
@@ -359,6 +359,8 @@ public class Map implements java.io.Serializable {
         //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
         ArrayList<Vector2> moves = p.getPositions();
+        //System.out.println(" moves SIZE " + moves.size());
+
         ShipUnit[] shipUnits = s.getShipUnits();
         Vector2 obstacle, mine; 
         int shipSize = s.getSize();
@@ -382,16 +384,27 @@ public class Map implements java.io.Serializable {
                             damagedUnits[0] = shipUnits[0];
                             damagedUnits[1] = shipUnits[1];
                             touchMine(mine, damagedUnits);
-                            return moves;                                                      
+                            break;                                                      
                         }else{
                             forwardmoves.add(v);
+                         System.out.println(" moves added " + v.x + " " + v.y);                        
                         }
                     }
                     
                     moves.clear();
-                    for (i = forwardmoves.size()-1; i >= forwardmoves.size()-shipSize; i--){
+              /*      for (i = forwardmoves.size()-1; i >= forwardmoves.size()-shipSize; i--){
+            //            System.out.println(" forwardmoves " + forwardmoves.get(i).x +" " + forwardmoves.get(i).y);
                         moves.add(forwardmoves.get(i));                        
                     }
+                */
+                    i = forwardmoves.size()-1;
+                    int k = shipSize;
+                    while(k > 0){
+                        moves.add(forwardmoves.get(i));
+                        k--;
+                        i--;
+                    }
+                    
                     break;
                 case B:
                     for (Vector2 v : moves) {
@@ -772,7 +785,8 @@ public class Map implements java.io.Serializable {
                     break;
                 }
             }
-        }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
+        }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0 ||
+                o.getObjectType().compareTo(GameObject.GameObjectType.MineZone)== 0){
             if (s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
                 ArrayList<Vector2> visible = s.getRadarPositions();
                 for (Vector2 v: visible){
@@ -968,8 +982,8 @@ public class Map implements java.io.Serializable {
     	Vector2[] zone = mine.getMineZone();
     	int count = 0;
     	for(Vector2 temp: zone) {
-    		if(getObjectAt(temp) != null)
-    			count++;
+            if(getObjectAt(temp) != null)              
+                    count++;
     	}
     	
     	if(count > 1)
@@ -978,7 +992,7 @@ public class Map implements java.io.Serializable {
     	mine.setActive(true);
     	setObjectAt(position, mine);
     	for(Vector2 temp: zone) {
-    		setObjectAt(position, new MineZone(true, position, mine));
+            setObjectAt(temp, new MineZone(true, temp, mine));
     	}
     	
     	return mine;
@@ -1185,12 +1199,19 @@ public class Map implements java.io.Serializable {
                 } else if(grid[x][y] instanceof CoralUnit) {
                     sb.append("C");
                 } else if(grid[x][y] instanceof ShipUnit) {
-                    sb.append("S");
+                    ShipUnit su = (ShipUnit)getObjectAt(new Vector2(x,y));
+                    if (su.isDamaged()){
+                        sb.append("A");
+                    }else{
+                        sb.append("S");
+                    }
                 } else if(grid[x][y] instanceof BaseUnit) {
                     sb.append("B");                    
-                } else {
-                    sb.append("o");
-                }
+                } else if(grid[x][y] instanceof Mine) {
+                    sb.append("M");
+                } else if(grid[x][y] instanceof MineZone) {
+                    sb.append("Z");
+                } 
             }
             sb.append("\n");
         }

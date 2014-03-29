@@ -31,6 +31,7 @@ public class MineZone extends GameObject{
 		this.active = active;
 		this.position = position;
 		this.mine = mine;
+                this.type = GameObjectType.MineZone;
 	}
 	
 }

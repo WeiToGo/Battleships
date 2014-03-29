@@ -125,14 +125,14 @@ public abstract class Ship implements java.io.Serializable {
     }
     
     public int getDestoryedUnit() {
-		return destoryedUnit;
-	}
+	return destoryedUnit;
+    }
 
-	public void setDestoryedUnit(int destoryedUnit) {
-		this.destoryedUnit = destoryedUnit;
-	}
+    public void setDestoryedUnit(int destoryedUnit) {
+	this.destoryedUnit = destoryedUnit;
+    }
 
-	public int getPlayerID() {
+    public int getPlayerID() {
 	return playerID;
     }
 
@@ -209,7 +209,7 @@ public abstract class Ship implements java.io.Serializable {
 			ShipUnit su = ((ShipUnit)target);
                         su.setDamage(getCannonDamage());
                         objectHit = su;
-			if (((ShipUnit)target).isDestoryed()){
+			if (((ShipUnit)target).isDestroyed()){
 				((ShipUnit)target).getShip().hitUpdate();
 			}
 		}
