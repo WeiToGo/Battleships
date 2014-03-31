@@ -217,31 +217,30 @@ public class Game implements GameGUI.GameGuiListener {
         Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
         Vector2 position = new Vector2(x, y);
         
-        Misc.log((playerWithTurn.equals(player)) + " and " + gameState.getMap().isShip(position));
-        if(playerWithTurn == player && gameState.getMap().isShip(position) && ! awaitingInput) {
+        if(playerWithTurn == player && !awaitingInput && gameState.getMap().isShip(position)) {
+            //first clear all previous highlights for previously selected ships
+            if(moveHighlight != null || turnHighlight != null) {
+                clearGUI();
+            }
             //mark the ship as selected and enable the gui buttons
             ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
             Ship ship = s.getShip();
             this.selectedShip = ship;
-            gui.setButtonsEnabled(true);
-            Misc.log("Clicked on ship.");
+            gui.setActionButtonsEnabled(true);
         } else if (awaitingInput) {
             synchronized(this) {
                 input = new Vector2(position);
                 this.notifyAll();
             }
-        } else {
-            this.selectedShip = null;
-            gui.setButtonsEnabled(false);
-            if(moveHighlight != null || turnHighlight != null) {
-                gui.requestClearHighlight();
-                //clear all highlights too
-                moveHighlight = null;
-                turnHighlight = null;
-                if(weaponHighlight != null)
-                    weaponHighlight.clear();
-                weaponHighlight = null;
+            //check if the player clicked on a new ship
+            if(gameState.getMap().isShip(position)) {
+                ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
+                Ship ship = s.getShip();
+                this.selectedShip = ship;
+                clearGUI();
             }
+        } else {
+            clearGUI();
         }
     }
     
@@ -258,6 +257,7 @@ public class Game implements GameGUI.GameGuiListener {
             Thread t;
             switch(action) {
                 case Move:
+                    interruptPreviousActions();
                     t = new Thread(new Runnable() {
                         public void run() {
                             moveAction(selectedShip);
@@ -266,6 +266,7 @@ public class Game implements GameGUI.GameGuiListener {
                     t.start();
                     break;
                 case Turn:
+                    interruptPreviousActions();
                     t = new Thread(new Runnable() {
                         public void run() {
                             turnAction(selectedShip);
@@ -274,6 +275,7 @@ public class Game implements GameGUI.GameGuiListener {
                     t.start();
                     break;
                 case Attack:
+                    interruptPreviousActions();
                     t = new Thread(new Runnable() {
                         public void run() {
                             attackAction(selectedShip);
@@ -288,6 +290,17 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
+    /**
+     * Notifies all action threads that are awaiting position input, and sets the
+     * input to null, as the user has chosen not to enter position, but do something else instead.
+     */
+    private void interruptPreviousActions() {
+         synchronized(this) {
+            input = null;
+            this.notifyAll();
+        }
+        clearGUI();
+    }
 
     /* *********************************************************************** */
     
@@ -369,10 +382,10 @@ public class Game implements GameGUI.GameGuiListener {
                     gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship moved to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
+                    //clear up the gui
+                    clearGUI();
                     endTurn();
                 }
-                //clear up the gui
-                clearGUI();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -396,10 +409,10 @@ public class Game implements GameGUI.GameGuiListener {
                     gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship turned to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
+                    //clear up the gui
+                    clearGUI();
                     endTurn();
                 }
-                //clear gui
-                clearGUI();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -435,20 +448,18 @@ public class Game implements GameGUI.GameGuiListener {
                         Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
                         //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
                         gameState.addMessage(m);
-
                         gui.drawGameState(gameState);
+                        //clear up the gui
+                        clearGUI();
                         endTurn();
                     } else {
                         Misc.log("No hit.");
                     }
                 }
-                //clear gui
-                clearGUI();
-
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } 
+        }
     }
     
     /**
@@ -456,9 +467,6 @@ public class Game implements GameGUI.GameGuiListener {
      */
     private void clearGUI() {
         gui.requestClearHighlight();
-        gui.setButtonsEnabled(false);
-        selectedShip = null;
-        moveHighlight = null;
     }
         
     public void layMine(Vector2 pos){

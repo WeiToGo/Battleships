@@ -8,7 +8,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapText;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
@@ -24,16 +23,11 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
-import com.sun.javafx.geom.PickRay;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.text.Position;
-
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
@@ -43,7 +37,6 @@ import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.util.GameException;
-import my_game.util.Misc;
 import my_game.util.Positions;
 import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
@@ -57,7 +50,7 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication implements ActionListener {    
    
     public enum Action {
-        Move, Turn, Attack
+        Move, Turn, Attack, EndTurn
     };
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
@@ -66,20 +59,25 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     private final static float BUTTONS_Y = 15;
     /** The gap between buttons. */
     private float BUTTONS_GAP = 15;
-    
+    /** Constants used in creating the button interface. These are ratios connected to the ratio of the resolution
+     * of the buttons to the resolution of 2560x1440. In other words, how would you scale the button to look the same
+     * as it looked without scaling on a 2560x1440 screen. */
     private final static float BAR_HEIGHT_RATIO = 14.5454f, BUTTON_HEIGHT_RATIO = 26.1818181818f, BUTTON_WIDTH_RATIO = 16;
     
     private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
+    /* The elevatedPlane is a plane above the gridPlane used to fix the difficult ship selection issue. */
+    private final static Plane elevatedPlane = new Plane(Vector3f.UNIT_Y, 1.5f);
     
     Spatial grid, highlight, shade, blueShipBlock, blueShipBow, 
             redShipBlock, redShipBow, blueBase, redBase, rock;
     
     /** Interface buttons and other pictures. */
-    Picture blackBar, moveButton, turnButton, shootCannonButton;
+    Picture blackBar, moveButton, turnButton, shootCannonButton, endTurnButton;
+    
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    boolean moveActivated, turnActivated, shootCannonActivated;
+    public boolean moveActivated, turnActivated, shootCannonActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid;
@@ -190,6 +188,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackEnabled.png", true);
         } else {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
+        }
+        if(endTurnActivated) {
+            this.endTurnButton.setImage(assetManager, "/Interface/endTurnEnabled.png", true);
+        } else {
+            this.endTurnButton.setImage(assetManager, "/Interface/endTurnDisabled.png", true);
         }
     }
     
@@ -320,7 +323,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         turnButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(turnButton);
         //*************************
-        shootCannonButton = new Picture("TurnButton");
+        shootCannonButton = new Picture("ShootCannonButton");
         shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
         
         shootCannonButton.setWidth(width);
@@ -329,6 +332,17 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         shootCannonButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(shootCannonButton);
+        //**************************
+        //init. end turn button
+        endTurnButton = new Picture("EndTurnButton");
+        endTurnButton.setImage(assetManager, "/Interface/endTurnDisabled.png", true);
+        
+        endTurnButton.setWidth(width);
+        endTurnButton.setHeight(height);
+        endTurnButton.setPosition(4 * resolutionAdjustedGap +  3 * width , resolutionAdjustedY);
+        
+        endTurnButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(endTurnButton);
         //**************************
         //init. the text for the chat log
         chatText = new BitmapText(guiFont, false);  
@@ -371,6 +385,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         highlightNode.detachAllChildren();
         clearHighlight = false;
         highlightPos = null;
+        //now notify all threads waiting for the clear to complete
+        synchronized(this) {
+            this.notifyAll();
+        }
     }
     
     /**
@@ -378,16 +396,19 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param highlight 
      */    
     public void highlightPositions(Positions highlights) {
+        waitForClear();
         this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
     
     public void highlightPositions(TurnPositions highlights) {
+        waitForClear();
         this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
     
     public void highlightPositions(ArrayList<Vector2> highlights) {
+        waitForClear();
         this.highlightPos = highlights;
         this.highlightPosUpdated = true;
     }
@@ -395,6 +416,20 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     private void highlightPositions() {
         for(Vector2 v: highlightPos) {
                 drawHighlight(v.x, v.y);
+        }
+    }
+    
+    /**
+     * Makes sure the gui thread is not currently clearing or waiting to clear the
+     * highlight.
+     */
+    private void waitForClear() {
+        synchronized(this) {
+            try {
+                while(this.clearHighlight) {
+                    this.wait();
+                }
+            } catch(InterruptedException ignore) {}
         }
     }
     
@@ -605,7 +640,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                                 int damage = 0;
                                 if(s.isHealthy()) {
                                     damage = NEW;
-                                } else if(s.isDestoryed()) {
+                                } else if(s.isDestroyed()) {
                                     damage = DESTROYED;
                                 } else {
                                     damage = DAMAGED;
@@ -694,7 +729,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                         // Aim the ray from the clicked spot forwards.
                 Ray ray = new Ray(click3d, dir);
                 Vector3f clickOnGridPlane = new Vector3f();
-                ray.intersectsWherePlane(gridPlane, clickOnGridPlane);
+                ray.intersectsWherePlane(elevatedPlane, clickOnGridPlane);
 
                 int x, y;
 
@@ -734,6 +769,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                         case 2:
                             guiListener.onButtonPressed(Action.Attack);
                             break;
+                        case 3:
+                            guiListener.onButtonPressed(Action.EndTurn);
+                            break;
                         default:
                             //ignore clicks outside the buttons
                     }
@@ -743,17 +781,24 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     }
 
     /**
-     * Enables and disables the buttons of the game gui.
+     * Enables and disables the action buttons of the game gui.
      * @param active 
      */
-    public void setButtonsEnabled(boolean active) {
+    public void setActionButtonsEnabled(boolean active) {
         this.moveActivated = active;
         this.shootCannonActivated = active;
         this.turnActivated = active;
     }
-
-
-
+    
+    /**
+     * Enables and disables all buttons of the game gui.
+     * @param active 
+     */
+    public void setAllButtonsEnabled(boolean active) {
+        this.setActionButtonsEnabled(active);
+        this.endTurnActivated = active;
+    }
+    
     /**
      * Interface used by GameGUI to communicate back to the controller which
      * initialized the gui.

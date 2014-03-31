@@ -65,7 +65,7 @@ public class ShipUnit extends GameObject implements java.io.Serializable {
     }
     
     public boolean isDamaged() {
-    	return (unitArmour - damageLevel) == 1;
+    	return (unitArmour - damageLevel) == 1 && damageLevel > 0;
     }
     
     public boolean isDestroyed() {
