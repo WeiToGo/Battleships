@@ -130,7 +130,7 @@ public class GameClient extends Thread implements NetworkEntity {
                             //make connection to try to reach a server
                             try {
                                 Socket s = new Socket();
-                                s.connect(new InetSocketAddress(address, Constants.SERVER_INFO_PORT), 75);
+                                s.connect(new InetSocketAddress(address, Constants.SERVER_INFO_PORT), 50);
                                 DataInputStream di = new DataInputStream(s.getInputStream());
 
                                 byte[] data = new byte[1024];

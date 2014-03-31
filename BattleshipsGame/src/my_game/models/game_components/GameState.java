@@ -19,8 +19,7 @@ import my_game.util.Vector2;
 /**
  * The state of a game describes a game fully.
  */
-public class GameState implements java.io.Serializable {
-    
+public class GameState implements java.io.Serializable {    
     public enum GamePhase {
         New,    // game has just been created, players have not interacted yet
         ShipPositioning, // after creating the game, players position their ships on the map
@@ -90,6 +89,13 @@ public class GameState implements java.io.Serializable {
      */
     public List<Message> getChatLog(Player p) {
         return this.chatLog.getMessages(p);
+    }
+    
+    /**
+     * Changes the turn to the next player.
+     */
+    public void nextTurn() {
+        this.playerTurn = (playerTurn + 1) % 2;
     }
     
     public void addMessage(Message m) {

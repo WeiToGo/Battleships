@@ -77,7 +77,6 @@ public class PacketHandler {
                                 break;
                             case GAMESTATE:
                                 GameStatePacket g = new GameStatePacket(args[i].getBytes("ISO-8859-1"));
-                                System.out.println("Game state packet received." + g.getGameState());
                                 net.sendGameStateToListeners(g.getGameState());
                                 break;
                             case SILENT:

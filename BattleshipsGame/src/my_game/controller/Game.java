@@ -4,18 +4,13 @@
  */
 package my_game.controller;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.text.Position;
-
 import my_game.gui.GameGUI;
 import my_game.gui.GameGUI.Action;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
-import my_game.models.game_components.Map;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
@@ -23,7 +18,6 @@ import my_game.models.player_components.Message;
 import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
 import my_game.networking.NetEntityListener;
-import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 import my_game.util.GameException;
 import my_game.util.Misc;
@@ -69,7 +63,7 @@ public class Game implements GameGUI.GameGuiListener {
     private TurnPositions turnHighlight;
     private ArrayList<Vector2> weaponHighlight;
     //////*************************************
-    private boolean awaitingInput;
+    private boolean awaitingInput, hasTurn;
     private Vector2 input;
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
@@ -110,7 +104,7 @@ public class Game implements GameGUI.GameGuiListener {
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
             //TODO if the line below is commented, uncomment for proper behaviour
-            //this.net.sendGameState(gameState);
+            sendGameState();
             startGame();
         } else {
             //add a listener to the client
@@ -130,12 +124,8 @@ public class Game implements GameGUI.GameGuiListener {
                     }
                 }
             }
-            
             System.out.println("Client received a game state.");
-            gameState = new GameState(this.receivedGameState);
             receivedNewGamestate = false;
-            //replace the partial information about this player in the gamestate with the full info
-            gameState.setPlayer(1, player);
             
             startGame();
         }
@@ -161,12 +151,19 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                receivedGameState = gs;
-                receivedNewGamestate = true;
+                gameState = new GameState(gs);
+                if(gameState != null) {
+                    //replace the partial information about this player in the gamestate with the full info
+                    gameState.setPlayer(0, player);
+                    receivedNewGamestate = true;
+                    if(gui != null) {
+                        gui.drawGameState(gameState);
+                    }
+                }
+                startTurn();
                 player.notifyAll();
             }
         }
-        
     }
     
     /**
@@ -189,13 +186,17 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                receivedGameState = gs;
-                receivedGameState.setPlayer(1, player);
-                receivedNewGamestate = true;
+                gameState = new GameState(gs);
+                if(gameState != null) {
+                    //replace the partial information about this player in the gamestate with the full info
+                    gameState.setPlayer(1, player);
+                    receivedNewGamestate = true;
+                    if(gui != null) {
+                        gui.drawGameState(gameState);
+                    }
+                }
+                startTurn();
                 player.notifyAll();
-            }
-            if(gui != null) {
-                gui.drawGameState(receivedGameState);
             }
         }
         
@@ -214,10 +215,10 @@ public class Game implements GameGUI.GameGuiListener {
     @Override
     public void onMouseClick(int x, int y) {
         //if it's the player's turn and there is a ship under the mouse cursor, select the ship
-        Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
         Vector2 position = new Vector2(x, y);
-        
-        if(playerWithTurn == player && !awaitingInput && gameState.getMap().isShip(position)) {
+        if(!hasTurn) {
+            //do nothing, it is not the turn of this player
+        } else if(!awaitingInput && gameState.getMap().isShip(position)) {
             //first clear all previous highlights for previously selected ships
             if(moveHighlight != null || turnHighlight != null) {
                 clearGUI();
@@ -252,6 +253,9 @@ public class Game implements GameGUI.GameGuiListener {
                 this.notifyAll();
             }
         }
+        if(!hasTurn) {
+            return;
+        }
         if(selectedShip != null) {
             //we can take an action, there's a ship already selected
             Thread t;
@@ -283,6 +287,9 @@ public class Game implements GameGUI.GameGuiListener {
                     });
                     t.start();
                     break;
+                case EndTurn:
+                    interruptPreviousActions();
+                    endTurn();
                 default:
                     Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Unknown action encountered."));
                     break;
@@ -330,7 +337,10 @@ public class Game implements GameGUI.GameGuiListener {
         }
         gui.drawGameState(this.gameState);
         //positioning phase
-        gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+        //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
+        System.out.println("Will now enter startTurn()");
+        startTurn();
+        System.out.println("startTurn() is done.");
     }
     
     /**
@@ -354,14 +364,35 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
+    /**
+     * If the game state says that this player has the current turn, this method
+     * prepares the gui for the player's turn.
+     */
+    private void startTurn() {
+        Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
+        if(playerWithTurn.equals(player)) {
+            //this player's turn
+            hasTurn = true;
+            gui.setAllButtonsEnabled(true);
+            gui.setActionButtonsEnabled(false);
+        } else {
+            hasTurn = false;
+        }
+    }
     
     private void endTurn() {
+        //set turn to next player
+        gameState.nextTurn();
+        //send the game state
         sendGameState();
+        //disable buttons
+        gui.setAllButtonsEnabled(false);
+        selectedShip = null;
         if(gameState.gameOver()) {
             gameOver();
         }
+        hasTurn = false;
         //TODO insert other stuff to do at the end of a turn
-        
     }
     
     public void moveAction(Ship s){
