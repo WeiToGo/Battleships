@@ -590,6 +590,20 @@ public class Map implements java.io.Serializable {
         updateRadarVisibilityArrays();
         return true;
     }
+    
+    /**
+     * @param ship
+     * @return The positions of every ship unit in this ship.
+     */
+    public static ArrayList<Vector2> getShipPositions(Ship ship) {
+        ShipUnit[] units = ship.getShipUnits();
+        ArrayList<Vector2> list = new ArrayList<Vector2>();
+        for(ShipUnit s: units) {
+            list.add(new Vector2(s.getPosition()));
+        }
+        return list;
+    }
+    
     /**
      * This method calculate all positions that need be checked in order move the
      * ship successfully.

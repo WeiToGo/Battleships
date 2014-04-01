@@ -110,6 +110,13 @@ public class GameState implements java.io.Serializable {
         return this.map;
     }
     
+    /**
+     * @return The current game phase.
+     */
+    public GamePhase getPhase() {
+        return this.phase;
+    }
+    
     public int getPlayerTurn() {
         return this.playerTurn;
     }
@@ -381,9 +388,10 @@ public class GameState implements java.io.Serializable {
      * This method is called when the players rearrange their ships around the base.
      * @param s The ship they want to move
      * @param p The position they want to move to. (Does not need to be the
+     * @return True if the positionning was successful, otherwise false.
      * position of the bow.
      */
-    public void positionShip(Ship s, Vector2 p) {
+    public boolean positionShip(Ship s, Vector2 p) {
         boolean validTarget = true;
         int shipSize = s.getSize();
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
@@ -436,8 +444,11 @@ public class GameState implements java.io.Serializable {
             if (canMove){
                 map.updateShipPositions(s,positions);            
                 s.moveTo(positions);
-            }        
+                return true;
+            }      
         }
+        //the target was invalid and no movement occured
+        return false;
     }    
     
     /**

@@ -167,7 +167,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             gameStateUpdated = false;
         }
         
-        if(this.highlightPosUpdated) {
+        if(highlightPos != null && this.highlightPosUpdated) {
             highlightPositions();
             highlightPosUpdated = false;
         }
@@ -367,6 +367,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * Sets a flag in the GameGUI which will clear all highlights at the next update.
      */
     public void requestClearHighlight() {
+        this.highlightPosUpdated = false;
         this.clearHighlight = true;
     }
     
