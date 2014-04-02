@@ -783,6 +783,7 @@ public class Map implements java.io.Serializable {
             return false;
         }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
+            System.out.println("base " + p.x + " " + p.y);
              isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;

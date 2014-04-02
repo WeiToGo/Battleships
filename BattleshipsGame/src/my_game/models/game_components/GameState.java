@@ -392,6 +392,8 @@ public class GameState implements java.io.Serializable {
      * position of the bow.
      */
     public boolean positionShip(Ship s, Vector2 p) {
+        System.out.println("POS TO ==  " + p.x + " " + p.y);
+        System.out.println("ship size " + s.getSize());
         boolean validTarget = true;
         int shipSize = s.getSize();
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
@@ -400,11 +402,15 @@ public class GameState implements java.io.Serializable {
             if (p.y <= 9 && p.y >= 5){
                 for (i = 10-shipSize; i < 10; i++){
                     Vector2 v = new Vector2(p.x,i);
+                    System.out.println("pos A " + v.x + " " + v.y);
+                    s.setDirection(ShipDirection.North);
                     positions.add(v);
                 }              
             }else if (p.y >= 20 && p.y <= 24){
                 for (i = 19+shipSize; i > 19; i--){
                     Vector2 v = new Vector2(p.x,i);
+                    System.out.println("pos B " + v.x + " " + v.y);
+                    s.setDirection(ShipDirection.South);
                     positions.add(v);                
                 }
             }
@@ -421,17 +427,19 @@ public class GameState implements java.io.Serializable {
                 }
             }
         }else if(p.y > 9 && p.y < 20 && p.x <= 5){
-            for (i = 1; i <= shipSize; i++){
+            for (i = shipSize; i >= 1; i++){
                 Vector2 v = new Vector2(i,p.y);
+            //  System.out.println("pos C " + v.x + " " + v.y);
                 positions.add(v);
             }             
         }else if(p.y > 9 && p.y < 20 && p.x >= 24){
             for (i = 29-shipSize; i < 29; i++){
                 Vector2 v = new Vector2(i,p.y);
+             //   System.out.println("pos D " + v.x + " " + v.y);                
                 positions.add(v);            
             }
         }else{
-            validTarget = false;;
+            validTarget = false;
         }
         
         if (validTarget){        
@@ -442,8 +450,12 @@ public class GameState implements java.io.Serializable {
                     }
                 }
             if (canMove){
-                map.updateShipPositions(s,positions);            
+                map.updateShipPositions(s,positions);  
+                for (Vector2 v: positions){
+                    System.out.println("pos MOVE " + v.x + " " + v.y);
+                }
                 s.moveTo(positions);
+                map.updateRadarVisibilityArrays();
                 return true;
             }      
         }
