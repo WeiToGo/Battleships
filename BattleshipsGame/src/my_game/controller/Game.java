@@ -127,6 +127,7 @@ public class Game implements GameGUI.GameGuiListener {
                 }
             }
             System.out.println("Client received a game state.");
+            this.gameState = receivedGameState;
             receivedNewGamestate = false;
             
             startGame();
@@ -153,16 +154,12 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                gameState = new GameState(gs);
-                if(gameState != null) {
+                receivedGameState = new GameState(gs);
+                if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    gameState.setPlayer(0, player);
+                    receivedGameState.setPlayer(0, player);
                     receivedNewGamestate = true;
-                    if(gui != null) {
-                        gui.drawGameState(gameState);
-                    }
                 }
-                startTurn();
                 player.notifyAll();
             }
         }
@@ -188,16 +185,12 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                gameState = new GameState(gs);
-                if(gameState != null) {
+                receivedGameState = new GameState(gs);
+                if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    gameState.setPlayer(1, player);
+                    receivedGameState.setPlayer(1, player);
                     receivedNewGamestate = true;
-                    if(gui != null) {
-                        gui.drawGameState(gameState);
-                    }
                 }
-                startTurn();
                 player.notifyAll();
             }
         }
@@ -410,6 +403,27 @@ public class Game implements GameGUI.GameGuiListener {
                 }
             }
         }
+        if(playerType.equals(PlayerType.Client)) {
+            //the client first sends the gamestate then waits for a merged final
+            //game state from the server
+            sendGameState();
+            //wait the server's finalized copy
+            waitForGameState();
+            //set the received game state 
+            this.gameState = receivedGameState;
+            receivedNewGamestate = false;
+        } else {
+            //this is the server, wait for the client's state
+            waitForGameState();
+            receivedNewGamestate = false;
+            //now we've received a new gamestate from the other party; merge with 
+            //the current gamestate
+            gameState.mergeShipPositions(this.player, receivedGameState);
+            //send back a copy of the finalized state to the client
+            sendGameState();
+        }
+        
+        //TODO execute what happens after the position phase.
     }
     
     /**
@@ -568,6 +582,21 @@ public class Game implements GameGUI.GameGuiListener {
         gui.requestClearHighlight();
     }
         
+    /**
+     * Blocks the current thread until a game state is received.
+     */
+    private void waitForGameState() {
+        synchronized(player) {
+            try {
+                while(!receivedNewGamestate) {
+                    this.wait();
+                }
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public void layMine(Vector2 pos){
     	//map.layMine(Ship mineLayer, Vector2 position)
     }

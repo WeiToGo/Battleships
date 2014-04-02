@@ -1335,4 +1335,21 @@ public class Map implements java.io.Serializable {
         }
         return null;
     }
+
+    /**
+     * Copy the GameObjects from the provided map to this map within the specified
+     * region between minX,minY and maxX,maxY.
+     * @param map Map whose grid will be copied.
+     * @param minX 
+     * @param minY
+     * @param maxX
+     * @param maxY 
+     */
+    void setGrid(Map map, int minX, int minY, int maxX, int maxY) {
+        for(int x = minX; x <= maxX; x++) {
+            for(int y = minY; y <= maxY; y++) {
+                this.grid[x][y] = map.grid[x][y];
+            }
+        }
+    }
 }
