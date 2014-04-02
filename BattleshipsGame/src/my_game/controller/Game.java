@@ -222,13 +222,13 @@ public class Game implements GameGUI.GameGuiListener {
             //do nothing, it is not the turn of this player
         } else if(!awaitingInput && gameState.getMap().isShip(position)) {
             //first clear all previous highlights for previously selected ships
-            if(moveHighlight != null || turnHighlight != null) {
-                clearGUI();
-            }
+            clearGUI();
             //mark the ship as selected and enable the gui buttons
             ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
             Ship ship = s.getShip();
             this.selectedShip = ship;
+            //highlight the selected ship in the gui
+            gui.highlightPositions(Map.getShipPositions(selectedShip));
             //enable the buttons only if in the player turns phase
             if(gameState.getPhase().equals(GamePhase.PlayerTurns)) {
                 gui.setActionButtonsEnabled(true);
@@ -243,14 +243,15 @@ public class Game implements GameGUI.GameGuiListener {
             synchronized(this) {
                 input = new Vector2(position);
                 this.notifyAll();
-            }
-            //check if the player clicked on a new ship
-            if(gameState.getMap().isShip(position)) {
-                ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
-                Ship ship = s.getShip();
-                this.selectedShip = ship;
-                //highlight the selected ship in the gui
-                clearGUI();
+                //check if the player clicked on a new ship
+                if(gameState.getMap().isShip(position)) {
+                    ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
+                    Ship ship = s.getShip();
+                    this.selectedShip = ship;
+                    //highlight the selected ship in the gui
+                    clearGUI();
+                    gui.highlightPositions(Map.getShipPositions(selectedShip));
+                }
             }
         } else {
             clearGUI();
@@ -390,8 +391,7 @@ public class Game implements GameGUI.GameGuiListener {
                     while(selectedShip == null) {
                         this.wait();
                     }
-                    //highlight the selected ship in the gui
-                    gui.highlightPositions(Map.getShipPositions(selectedShip));
+
                     //do an intermediate check whether the game phase has changed
                     if(!gameState.getPhase().equals(GamePhase.ShipPositioning)) {
                         continue;
@@ -403,6 +403,7 @@ public class Game implements GameGUI.GameGuiListener {
                     if(gameState.positionShip(selectedShip, input)) {
                         //ship positionning was successful, update gui
                         gui.drawGameState(gameState);
+                        selectedShip = null;
                     }
                 } catch(InterruptedException e) {
                     e.printStackTrace();
