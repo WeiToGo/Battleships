@@ -73,6 +73,9 @@ public class GameState implements java.io.Serializable {
         Base player0Base = new Base(player[0].getID(),1);
         Base player1Base = new Base(player[1].getID(),0);
         BaseUnit[] bu = player0Base.getBaseUnits();
+        for (BaseUnit b: bu){
+          //  System.out.println("base 0 == " + 
+        }
 
         //init each player's ships
    //     Ship[] player0Ships = generateShips(player[0].id, player0Base);

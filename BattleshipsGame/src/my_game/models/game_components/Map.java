@@ -222,7 +222,10 @@ public class Map implements java.io.Serializable {
             selfPositions.add(su.getPosition());
         }        
         for (Vector2 v: selfPositions){
+        //    System.out.println(" SELF " + v.x + " " + v.y);
+
             if(v.equals(p)){
+       //       System.out.println(" SELF EQUAL" + p.x + " " + p.y);              
                 return true;
             }
         }
@@ -266,7 +269,9 @@ public class Map implements java.io.Serializable {
         } else {
             return false;
         }
-        
+        for (ShipUnit su : ship.getShipUnits()){
+            System.out.println("damage level  " + su.getDamageLevel() + "---" +  su.getPosition().x + " " + su.getPosition().y);
+        }        
         this.updateRadarVisibilityArrays();
         return true;
     }
@@ -385,10 +390,11 @@ public class Map implements java.io.Serializable {
                             damagedUnits[0] = shipUnits[0];
                             damagedUnits[1] = shipUnits[1];
                             touchMine(mine, damagedUnits);
+                            forwardmoves.add(v);
                             break;                                                      
                         }else{
                             forwardmoves.add(v);
-                         System.out.println(" moves added " + v.x + " " + v.y);                        
+                            System.out.println(" moves added " + v.x + " " + v.y);                        
                         }
                     }
                     
@@ -784,7 +790,7 @@ public class Map implements java.io.Serializable {
             return false;
         }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
-            System.out.println("base " + p.x + " " + p.y);
+            System.out.println("BASE  " + p.x + " " + p.y);
              isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;
@@ -792,7 +798,8 @@ public class Map implements java.io.Serializable {
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ShipUnit su = (ShipUnit)o;
             if (su.getShip().getPlayerID()== s.getPlayerID()){
-                return true;
+                System.out.println("SHIP  " + p.x + " " + p.y);
+                isVisibleObstacle = true;
             }
             ArrayList<Vector2> visible = s.getRadarPositions();            
             for (Vector2 v: visible){
@@ -1020,6 +1027,7 @@ public class Map implements java.io.Serializable {
         // and we destroyed it.
         for (ShipUnit s: damagedUnits){
             s.setDamage(1);
+            System.out.println("damaged " + s.getPosition().x + " " + s.getPosition().y);
         }
         
         if(temp.getClass() == new Mine().getClass()){
@@ -1030,12 +1038,13 @@ public class Map implements java.io.Serializable {
         	}
         }
         else{ //temp is a MineZone
-        	Mine mine = ((MineZone)temp).getMine();
+        /*	Mine mine = ((MineZone)temp).getMine();
         	mine.setDestoryed(true);
         	setObjectAt(mineZone, null);
         	for(Vector2 mz: mine.getMineZone()){
-        		setObjectAt(mz, null);
-        	}
+        	setObjectAt(mz, null);
+        */
+            setObjectAt(mineZone, null);
         }
     }
     
@@ -1216,10 +1225,10 @@ public class Map implements java.io.Serializable {
                     sb.append("C");
                 } else if(grid[x][y] instanceof ShipUnit) {
                     ShipUnit su = (ShipUnit)getObjectAt(new Vector2(x,y));
-                    if (su.isDamaged()){
-                        sb.append("A");
-                    }else{
-                        sb.append("S");
+                    if (su.isDamaged() || su.isDestroyed()){
+                        sb.append("D");
+                    }else if (su.isHealthy()){
+                        sb.append("H");
                     }
                 } else if(grid[x][y] instanceof BaseUnit) {
                     sb.append("B");                    
