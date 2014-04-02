@@ -4,6 +4,13 @@
  */
 package my_game.models.game_components;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -270,7 +277,7 @@ public class GameState implements java.io.Serializable {
         }        
         RadarBoat r = new RadarBoat(pid, position, d);   
         position.clear();
-        Vector2 kam = new Vector2(0,9);
+        Vector2 kam = new Vector2(0,20);
         position.add(kam);
         KamikazeBoat k = new KamikazeBoat(pid,position,d);
         
@@ -392,8 +399,6 @@ public class GameState implements java.io.Serializable {
      * position of the bow.
      */
     public boolean positionShip(Ship s, Vector2 p) {
-        System.out.println("POS TO ==  " + p.x + " " + p.y);
-        System.out.println("ship size " + s.getSize());
         boolean validTarget = true;
         int shipSize = s.getSize();
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
@@ -402,14 +407,12 @@ public class GameState implements java.io.Serializable {
             if (p.y <= 9 && p.y >= 5){
                 for (i = 10-shipSize; i < 10; i++){
                     Vector2 v = new Vector2(p.x,i);
-                    System.out.println("pos A " + v.x + " " + v.y);
                     s.setDirection(ShipDirection.North);
                     positions.add(v);
                 }              
             }else if (p.y >= 20 && p.y <= 24){
                 for (i = 19+shipSize; i > 19; i--){
                     Vector2 v = new Vector2(p.x,i);
-                    System.out.println("pos B " + v.x + " " + v.y);
                     s.setDirection(ShipDirection.South);
                     positions.add(v);                
                 }
@@ -427,15 +430,15 @@ public class GameState implements java.io.Serializable {
                 }
             }
         }else if(p.y > 9 && p.y < 20 && p.x <= 5){
-            for (i = shipSize; i >= 1; i++){
+            for (i = shipSize; i >= 1; i--){
                 Vector2 v = new Vector2(i,p.y);
-            //  System.out.println("pos C " + v.x + " " + v.y);
+                s.setDirection(ShipDirection.East);
                 positions.add(v);
             }             
         }else if(p.y > 9 && p.y < 20 && p.x >= 24){
             for (i = 29-shipSize; i < 29; i++){
                 Vector2 v = new Vector2(i,p.y);
-             //   System.out.println("pos D " + v.x + " " + v.y);                
+                s.setDirection(ShipDirection.West);
                 positions.add(v);            
             }
         }else{
@@ -451,9 +454,6 @@ public class GameState implements java.io.Serializable {
                 }
             if (canMove){
                 map.updateShipPositions(s,positions);  
-                for (Vector2 v: positions){
-                    System.out.println("pos MOVE " + v.x + " " + v.y);
-                }
                 s.moveTo(positions);
                 map.updateRadarVisibilityArrays();
                 return true;
@@ -470,8 +470,34 @@ public class GameState implements java.io.Serializable {
         return this.phase.equals(GamePhase.GameOver);
     }
     
+    /**
+     * Save the current game state to a local file.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public void saveGame() throws FileNotFoundException, IOException{
+        FileOutputStream f = new FileOutputStream("game-saved");
+        ObjectOutput s = new ObjectOutputStream(f);
+        s.writeObject(this);
+        s.flush();        
+    }
+    
+    /**
+     * Load the game state from the given file.
+     * @param gameFile
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public void loadGame(String gameFile) throws FileNotFoundException, IOException{
+        FileInputStream in = new FileInputStream(gameFile);
+        ObjectInputStream s = new ObjectInputStream(in);
+    //    this = (GameState)s.readObject();
+    }
+    
+    
     @Override
     public String toString() {
+        
         StringBuilder sb = new StringBuilder();
         
         sb.append("phase: " + this.phase + "\n");

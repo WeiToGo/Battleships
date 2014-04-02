@@ -199,6 +199,7 @@ public class Map implements java.io.Serializable {
             for (int i = 0; i < moves.size(); i++){
 //            for (Vector2 p: moves){
                 if(isVisibleObstacle(ship, moves.get(i)) || isSelf(ship,moves.get(i))){
+                    System.out.println(" MOVE obs " + moves.get(i).x + " " + moves.get(i).y);
                     moves.remove(moves.get(i));
                 }
             }
