@@ -197,10 +197,12 @@ public class Map implements java.io.Serializable {
         ArrayList<Vector2> moves = ship.availableMovesKam();
         if (moves.size() > 0){
             for (int i = 0; i < moves.size(); i++){
-//            for (Vector2 p: moves){
+            //    for (Vector2 p: moves){
                 if(isVisibleObstacle(ship, moves.get(i)) || isSelf(ship,moves.get(i))){
                     System.out.println(" MOVE obs " + moves.get(i).x + " " + moves.get(i).y);
                     moves.remove(moves.get(i));
+                }else{
+                    System.out.println(" CLEAR " + moves.get(i).x + " " + moves.get(i).y);
                 }
             }
             // since we don't need to differentiate different directions, just set
@@ -628,30 +630,35 @@ public class Map implements java.io.Serializable {
         if (left != null){       
             leftPath = positions.getLeftPath();
             ShipDirection ld = positions.getLeftDirection();
-            if (left.get(0).equals(p)){
-                turns.setTurns(left);
-                turns.setPath(leftPath);
-                turns.setNewDirection(ld);
-                return turns;
+            for (Vector2 v : left){
+                if (v.equals(p)){
+                    System.out.println("TURN " + p.x + " " + p.y);
+                    turns.setTurns(left);
+                    turns.setPath(leftPath);
+                    turns.setNewDirection(ld);
+                    return turns;
+                }
             }
         }
         ArrayList<Vector2> right = positions.getRight();
         if (right != null){
             rightPath = positions.getRightPath();
             ShipDirection rd = positions.getRightDirection();
-            if (right.get(0).equals(p)) {
-                turns.setTurns(right);
-                turns.setPath(rightPath);
-                turns.setNewDirection(rd);
-                return turns;
-            }  
+            for (Vector2 v : right){
+                if (v.equals(p)) {
+                    turns.setTurns(right);
+                    turns.setPath(rightPath);
+                    turns.setNewDirection(rd);
+                    return turns;
+                }  
+            }
         }
         ArrayList<Vector2> back = positions.getBackward();
         if (back != null){
             ArrayList<Vector2> backPath = new ArrayList<Vector2>();
             ShipDirection bd = positions.getBackDirection();
             for (Vector2 v : back) {
-                if (v.x == p.x && v.y == p.y) {
+                if (v.equals(p)) {
                     turns.setTurns(back);
                     backPath.addAll(leftPath);
                     backPath.addAll(rightPath);
