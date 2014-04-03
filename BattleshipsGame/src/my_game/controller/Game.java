@@ -127,6 +127,7 @@ public class Game implements GameGUI.GameGuiListener {
                 }
             }
             System.out.println("Client received a game state.");
+            this.gameState = receivedGameState;
             receivedNewGamestate = false;
             
             startGame();
@@ -153,16 +154,12 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                gameState = new GameState(gs);
-                if(gameState != null) {
+                receivedGameState = new GameState(gs);
+                if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    gameState.setPlayer(0, player);
+                    receivedGameState.setPlayer(0, player);
                     receivedNewGamestate = true;
-                    if(gui != null) {
-                        gui.drawGameState(gameState);
-                    }
                 }
-                startTurn();
                 player.notifyAll();
             }
         }
@@ -188,16 +185,12 @@ public class Game implements GameGUI.GameGuiListener {
         public void onGameStateReceive(GameState gs) {
             //use player as a common synchronization object
             synchronized(player) {
-                gameState = new GameState(gs);
-                if(gameState != null) {
+                receivedGameState = new GameState(gs);
+                if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    gameState.setPlayer(1, player);
+                    receivedGameState.setPlayer(1, player);
                     receivedNewGamestate = true;
-                    if(gui != null) {
-                        gui.drawGameState(gameState);
-                    }
                 }
-                startTurn();
                 player.notifyAll();
             }
         }
@@ -222,13 +215,13 @@ public class Game implements GameGUI.GameGuiListener {
             //do nothing, it is not the turn of this player
         } else if(!awaitingInput && gameState.getMap().isShip(position)) {
             //first clear all previous highlights for previously selected ships
-            if(moveHighlight != null || turnHighlight != null) {
-                clearGUI();
-            }
+            clearGUI();
             //mark the ship as selected and enable the gui buttons
             ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
             Ship ship = s.getShip();
             this.selectedShip = ship;
+            //highlight the selected ship in the gui
+            gui.highlightPositions(Map.getShipPositions(selectedShip));
             //enable the buttons only if in the player turns phase
             if(gameState.getPhase().equals(GamePhase.PlayerTurns)) {
                 gui.setActionButtonsEnabled(true);
@@ -243,14 +236,15 @@ public class Game implements GameGUI.GameGuiListener {
             synchronized(this) {
                 input = new Vector2(position);
                 this.notifyAll();
-            }
-            //check if the player clicked on a new ship
-            if(gameState.getMap().isShip(position)) {
-                ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
-                Ship ship = s.getShip();
-                this.selectedShip = ship;
-                //highlight the selected ship in the gui
-                clearGUI();
+                //check if the player clicked on a new ship
+                if(gameState.getMap().isShip(position)) {
+                    ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
+                    Ship ship = s.getShip();
+                    this.selectedShip = ship;
+                    //highlight the selected ship in the gui
+                    clearGUI();
+                    gui.highlightPositions(Map.getShipPositions(selectedShip));
+                }
             }
         } else {
             clearGUI();
@@ -390,8 +384,7 @@ public class Game implements GameGUI.GameGuiListener {
                     while(selectedShip == null) {
                         this.wait();
                     }
-                    //highlight the selected ship in the gui
-                    gui.highlightPositions(Map.getShipPositions(selectedShip));
+
                     //do an intermediate check whether the game phase has changed
                     if(!gameState.getPhase().equals(GamePhase.ShipPositioning)) {
                         continue;
@@ -403,12 +396,34 @@ public class Game implements GameGUI.GameGuiListener {
                     if(gameState.positionShip(selectedShip, input)) {
                         //ship positionning was successful, update gui
                         gui.drawGameState(gameState);
+                        selectedShip = null;
                     }
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
+        if(playerType.equals(PlayerType.Client)) {
+            //the client first sends the gamestate then waits for a merged final
+            //game state from the server
+            sendGameState();
+            //wait the server's finalized copy
+            waitForGameState();
+            //set the received game state 
+            this.gameState = receivedGameState;
+            receivedNewGamestate = false;
+        } else {
+            //this is the server, wait for the client's state
+            waitForGameState();
+            receivedNewGamestate = false;
+            //now we've received a new gamestate from the other party; merge with 
+            //the current gamestate
+            gameState.mergeShipPositions(this.player, receivedGameState);
+            //send back a copy of the finalized state to the client
+            sendGameState();
+        }
+        
+        //TODO execute what happens after the position phase.
     }
     
     /**
@@ -567,6 +582,21 @@ public class Game implements GameGUI.GameGuiListener {
         gui.requestClearHighlight();
     }
         
+    /**
+     * Blocks the current thread until a game state is received.
+     */
+    private void waitForGameState() {
+        synchronized(player) {
+            try {
+                while(!receivedNewGamestate) {
+                    this.wait();
+                }
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public void layMine(Vector2 pos){
     	//map.layMine(Ship mineLayer, Vector2 position)
     }

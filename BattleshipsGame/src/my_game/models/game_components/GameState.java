@@ -27,6 +27,7 @@ import my_game.util.Vector2;
  * The state of a game describes a game fully.
  */
 public class GameState implements java.io.Serializable {    
+
     public enum GamePhase {
         New,    // game has just been created, players have not interacted yet
         ShipPositioning, // after creating the game, players position their ships on the map
@@ -52,8 +53,8 @@ public class GameState implements java.io.Serializable {
     protected Map map;
     
     /* TEST ONLY */
-    Ship[] player0Ships;
-    Ship[] player1Ships;
+    //Ship[] player0Ships;
+    //Ship[] player1Ships;
     
     //TODO accessors and mutators for chat log and map
 
@@ -81,9 +82,8 @@ public class GameState implements java.io.Serializable {
    //     Ship[] player0Ships = generateShips(player[0].id, player0Base);
    //     Ship[] player1Ships = generateShips(player[1].id, player1Base);
 
-        /* TEST ONLY */
-        player0Ships = generateShips(player[0].id, player0Base);
-        player1Ships = generateShips(player[1].id, player1Base);             
+        Ship[] player0Ships = generateShips(player[0].id, player0Base);
+        Ship[] player1Ships = generateShips(player[1].id, player1Base);             
         /***********/
         
         //init map
@@ -144,11 +144,11 @@ public class GameState implements java.io.Serializable {
     
     /* TEST ONLY */
     public Ship[] getShipsP0(){
-        return player0Ships;
+        return map.player0Ships;
     }
     
     public Ship[] getShipsP1(){
-        return player1Ships;
+        return map.player1Ships;
     }    
     /******END TEST *******************/
     
@@ -497,6 +497,35 @@ public class GameState implements java.io.Serializable {
     //    this = (GameState)s.readObject();
     }
     
+    /**
+     * Replaces the positions of all ships not belonging to the invariable player
+     * with the positions of those same ships provided in the otherState GameState
+     * object.
+     * @param invariablePlayer Player whose ships will not be touched in this and
+     * the otherState GameState objects.
+     * @param otherState A game state which contains the new positions of the ships.
+     * 
+     */
+    public void mergeShipPositions(Player invariablePlayer, GameState otherState) {
+        //find out which player is the invariable player
+        if(invariablePlayer.equals(this.player[0])) {
+            //place player[1]'s ships from otherState into this GameState
+            for(int i = 0; i < map.player1Ships.length; i++) {
+                map.player1Ships[i] = otherState.map.player1Ships[i];
+            }
+            //now copy the respective player's half of the map grid to this state's map grid
+            map.setGrid(otherState.map, 15, 0, 29, 29);
+        } else if(invariablePlayer.equals(this.player[1])) {
+            //place player[0]'s ships from otherState into this GameState
+            for(int i = 0; i < map.player0Ships.length; i++) {
+                map.player0Ships[i] = otherState.map.player0Ships[i];
+            }
+            //now copy the respective player's half of the map grid to this state's map grid
+            map.setGrid(otherState.map, 0, 0, 15, 29);
+        } else {
+            Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, new GameException("Unknown player."));
+        }
+    }
     
     @Override
     public String toString() {

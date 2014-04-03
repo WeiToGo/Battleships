@@ -166,13 +166,13 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             drawGameState();
             gameStateUpdated = false;
         }
-        
-        if(highlightPos != null && this.highlightPosUpdated) {
-            highlightPositions();
-            highlightPosUpdated = false;
-        }
+       
         if(clearHighlight) {
             clearHighlight();
+        }
+        if(highlightPos != null && !clearHighlight && this.highlightPosUpdated ) {
+            highlightPositions();
+            highlightPosUpdated = false;
         }
         if(moveActivated) {
             this.moveButton.setImage(assetManager, "/Interface/moveEnabled.png", true);
@@ -385,7 +385,6 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         highlightNode.detachAllChildren();
         clearHighlight = false;
-        highlightPos = null;
         //now notify all threads waiting for the clear to complete
         synchronized(this) {
             this.notifyAll();
@@ -397,19 +396,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param highlight 
      */    
     public void highlightPositions(Positions highlights) {
-        waitForClear();
         this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
     
     public void highlightPositions(TurnPositions highlights) {
-        waitForClear();
         this.highlightPos = highlights.getAll();
         this.highlightPosUpdated = true;
     }
     
     public void highlightPositions(ArrayList<Vector2> highlights) {
-        waitForClear();
         this.highlightPos = highlights;
         this.highlightPosUpdated = true;
     }
@@ -439,8 +435,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             Spatial highlightInstance = highlight.clone();
                     // x-axis columns; y-axis rows
             highlightInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
-            highlightNode.attachChild(highlightInstance);
-            this.highlightsGrid[x][y] = highlightInstance;
+            if(highlightsGrid[x][y] == null) {
+                highlightNode.attachChild(highlightInstance);
+                this.highlightsGrid[x][y] = highlightInstance;
+            }
         }
     }
     
