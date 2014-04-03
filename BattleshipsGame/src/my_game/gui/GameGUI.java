@@ -48,7 +48,7 @@ import my_game.util.Vector2;
  * @author Ivo Parvanov
  */
 public class GameGUI extends SimpleApplication implements ActionListener {    
-   
+
     public enum Action {
         Move, Turn, Attack, EndTurn
     };
@@ -67,6 +67,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     private final static Plane gridPlane = new Plane(Vector3f.UNIT_Y, 0);
     /* The elevatedPlane is a plane above the gridPlane used to fix the difficult ship selection issue. */
     private final static Plane elevatedPlane = new Plane(Vector3f.UNIT_Y, 1.5f);
+    /** This array contains the radar visibility for each coordinate from the last update. */
+    boolean[][] visibility;
     
     Spatial grid, highlight, shade, blueShipBlock, blueShipBow, 
             redShipBlock, redShipBow, blueBase, redBase, rock;
@@ -621,12 +623,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         //draw map objects 
         Map m = gameState.getMap();
         //get the radar visibility for the current player
-        boolean[][] visibility = gameState.getRadarVisibility(this.player);
+        visibility = gameState.getRadarVisibility(this.player);
         
         for(int x = 0; x < m.WIDTH; x++) {
             for(int y = 0; y < m.HEIGHT; y++) {
                 Vector2 position = new Vector2(x, y);
-                if(visibility[x][y]) {
+                if(true/*visibility[x][y]*/) { //TODO don't forget to uncomment the real code
                     if(m.isClear(position)) {
                         //don't draw anything
                     } else {
@@ -822,4 +824,14 @@ public class GameGUI extends SimpleApplication implements ActionListener {
          */
         public void onButtonPressed(Action action);
     }
+    
+    /**
+     * @param x
+     * @param y
+     * @return True if the coordinate pressed is currently revealed on the map, i.e. it is in radar range.
+     */
+    public boolean isVisible(int x, int y) {
+        return visibility[x][y];
+    }
+   
 }

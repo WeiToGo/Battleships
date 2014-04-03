@@ -4,6 +4,7 @@
  */
 package my_game.controller;
 
+import com.sun.org.apache.bcel.internal.generic.DREM;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,7 +66,7 @@ public class Game implements GameGUI.GameGuiListener {
     private TurnPositions turnHighlight;
     private ArrayList<Vector2> weaponHighlight;
     //////*************************************
-    private boolean awaitingInput, hasTurn;
+    private boolean awaitingInput, hasTurn, enemyShipSelectionAllowed;
     private Vector2 input;
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
@@ -106,7 +107,7 @@ public class Game implements GameGUI.GameGuiListener {
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
             
             //TODO if the line below is commented, uncomment for proper behaviour
-            //sendGameState();
+            sendGameState();
             startGame();
         } else {
             //add a listener to the client
@@ -213,7 +214,7 @@ public class Game implements GameGUI.GameGuiListener {
         Vector2 position = new Vector2(x, y);
         if(!hasTurn) {
             //do nothing, it is not the turn of this player
-        } else if(!awaitingInput && gameState.getMap().isShip(position)) {
+        } else if(!awaitingInput && gameState.getMap().isShip(position) && gui.isVisible(x, y)) {
             //first clear all previous highlights for previously selected ships
             clearGUI();
             //mark the ship as selected and enable the gui buttons
@@ -223,7 +224,7 @@ public class Game implements GameGUI.GameGuiListener {
             //highlight the selected ship in the gui
             gui.highlightPositions(Map.getShipPositions(selectedShip));
             //enable the buttons only if in the player turns phase
-            if(gameState.getPhase().equals(GamePhase.PlayerTurns)) {
+            if(gameState.getPhase().equals(GamePhase.PlayerTurns) && gameState.getCurrentPlayer().equals(player)) {
                 gui.setActionButtonsEnabled(true);
             } else {
                 //this is not the player turns phase which means there could be a thread
@@ -237,7 +238,7 @@ public class Game implements GameGUI.GameGuiListener {
                 input = new Vector2(position);
                 this.notifyAll();
                 //check if the player clicked on a new ship
-                if(gameState.getMap().isShip(position)) {
+                if(gui.isVisible(x, y) && gameState.getMap().isShip(position)) {
                     ShipUnit s = (ShipUnit) gameState.getMap().getObjectAt(position);
                     Ship ship = s.getShip();
                     this.selectedShip = ship;
@@ -256,8 +257,9 @@ public class Game implements GameGUI.GameGuiListener {
         if(gameState.getPhase().equals(GamePhase.ShipPositioning)) {
             switch(action) {
                 case EndTurn:
-                    //TODO make the end turn button end the ship positioning phase
-                    gameState.setGamePhase(GamePhase.PlayerTurns);
+                    //the end turn button ends the ship positioning phase
+                    gameState.setGamePhase(GamePhase.ShipPositioningDone);
+                    gui.setAllButtonsEnabled(false);
                     synchronized(this) {
                         this.notifyAll();
                     }
@@ -314,6 +316,9 @@ public class Game implements GameGUI.GameGuiListener {
                         Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Unknown action encountered."));
                         break;
                 }
+            } else if(action.equals(Action.EndTurn)) {
+                    interruptPreviousActions();
+                    endTurn();
             }
         }
     }
@@ -357,13 +362,21 @@ public class Game implements GameGUI.GameGuiListener {
             }
         }
         gui.drawGameState(this.gameState);
+        enemyShipSelectionAllowed = false;
         //positioning phase
         positionShips();
         
-        //gameState.setGamePhase(GameState.GamePhase.ShipPositioning);
-        System.out.println("Will now enter startTurn()");
-        startTurn();
-        System.out.println("startTurn() is done.");
+        gameState.setGamePhase(GamePhase.PlayerTurns);
+        while(!gameState.gameOver()) {
+            startTurn();
+            waitForGameState();
+            //TODO for now we are simply assigning the game state as it is received
+            // but in future check for consistency and consider the server's game
+            //state as the primary one
+            gameState = receivedGameState;
+            receivedNewGamestate = false;
+            gui.drawGameState(gameState);
+        }
     }
     
     /**
@@ -381,28 +394,29 @@ public class Game implements GameGUI.GameGuiListener {
         while(gameState.getPhase().equals(GamePhase.ShipPositioning)) {
             synchronized(this) {
                 try {
-                    while(selectedShip == null) {
+                    while(selectedShip == null && gameState.getPhase().equals(GamePhase.ShipPositioning)) {
                         this.wait();
                     }
 
                     //do an intermediate check whether the game phase has changed
-                    if(!gameState.getPhase().equals(GamePhase.ShipPositioning)) {
-                        continue;
-                    }
-                    //now we have a selected ship, get a location to move the ship to
-                    awaitingInput = true;
-                    this.wait();
-                    awaitingInput = false;
-                    if(gameState.positionShip(selectedShip, input)) {
-                        //ship positionning was successful, update gui
-                        gui.drawGameState(gameState);
-                        selectedShip = null;
+                    if(gameState.getPhase().equals(GamePhase.ShipPositioning)) {
+                        
+                        //now we have a selected ship, get a location to move the ship to
+                        awaitingInput = true;
+                        this.wait();
+                        awaitingInput = false;
+                        if(gameState.positionShip(selectedShip, input) && gameState.getPhase().equals(GamePhase.ShipPositioning)) {
+                            //ship positionning was successful, update gui
+                            gui.drawGameState(gameState);
+                            selectedShip = null;
+                        }
                     }
                 } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
+        
         if(playerType.equals(PlayerType.Client)) {
             //the client first sends the gamestate then waits for a merged final
             //game state from the server
@@ -423,7 +437,8 @@ public class Game implements GameGUI.GameGuiListener {
             sendGameState();
         }
         
-        //TODO execute what happens after the position phase.
+        //redraw game state
+        gui.drawGameState(gameState);
     }
     
     /**
@@ -588,8 +603,8 @@ public class Game implements GameGUI.GameGuiListener {
     private void waitForGameState() {
         synchronized(player) {
             try {
-                while(!receivedNewGamestate) {
-                    this.wait();
+                while(!receivedNewGamestate || receivedGameState == null) {
+                    player.wait();
                 }
             } catch(InterruptedException e) {
                 e.printStackTrace();

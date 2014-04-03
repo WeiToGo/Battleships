@@ -31,6 +31,7 @@ public class GameState implements java.io.Serializable {
     public enum GamePhase {
         New,    // game has just been created, players have not interacted yet
         ShipPositioning, // after creating the game, players position their ships on the map
+        ShipPositioningDone,    //when the player is done positioning his ships and is waiting for the other player to be done too
         PlayerTurns,    // the main part of the game where players take turns 
         GameOver    //the game is over, one player is the winner
     };
@@ -497,6 +498,13 @@ public class GameState implements java.io.Serializable {
         FileInputStream in = new FileInputStream(gameFile);
         ObjectInputStream s = new ObjectInputStream(in);
     //    this = (GameState)s.readObject();
+    }
+    
+    /**
+     * @return The player whose turn it currently is.
+     */
+    public Player getCurrentPlayer() {
+        return player[playerTurn];
     }
     
     /**
