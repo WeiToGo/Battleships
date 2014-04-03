@@ -424,11 +424,13 @@ public class GameState implements java.io.Serializable {
             if (p.y <= 9 && p.y >= 5){
                 for (i = 10-shipSize; i < 10; i++){
                     Vector2 v = new Vector2(p.x,i);
+                    s.setDirection(ShipDirection.North);
                     positions.add(v);
                 }              
             }else if (p.y >= 20 && p.y <= 24){
                 for (i = 19+shipSize; i > 19; i--){
                     Vector2 v = new Vector2(p.x,i);
+                    s.setDirection(ShipDirection.South);
                     positions.add(v);                
                 }
             }
