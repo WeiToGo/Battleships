@@ -33,6 +33,7 @@ import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
+import my_game.models.game_components.MoveDescription;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
@@ -82,7 +83,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     public boolean moveActivated, turnActivated, shootCannonActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
-    Spatial[][] objectsGrid, highlightsGrid;
+    Spatial[][] objectsGrid, highlightsGrid, radarGrid;
     /** A node containing the game field: grid, ships, bases and corals. */
     Node field, highlightNode;
     Vector3f translation;
@@ -93,8 +94,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     GameGuiListener guiListener;
     /** Local reference to a game state which is drawn on frame update. */
     private GameState gameState;
+    /** When playing animation, the animation is played by interpolating between the gameState and the updateGameState. */
+    private GameState updateState;
+    private Animator animation;
     /** A flag set to true every time the drawGameState method is called. */
-    private boolean gameStateUpdated;
+    private boolean gameStateUpdated, updateStateUpdated;
     /** Reference to the player running the instance of this GUI. This variable
      * is used for determining the radar visibility, chat log and controls. */
     private Player player;
@@ -112,7 +116,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param p The player who is running the instance of this GUI.
      */
     public GameGUI(int width, int height, GameGuiListener g, Player p) {
+        animation = new Animator();
         objectsGrid = new Spatial[width][height];
+        radarGrid = new Spatial[width][height];
         highlightsGrid = new Spatial[width][height];
         guiListener = g;
         this.player = p;
@@ -167,6 +173,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         if(this.gameStateUpdated) {
             drawGameState();
             gameStateUpdated = false;
+        }
+        
+        if(this.updateStateUpdated) {
+            if(updateGameState()) { //if the animation is complete
+                updateStateUpdated = false; 
+            }
         }
        
         if(clearHighlight) {
@@ -380,7 +392,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     private void clearHighlight() {        
         for(int x = 0; x < highlightsGrid.length; x++) {
             for(int y = 0; y < highlightsGrid[0].length; y++) {
-                Spatial tmp = highlightsGrid[x][y];
+                //Spatial tmp = highlightsGrid[x][y];
                 highlightsGrid[x][y] = null;
             }
         }
@@ -564,7 +576,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         // x-axis columns; y-axis rows
         shadeInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
         field.attachChild(shadeInstance);
-        this.objectsGrid[x][y] = shadeInstance;
+        this.radarGrid[x][y] = shadeInstance;
     }
     
     /**
@@ -602,8 +614,104 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      */
     public void drawGameState(GameState gs) {
         //use direct reference as the gui does not change the game state
-        this.gameState = gs;
+        this.gameState = new GameState(gs);
         this.gameStateUpdated = true;
+    }
+    
+    /**
+     * This method should be called if a player has taken a single action on the 
+     * GameState which was lastly rendered on this gui. What this method will do is
+     * figure out the single action that the player took and play the single animation
+     * which would bring the previous GameState to the current one. 
+     * NOTE: Undetermined behaviour if method called inappropriately.
+     * @param updateState The GameState which is one action ahead of the current GameState in the GUI.
+     */
+    public void updateGameState(GameState updateState) {
+        this.updateState = updateState;
+        this.updateStateUpdated = true;
+        animation.prepareNewAnimation();
+    }
+    
+    private boolean updateGameState() {
+        if(animation.isPreparing()) {
+            switch(updateState.previousAction.getActionType()) {
+                case Move:
+                    //set the radar visibility to the current radar UNION the radar in the update gameState
+                    this.visibility = mergeVisibility(updateState, this.gameState, this.player);
+                    updateRadar();
+                    //now we are ready to animate the movement of the ship
+                    animation.startMoveAnimation(updateState, objectsGrid);
+                    break;
+                default:
+                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, new GameException("Unknown or unimplemented action taken."));
+                    break;
+            }
+            return false;
+        } else if(animation.isAnimating()) {
+            switch(updateState.previousAction.getActionType()) {
+                case Move:
+                    //move the ship a little bit towards the destination
+                    animation.nextMoveFrame();
+                    break;
+                default:
+                    Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, new GameException("Unknown or unimplemented action taken."));
+                    break;
+            }
+            return false;
+        } else {
+            //DONE
+            this.visibility = updateState.getRadarVisibility(player);
+            updateRadar();
+            gameState = new GameState(updateState);
+            return true;
+        }
+    }
+    
+    /**
+     * Renders the radar on screen.
+     */
+    public void updateRadar() {
+        for(int x = 0; x < visibility.length; x++) {
+            for(int y = 0; y < visibility[0].length; y++) {
+                //update only mismatches between what is rendered on screen and what is in the visibility matrix
+                if(visibility[x][y] && radarGrid[x][y] != null) {
+                    //this cell should be visible
+                    field.detachChild(radarGrid[x][y]);
+                    radarGrid[x][y] = null;
+                    this.drawMapObject(new Vector2(x, y), gameState.getMap());
+                } else if(!visibility[x][y] && radarGrid[x][y] == null) {
+                    //this cell should not be visible
+                    if(objectsGrid[x][y] != null) {
+                        field.detachChild(objectsGrid[x][y]);
+                    }
+                    objectsGrid[x][y] = null;
+                    drawRadarShade(x, y);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Returns the union of the radar visibilities of g1 and g2.
+     * @param g1
+     * @param g2
+     * @param p Which player are we generating the radar visibility for?
+     * @return 
+     */
+    public static boolean[][] mergeVisibility(GameState g1, GameState g2, Player p) {
+        boolean[][] map1 = g1.getRadarVisibility(p);
+        boolean[][] map2 = g2.getRadarVisibility(p);
+        //unite the two matrices
+        for(int x = 0; x < map1.length; x++) {
+            for(int y = 0; y < map1[0].length; y++) {
+                if(map1[x][y] || map2[x][y]) {
+                    map1[x][y] = true;      //do the updates in place inside map1
+                } else {
+                    map1[x][y] = false;
+                }
+            }
+        }
+        return map1;
     }
     
     /**
@@ -613,6 +721,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      */
     private void drawGameState() {
         field.detachAllChildren();
+        clearObjectsGrid();
+        clearRadarGrid();
         clearHighlight();
         field.attachChild(grid);
         
@@ -628,51 +738,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         for(int x = 0; x < m.WIDTH; x++) {
             for(int y = 0; y < m.HEIGHT; y++) {
                 Vector2 position = new Vector2(x, y);
-                if(true/*visibility[x][y]*/) { //TODO don't forget to uncomment the real code
-                    if(m.isClear(position)) {
-                        //don't draw anything
-                    } else {
-                        //find out what the object is and draw it
-                        GameObject o = m.getObjectAt(position);
-
-                        switch(o.getObjectType()) {
-                            case Ship:
-                                ShipUnit s = (ShipUnit) o;
-                                int damage = 0;
-                                if(s.isHealthy()) {
-                                    damage = NEW;
-                                } else if(s.isDestroyed()) {
-                                    damage = DESTROYED;
-                                } else {
-                                    damage = DAMAGED;
-                                }
-                                if(s.isBow()) {
-                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), BOW, m.isBlue(s.getShip()) ? BLUE : RED, damage);
-                                } else {
-                                    drawShipPart(position.x, position.y, s.getShip().getDirection(), BLOCK, m.isBlue(s.getShip()) ? BLUE : RED, damage);
-                                }
-
-                                break;
-                            case Base:
-                                BaseUnit b = (BaseUnit) o;
-                                damage = 0;
-                                if(b.isHealthy()) {
-                                    damage = NEW;
-                                } else if(b.isDestoryed()) {
-                                    damage = DESTROYED;
-                                } else {
-                                    damage = DAMAGED;
-                                }
-                                drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BLUE : RED, damage);
-                                break;
-                            case CoralReef:
-                                CoralUnit c = (CoralUnit) o;
-                                drawCoral(position.x, position.y);
-                            default:
-                                //do nothing just yet
-                                break;
-                        }
-                    }
+                if(visibility[x][y]) {
+                   drawMapObject(position, m);
                 } else {
                     //this cell is not visible by this player
                     drawRadarShade(x, y);
@@ -682,7 +749,71 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         //we are done with displaying the contents of the game state
     }
+    
+    private void drawMapObject(Vector2 position, Map m) {
+        if(m.isClear(position)) {
+            //don't draw anything
+        } else {
+            //find out what the object is and draw it
+            GameObject o = m.getObjectAt(position);
 
+            switch(o.getObjectType()) {
+                case Ship:
+                    ShipUnit s = (ShipUnit) o;
+                    int damage = 0;
+                    if(s.isHealthy()) {
+                        damage = NEW;
+                    } else if(s.isDestroyed()) {
+                        damage = DESTROYED;
+                    } else {
+                        damage = DAMAGED;
+                    }
+                    if(s.isBow()) {
+                        drawShipPart(position.x, position.y, s.getShip().getDirection(), BOW, m.isBlue(s.getShip()) ? BLUE : RED, damage);
+                    } else {
+                        drawShipPart(position.x, position.y, s.getShip().getDirection(), BLOCK, m.isBlue(s.getShip()) ? BLUE : RED, damage);
+                    }
+
+                    break;
+                case Base:
+                    BaseUnit b = (BaseUnit) o;
+                    damage = 0;
+                    if(b.isHealthy()) {
+                        damage = NEW;
+                    } else if(b.isDestoryed()) {
+                        damage = DESTROYED;
+                    } else {
+                        damage = DAMAGED;
+                    }
+                    drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BLUE : RED, damage);
+                    break;
+                case CoralReef:
+                    CoralUnit c = (CoralUnit) o;
+                    drawCoral(position.x, position.y);
+                default:
+                    //do nothing just yet
+                    break;
+            }
+        }
+    }
+
+    
+    private void clearObjectsGrid() {
+        for(int x = 0; x < objectsGrid.length; x++) {
+            for(int y = 0; y < objectsGrid[0].length; y++) {
+                objectsGrid[x][y] = null;
+            }
+        }
+    }
+    
+    private void clearRadarGrid() {
+        for(int x = 0; x < radarGrid.length; x++) {
+            for(int y = 0; y < radarGrid[0].length; y++) {
+                radarGrid[x][y] = null;
+            }
+        }
+    }
+    
     /**
      * @return The height of the UI bar element at the bottom of the screen.
      */

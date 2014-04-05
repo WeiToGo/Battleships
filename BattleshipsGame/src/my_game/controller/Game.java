@@ -4,7 +4,6 @@
  */
 package my_game.controller;
 
-import com.sun.org.apache.bcel.internal.generic.DREM;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +60,7 @@ public class Game implements GameGUI.GameGuiListener {
     private Ship selectedShip;
     /** A reference to the game gui which is displaying the game itself. */
     private GameGUI gui;
-    //// DIFFERENT TYPES OF HIGHLIGHTS
+    //// DIFFERENT TYPES OF HIGHLIGHTS DISPLAYED IN GUI
     private Positions moveHighlight;
     private TurnPositions turnHighlight;
     private ArrayList<Vector2> weaponHighlight;
@@ -505,13 +504,14 @@ public class Game implements GameGUI.GameGuiListener {
                 awaitingInput = false;
                 
                 //check if the result is acceptable
-                if(input != null && gameState.getMap().moveShip(s, input, moveHighlight)) {
+                if(input != null && gameState.moveShip(s, input, moveHighlight)) {
                     //action successfully executed
-                    gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship moved to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
                     //clear up the gui
                     clearGUI();
+                    //draw the movement animation by calling the update method in gui
+                    gui.updateGameState(gameState);
                     endTurn();
                 }
             } catch (InterruptedException ex) {
@@ -582,6 +582,8 @@ public class Game implements GameGUI.GameGuiListener {
                         endTurn();
                     } else {
                         Misc.log("No hit.");
+                        clearGUI();
+                        endTurn();
                     }
                 }
             } catch (InterruptedException ex) {

@@ -15,18 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.gui.GameGUI.Action;
 
 import my_game.models.player_components.ChatLog;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.models.ships_impl.*;
 import my_game.util.GameException;
+import my_game.util.Positions;
 import my_game.util.ShipDirection;
 import my_game.util.Vector2;
 /**
  * The state of a game describes a game fully.
  */
-public class GameState implements java.io.Serializable {    
+public class GameState implements java.io.Serializable {
 
     public enum GamePhase {
         New,    // game has just been created, players have not interacted yet
@@ -52,6 +54,9 @@ public class GameState implements java.io.Serializable {
     
     protected ChatLog chatLog;
     protected Map map;
+    
+    /* Variables used to describe the last action. */
+    public ActionDescription previousAction;
     
     /* TEST ONLY */
     //Ship[] player0Ships;
@@ -534,6 +539,18 @@ public class GameState implements java.io.Serializable {
             map.setGrid(otherState.map, 0, 0, 15, 29);
         } else {
             Logger.getLogger(GameState.class.getName()).log(Level.SEVERE, null, new GameException("Unknown player."));
+        }
+    }
+    
+    
+    public boolean moveShip(Ship s, Vector2 input, Positions moveHighlight) {
+        Vector2[] oldPos = s.getPositions();
+        if(map.moveShip(s, input, moveHighlight)) {
+            //the move has been successful, the ship has been updated, update previousAction
+            previousAction = new MoveDescription(oldPos, s.getPositions());
+            return true;
+        } else {
+            return false;
         }
     }
     

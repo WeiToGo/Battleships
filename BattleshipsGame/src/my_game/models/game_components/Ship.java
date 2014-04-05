@@ -179,6 +179,24 @@ public abstract class Ship implements java.io.Serializable {
     }
 
     /**
+     * @return The position of the bow of the ship.
+     */
+    public Vector2 getPosition() {
+        return this.shipUnits[0].getPosition();
+    }
+    
+    /**
+     * @return The positions of every ShipUnit composing this ship. The bow is the first.
+     */
+    public Vector2[] getPositions() {
+        Vector2[] pos = new Vector2[this.shipUnits.length];
+        for(int i = 0; i < pos.length; i++) {
+            pos[i] = shipUnits[i].getPosition();
+        }
+        return pos;
+    }
+    
+    /**
      * This method should be called after each attack on the ship.
      */
     public void hitUpdate(){
