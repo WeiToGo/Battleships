@@ -54,23 +54,23 @@ public class Login
     loginGameButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-        	Stage primaryStage=new Stage();
-        	AnchorPane page=null;
-        	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("UI.fxml"));
-        	} catch (IOException e) {
-        		// TODO Auto-generated catch block
-        		e.printStackTrace();
-        	}
-        	if(verifyLogin(username.toString() ,password.toString())){
-        		try {
-					Player player=new Player(username.getText(),password.getText(),InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
-					Main.setPlayer(player);
-        		} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		
+            Stage primaryStage=new Stage();
+            AnchorPane page=null;
+            try {
+            	page = (AnchorPane) FXMLLoader.load(Main.class.getResource("UI.fxml"));
+            } catch (IOException e) {
+        	// TODO Auto-generated catch block
+            	e.printStackTrace();
+            }
+            if(verifyLogin(username.toString() ,password.toString())){
+                try {
+                    Player player=new Player(username.getText(),password.getText(),InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
+                    Main.setPlayer(player);
+                } catch (UnknownHostException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+        	
             	Stage previousStage=Main.getStage();
             	previousStage.close();
             	Scene scene = new Scene(page);
@@ -78,11 +78,10 @@ public class Login
             	primaryStage.setTitle("Battleship");
             	primaryStage.show();
             	Main.setStage(primaryStage);
-        	}
-        	else{
-        		JOptionPane.showMessageDialog(null, "Invalid username or password", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-        	}
+            }else{
+                JOptionPane.showMessageDialog(null, "Invalid username or password", "Error",
+                JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         /**
