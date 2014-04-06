@@ -388,15 +388,16 @@ public abstract class Ship implements java.io.Serializable {
         KamikazeBoat k = (KamikazeBoat)this;
         //explosion range is the same than move range. 
         Range r = k.getExplosionRange();
-        moves = getRangePositions(r);
-        if (moves != null){
-            for (int i = 0; i < moves.size(); i++){                
-                if (moves.get(i).x > 29 || moves.get(i).x < 0 || moves.get(i).y < 0
-                        || moves.get(i).y > 29){
-                    moves.remove(moves.get(i));
-                }
+        ArrayList<Vector2> allMoves = getRangePositions(r);
+        if (allMoves != null){            
+            for (int i = 0; i < allMoves.size(); i++){   
+                if (allMoves.get(i).x > 29 || allMoves.get(i).x < 0 || allMoves.get(i).y < 0
+                        || allMoves.get(i).y > 29){
+                }else{
+                   moves.add(allMoves.get(i));
+                }              
             }
-        }
+        }       
         return moves;
     }
     

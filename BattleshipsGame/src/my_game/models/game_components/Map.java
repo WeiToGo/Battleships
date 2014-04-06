@@ -195,19 +195,16 @@ public class Map implements java.io.Serializable {
     private Positions prepareMoveKam(Ship ship){
         Positions highlightedMoves = new Positions(null,null,null,null);
         ArrayList<Vector2> moves = ship.availableMovesKam();
+        ArrayList<Vector2> forward = new ArrayList<Vector2>();
         if (moves.size() > 0){
             for (int i = 0; i < moves.size(); i++){
-            //    for (Vector2 p: moves){
-                if(isVisibleObstacle(ship, moves.get(i)) || isSelf(ship,moves.get(i))){
-                    System.out.println(" MOVE obs " + moves.get(i).x + " " + moves.get(i).y);
-                    moves.remove(moves.get(i));
-                }else{
-                    System.out.println(" CLEAR " + moves.get(i).x + " " + moves.get(i).y);
+                if(!isVisibleObstacle(ship, moves.get(i)) && !isSelf(ship,moves.get(i))){
+                    forward.add(moves.get(i));
                 }
             }
             // since we don't need to differentiate different directions, just set
-            //to forward as default.
-            highlightedMoves.setForward(moves);
+            //to forward as default.           
+            highlightedMoves.setForward(forward);
         }
         return highlightedMoves;
     }    
@@ -247,10 +244,6 @@ public class Map implements java.io.Serializable {
 //    public void moveShip(Ship ship,Vector2 newPosition, Positions p) throws GameException {
     public boolean moveShip(Ship ship,Vector2 newPosition, Positions p) {
         boolean found = false;
-        if (ship.getShipType().compareTo(Ship.ShipType.KamikazeBoat)== 0){
-            boolean b = moveShipKamikaze(ship, newPosition);
-            return b;
-        }
         for(Vector2 v: p.getAll()) {
             if(v.equals(newPosition)) {
                 found = true;
@@ -259,12 +252,13 @@ public class Map implements java.io.Serializable {
         if(!found) {
             return false;
         }
+        if (ship.getShipType().compareTo(Ship.ShipType.KamikazeBoat)== 0){
+            boolean b = moveShipKamikaze(ship, newPosition);
+            return b;
+        }        
         Moves shipPositions = getMovePositions (newPosition, p);
         ArrayList<Vector2> valid = new ArrayList<Vector2>();
         valid = validateMove(ship, shipPositions);
-        for (Vector2 v: valid){
-            System.out.println("valid " + v.x + " " + v.y);
-        }
         if (valid != null){
             this.updateShipPositions(ship, valid);    
             ship.moveTo(valid);           
@@ -797,7 +791,7 @@ public class Map implements java.io.Serializable {
             return false;
         }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
-            System.out.println("BASE  " + p.x + " " + p.y);
+       //     System.out.println("BASE  " + p.x + " " + p.y);
              isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;
@@ -805,7 +799,7 @@ public class Map implements java.io.Serializable {
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ShipUnit su = (ShipUnit)o;
             if (su.getShip().getPlayerID()== s.getPlayerID()){
-                System.out.println("SHIP  " + p.x + " " + p.y);
+          //      System.out.println("OWN SHIP  " + p.x + " " + p.y);
                 isVisibleObstacle = true;
             }
             ArrayList<Vector2> visible = s.getRadarPositions();            
