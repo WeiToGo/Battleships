@@ -374,7 +374,11 @@ public class Game implements GameGUI.GameGuiListener {
             //state as the primary one
             gameState = receivedGameState;
             receivedNewGamestate = false;
-            gui.drawGameState(gameState);
+            if(gameState.previousAction == null) {
+                gui.drawGameState(gameState);
+            } else {
+                gui.updateGameState(gameState);
+            }
         }
     }
     

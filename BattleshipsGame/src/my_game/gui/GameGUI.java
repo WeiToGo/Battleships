@@ -638,7 +638,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                 case Move:
                     //set the radar visibility to the current radar UNION the radar in the update gameState
                     this.visibility = mergeVisibility(updateState, this.gameState, this.player);
-                    updateRadar();
+                    updateRadar(gameState);
                     //now we are ready to animate the movement of the ship
                     animation.startMoveAnimation(updateState, objectsGrid);
                     break;
@@ -660,9 +660,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             return false;
         } else {
             //DONE
-            this.visibility = updateState.getRadarVisibility(player);
-            updateRadar();
             gameState = new GameState(updateState);
+            this.visibility = updateState.getRadarVisibility(player);
+            updateRadar(gameState);
             return true;
         }
     }
@@ -670,7 +670,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     /**
      * Renders the radar on screen.
      */
-    public void updateRadar() {
+    public void updateRadar(GameState state) {
         for(int x = 0; x < visibility.length; x++) {
             for(int y = 0; y < visibility[0].length; y++) {
                 //update only mismatches between what is rendered on screen and what is in the visibility matrix
@@ -678,7 +678,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     //this cell should be visible
                     field.detachChild(radarGrid[x][y]);
                     radarGrid[x][y] = null;
-                    this.drawMapObject(new Vector2(x, y), gameState.getMap());
+                    this.drawMapObject(new Vector2(x, y), state.getMap());
                 } else if(!visibility[x][y] && radarGrid[x][y] == null) {
                     //this cell should not be visible
                     if(objectsGrid[x][y] != null) {

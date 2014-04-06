@@ -20,6 +20,7 @@ import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
 import my_game.util.Vector2;
+import sun.org.mozilla.javascript.internal.ast.ArrayComprehension;
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -1080,9 +1081,11 @@ public class Map implements java.io.Serializable {
     public boolean[][] getRadarVisibility(int playerIndex) {
         switch(playerIndex) {
             case 0:
-                return this.player0Visibility;
+                boolean[][] newArray = copyArray(player0Visibility);
+                return newArray;
             case 1:
-                return this.player1Visibility;
+                boolean[][] newArray1 = copyArray(player1Visibility);
+                return newArray1;
             default:
                 Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null,                         
                         new GameException("Unknown player index: " + playerIndex));
@@ -1091,6 +1094,15 @@ public class Map implements java.io.Serializable {
         return null;
     }
     
+    public static boolean[][] copyArray(boolean[][] array) {
+        boolean[][] newArray = new boolean[array.length][array[0].length];
+        for(int x = 0; x < newArray.length; x++) {
+            for(int y = 0; y < newArray[0].length; y++) {
+                newArray[x][y] = array[x][y];
+            }
+        }
+        return newArray;
+    }
     
     /**
      * This function is an interface for Map to access the concrete attack action; as a controller Map takes two inputs
