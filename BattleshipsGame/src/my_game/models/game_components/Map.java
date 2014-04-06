@@ -7,7 +7,6 @@ package my_game.models.game_components;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
 import my_game.models.ships_impl.MineLayer;
@@ -20,7 +19,6 @@ import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
 import my_game.util.Turns;
 import my_game.util.Vector2;
-import sun.org.mozilla.javascript.internal.ast.ArrayComprehension;
 
 /**
 * This is the map object containing all game objects dispayed on the
@@ -948,7 +946,6 @@ public class Map implements java.io.Serializable {
     	GameObject target = getObjectAt(position);
     	
     	if(attacker.getClass() == new Cruiser(10000).getClass()){
-    	System.out.println("Attacker is a cruiser.");	
             return((Cruiser) attacker).fireCannon(target);
                 
     	}

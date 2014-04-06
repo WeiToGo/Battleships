@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState;
+import my_game.models.game_components.MoveDescription;
 import my_game.models.player_components.Player;
 import my_game.networking.packets.impl.GameStatePacket;
 import my_game.networking.server.Constants;
@@ -26,6 +27,7 @@ public class GameStatePacketTest {
 
             CoralReef reef = new CoralReef();
             GameState gs = new GameState(new Player[] {p0, p1}, reef, 0, "TestGameState");
+            gs.previousAction = new MoveDescription(null, null);
             //print out the generated state
             System.out.println(gs);
             //package the state into a GameStatePacket, then unpackage it

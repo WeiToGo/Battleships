@@ -22,6 +22,7 @@ import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.Spatial.CullHint;
 import com.jme3.ui.Picture;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,9 @@ import java.util.logging.Logger;
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
+import my_game.models.game_components.GameObject.GameObjectType;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
-import my_game.models.game_components.MoveDescription;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
@@ -674,18 +675,25 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         for(int x = 0; x < visibility.length; x++) {
             for(int y = 0; y < visibility[0].length; y++) {
                 //update only mismatches between what is rendered on screen and what is in the visibility matrix
-                if(visibility[x][y] && radarGrid[x][y] != null) {
+                if(visibility[x][y]) {
                     //this cell should be visible
-                    field.detachChild(radarGrid[x][y]);
-                    radarGrid[x][y] = null;
-                    this.drawMapObject(new Vector2(x, y), state.getMap());
-                } else if(!visibility[x][y] && radarGrid[x][y] == null) {
-                    //this cell should not be visible
+                    radarGrid[x][y].setCullHint(CullHint.Always);
+                    //do not redraw coral reefs
                     if(objectsGrid[x][y] != null) {
-                        field.detachChild(objectsGrid[x][y]);
+                        //this.drawMapObject(new Vector2(x, y), state.getMap());
+                        objectsGrid[x][y].setCullHint(CullHint.Never);
                     }
-                    objectsGrid[x][y] = null;
-                    drawRadarShade(x, y);
+                } else if(!visibility[x][y]) {
+                    //this cell should not be visible
+                    GameObject o = gameState.getMap().getObjectAt(new Vector2(x, y));
+                    //do not repaint or hide coral reefs
+                    if(objectsGrid[x][y] != null && !o.getObjectType().equals(GameObjectType.CoralReef)) {
+                        //field.detachChild(objectsGrid[x][y]);
+                        objectsGrid[x][y].setCullHint(CullHint.Always);
+                    }
+                    //make the radar shade visible
+                    radarGrid[x][y].setCullHint(CullHint.Never);
+                    //objectsGrid[x][y] = null;
                 }
             }
         }
@@ -740,9 +748,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                 Vector2 position = new Vector2(x, y);
                 if(visibility[x][y]) {
                    drawMapObject(position, m);
+                   drawRadarShade(x, y);
+                   //the radar shade at this coordinate should be invisible
+                   radarGrid[x][y].setCullHint(CullHint.Always);
                 } else {
                     //this cell is not visible by this player
                     drawRadarShade(x, y);
+                    drawMapObject(position, m);
+                    if(objectsGrid[x][y] != null) {
+                        objectsGrid[x][y].setCullHint(CullHint.Always); //make this piece invisible
+                    }
                 }
             }//END INNER LOOP
         }//ENDFOR

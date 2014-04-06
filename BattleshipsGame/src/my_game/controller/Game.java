@@ -66,6 +66,7 @@ public class Game implements GameGUI.GameGuiListener {
     private ArrayList<Vector2> weaponHighlight;
     //////*************************************
     private boolean awaitingInput, hasTurn, enemyShipSelectionAllowed;
+    private boolean actionTakenThisTurn;
     private Vector2 input;
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
@@ -408,11 +409,13 @@ public class Game implements GameGUI.GameGuiListener {
                         awaitingInput = true;
                         this.wait();
                         awaitingInput = false;
-                        if(gameState.positionShip(selectedShip, input) && gameState.getPhase().equals(GamePhase.ShipPositioning)) {
+                        if(gameState.getPhase().equals(GamePhase.ShipPositioning) && gameState.positionShip(selectedShip, input)) {
                             //ship positionning was successful, update gui
                             gui.drawGameState(gameState);
                             selectedShip = null;
                         }
+                    } else {
+                        selectedShip = null;
                     }
                 } catch(InterruptedException e) {
                     e.printStackTrace();
@@ -474,6 +477,7 @@ public class Game implements GameGUI.GameGuiListener {
         if(playerWithTurn.equals(player)) {
             //this player's turn
             hasTurn = true;
+            actionTakenThisTurn = false;
             activateEndTurnButton();
         } else {
             hasTurn = false;
@@ -483,6 +487,9 @@ public class Game implements GameGUI.GameGuiListener {
     private void endTurn() {
         //set turn to next player
         gameState.nextTurn();
+        if(!actionTakenThisTurn) {
+            gameState.previousAction = null;
+        }
         //send the game state
         sendGameState();
         //disable buttons
@@ -516,6 +523,7 @@ public class Game implements GameGUI.GameGuiListener {
                     clearGUI();
                     //draw the movement animation by calling the update method in gui
                     gui.updateGameState(gameState);
+                    actionTakenThisTurn = true;
                     endTurn();
                 }
             } catch (InterruptedException ex) {
@@ -543,6 +551,7 @@ public class Game implements GameGUI.GameGuiListener {
                     gameState.addMessage(m);
                     //clear up the gui
                     clearGUI();
+                    actionTakenThisTurn = true;
                     endTurn();
                 }
             } catch (InterruptedException ex) {
@@ -583,6 +592,7 @@ public class Game implements GameGUI.GameGuiListener {
                         gui.drawGameState(gameState);
                         //clear up the gui
                         clearGUI();
+                        actionTakenThisTurn = true;
                         endTurn();
                     } else {
                         Misc.log("No hit.");

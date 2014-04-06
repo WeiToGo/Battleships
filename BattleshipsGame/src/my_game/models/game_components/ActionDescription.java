@@ -11,7 +11,7 @@ import my_game.gui.GameGUI.Action;
  * animate the action using this information. This is basically a container for data.
  * @author Ivaylo Parvanov
  */
-public abstract class ActionDescription {
+public abstract class ActionDescription implements java.io.Serializable {
     Action actionType;
     
     /**

@@ -165,6 +165,8 @@ public class GameState implements java.io.Serializable {
         System.arraycopy(copyState.player, 0, this.player, 0, copyState.player.length);
         this.playerTurn = copyState.playerTurn;
         this.name = copyState.name;
+        //copy the previous action
+        this.previousAction = copyState.previousAction;
         //use copy constructor to create a chatlog copy
         this.chatLog = new ChatLog(copyState.chatLog);
         //use copy constructor to create a map copy
@@ -560,6 +562,7 @@ public class GameState implements java.io.Serializable {
         StringBuilder sb = new StringBuilder();
         
         sb.append("phase: " + this.phase + "\n");
+        sb.append("previousAction: " + this.previousAction.actionType + "\n");
         sb.append("Player0: " + this.player[0] + "\n");  //requires Player.toString();
         sb.append("Player1: " + this.player[1] + "\n");
         sb.append("Player turn: " + this.playerTurn + "\n");        
