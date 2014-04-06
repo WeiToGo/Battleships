@@ -71,7 +71,7 @@ public class GameStateTest {
         System.out.println(map.toString());            
   
         System.out.println("size  " + p1ships.length);
-    */   /**   TEST move  */
+       /**   TEST move  */
     /*    Ship s = p1ships[10];
         Positions p = map.prepareMoveShip(s);
         ArrayList<Vector2> target = p.getForward();
@@ -99,61 +99,50 @@ public class GameStateTest {
        
    */
        Ship s = p0ships[8]; 
-        map.layMine(s, new Vector2(6,18));
+        map.layMine(s, new Vector2(8,11));
         System.out.println(map.toString());       
-        Ship s2 = p0ships[9]; 
+        Ship s2 = p0ships[3]; 
         Positions p = map.prepareMoveShip(s2);
-        ArrayList<Vector2>  target = p.getForward();
-        for (Vector2 v2: target){
-      //      System.out.println(" move to " + v2.x + " " + v2.y);
-        }        
-        Vector2 v = target.get(target.size()-1); 
+        ArrayList<Vector2>  target = p.getForward();     
+        Vector2 v = target.get(target.size()-3); 
         System.out.println(" move to " + v.x + " " + v.y);        
         map.moveShip(s2,v,p);
- //       System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());          
        
- /*       System.out.println("***********************************");        
-        p = map.prepareMoveShip(s);
-        target = p.getBackward();
+   /*     System.out.println("***********************************");    
+        Ship s3 = p0ships[6]; 
+        p = map.prepareMoveShip(s3);
+        target = p.getForward();
         v = target.get(target.size()/2); 
-        map.moveShip(s,v,p);
+        map.moveShip(s3,v,p);
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());  
    */     
         /**   TEST turn  */
         
-  /*    s = p1ships[7];
-        TurnPositions pTurn = map.prepareTurnShip(s);
+        TurnPositions pTurn = map.prepareTurnShip(s2);
         ArrayList<Vector2> left = pTurn.getLeft();
         ArrayList<Vector2> right = pTurn.getRight();
         ArrayList<Vector2> back = pTurn.getBackward();
         System.out.println("left size " + left.size());
         System.out.println("right size " + right.size());
-        System.out.println("back size " + back.size());
+//        System.out.println("back size " + back.size());
      
         v = null;
         if(left != null){
             v = left.get(0);
-            System.out.println("L  == " + v.x + " " + v.y);            
-        } 
-        if(right != null){
-            v = right.get(0);
-            System.out.println("R  == " + v.x + " " + v.y);
-
         } 
    
        // if(back != null) v = back.get(0); 
         
-        if(v != null){
-            System.out.println("V  == " + v.x + " " + v.y);            
-            map.turnShip(s, v, pTurn);
+       if(v != null){
+            map.turnShip(s2, v, pTurn);
             System.out.println(" turn to " + v.x + " " + v.y);
             System.out.println(map.toString());
         }else{
             System.out.println("TURN BLOCKED");
         }
-  
+  /*
         System.out.println("***********************************");          
         p = map.prepareMoveShip(s);
         target = p.getForward();

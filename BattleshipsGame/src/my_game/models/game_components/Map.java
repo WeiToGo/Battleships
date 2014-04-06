@@ -221,10 +221,7 @@ public class Map implements java.io.Serializable {
             selfPositions.add(su.getPosition());
         }        
         for (Vector2 v: selfPositions){
-        //    System.out.println(" SELF " + v.x + " " + v.y);
-
             if(v.equals(p)){
-       //       System.out.println(" SELF EQUAL" + p.x + " " + p.y);              
                 return true;
             }
         }
@@ -264,10 +261,7 @@ public class Map implements java.io.Serializable {
             ship.moveTo(valid);           
         } else {
             return false;
-        }
-        for (ShipUnit su : ship.getShipUnits()){
-            System.out.println("damage level  " + su.getDamageLevel() + "---" +  su.getPosition().x + " " + su.getPosition().y);
-        }        
+        }       
         this.updateRadarVisibilityArrays();
         return true;
     }
@@ -361,7 +355,6 @@ public class Map implements java.io.Serializable {
         //MAKE SURE THE 1ST IN THE RETURED ARRAY IS THE POSITION OF THE BOW OF THE SHIP.
         // to remember the position where an obstacle or mine is encountered.
         ArrayList<Vector2> moves = p.getPositions();
-        //System.out.println(" moves SIZE " + moves.size());
 
         ShipUnit[] shipUnits = s.getShipUnits();
         Vector2 obstacle, mine; 
@@ -390,16 +383,10 @@ public class Map implements java.io.Serializable {
                             break;                                                      
                         }else{
                             forwardmoves.add(v);
-                            System.out.println(" moves added " + v.x + " " + v.y);                        
                         }
                     }
                     
                     moves.clear();
-              /*      for (i = forwardmoves.size()-1; i >= forwardmoves.size()-shipSize; i--){
-            //            System.out.println(" forwardmoves " + forwardmoves.get(i).x +" " + forwardmoves.get(i).y);
-                        moves.add(forwardmoves.get(i));                        
-                    }
-                */
                     i = forwardmoves.size()-1;
                     int k = shipSize;
                     while(k > 0){
@@ -569,21 +556,15 @@ public class Map implements java.io.Serializable {
         if(!found) {
             return false;
         }      
-        Turns shipPositions = getTurnPositions (newPosition, p);
-        ArrayList<Vector2> po = shipPositions.positions;       
+        Turns shipPositions = getTurnPositions (newPosition, p);     
         ArrayList <Vector2> t = shipPositions.positions;
         if (t == null){
             return false;
         }
 
-    /*   for (Vector2 v: t){
-            System.out.println("turnpositions " + v.x + " " + v.y);
-        }
-    */
         Turns validTurns = validateTurn(ship, shipPositions);
         // find the new ship direction
         ArrayList <Vector2> valid = validTurns.getTurns();
-      
         ShipDirection newDirection = validTurns.getNewDirection();
         if (valid != null){
             this.updateShipPositions(ship, valid);    
@@ -626,7 +607,6 @@ public class Map implements java.io.Serializable {
             ShipDirection ld = positions.getLeftDirection();
             for (Vector2 v : left){
                 if (v.equals(p)){
-                    System.out.println("TURN " + p.x + " " + p.y);
                     turns.setTurns(left);
                     turns.setPath(leftPath);
                     turns.setNewDirection(ld);
@@ -700,7 +680,7 @@ public class Map implements java.io.Serializable {
             if (isHiddenObstacle(s,v)){
                 canTurn = false;
                 break; // don't turn if there is an obstacle.
-            }else if (isMine(v)){
+            }else if (isMineZone(v)){
                 mine = v;
                 ShipUnit s1,s2;
                 if (count == s.getSize()-1){
@@ -725,7 +705,6 @@ public class Map implements java.io.Serializable {
             valid.setPath(turnPath);
             valid.setNewDirection(d);
         } 
-        
         return valid;
     }
 
@@ -791,7 +770,6 @@ public class Map implements java.io.Serializable {
             return false;
         }
         if (o.getObjectType().compareTo(GameObject.GameObjectType.Base)==0){
-       //     System.out.println("BASE  " + p.x + " " + p.y);
              isVisibleObstacle = true;
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.CoralReef)==0){
             isVisibleObstacle = true;
@@ -799,7 +777,6 @@ public class Map implements java.io.Serializable {
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Ship)==0){
             ShipUnit su = (ShipUnit)o;
             if (su.getShip().getPlayerID()== s.getPlayerID()){
-          //      System.out.println("OWN SHIP  " + p.x + " " + p.y);
                 isVisibleObstacle = true;
             }
             ArrayList<Vector2> visible = s.getRadarPositions();            
@@ -1022,30 +999,30 @@ public class Map implements java.io.Serializable {
     	return mine;
     }
     
-    public void touchMine(Vector2 mineZone, ShipUnit[] damagedUnits){
-        GameObject temp = getObjectAt(mineZone);
+    public void touchMine(Vector2 m, ShipUnit[] damagedUnits){
+        GameObject temp = getObjectAt(m);
         //assume we can get the actual mine which is at the center of this mineZone,
         // and we destroyed it.
         for (ShipUnit s: damagedUnits){
             s.setDamage(1);
-            System.out.println("damaged " + s.getPosition().x + " " + s.getPosition().y);
         }
         
         if(temp.getClass() == new Mine().getClass()){
-        	((Mine)temp).setDestoryed(true);
-        	setObjectAt(mineZone, null);
-        	for(Vector2 mz: ((Mine)temp).getMineZone()){
-        		setObjectAt(mz, null);
-        	}
+            ((Mine)temp).setDestoryed(true);
+            setObjectAt(m, null);
+            for(Vector2 mz: ((Mine)temp).getMineZone()){
+        	setObjectAt(mz, null);
+            }
         }
         else{ //temp is a MineZone
-        /*	Mine mine = ((MineZone)temp).getMine();
-        	mine.setDestoryed(true);
-        	setObjectAt(mineZone, null);
-        	for(Vector2 mz: mine.getMineZone()){
+            Mine mine = ((MineZone)temp).getMine();
+            mine.setDestoryed(true);
+            setObjectAt(m, null);
+            Vector2 realMine = mine.getPosition();
+            setObjectAt(realMine, null);
+            for(Vector2 mz: mine.getMineZone()){
         	setObjectAt(mz, null);
-        */
-            setObjectAt(mineZone, null);
+            }
         }
     }
     
