@@ -96,20 +96,20 @@ public class GameStateTest {
        //     System.out.println(" move to " + v.x + " " + v.y);
             System.out.println(map.toString());
         }
-   */
+   
        boolean[][] sonar = map.getSonarVisibility(0);
        for (int i = 0; i< sonar.length; i++){
            for (int j = 0; i < sonar[i].length; j++){
 //               System.out.println(sonar[i][j]);  
            }
        }
+   */    
        
-       
-   /*
+   
         Ship s = p0ships[8]; 
         map.layMine(s, new Vector2(8,11));
         System.out.println(map.toString());       
-        Ship s2 = p0ships[3]; 
+        Ship s2 = p0ships[1]; 
         Positions p = map.prepareMoveShip(s2);
         ArrayList<Vector2>  target = p.getForward();     
         Vector2 v = target.get(target.size()-3); 
@@ -125,7 +125,7 @@ public class GameStateTest {
         map.moveShip(s3,v,p);
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());  
-   */    
+       
         /**   TEST turn  */
      /*   
         TurnPositions pTurn = map.prepareTurnShip(s2);

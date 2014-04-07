@@ -854,11 +854,13 @@ public class Map implements java.io.Serializable {
             for (int j = 0; j < HEIGHT; j++){
                 v = new Vector2(i,j);
                 GameObject o = getObjectAt(v);
-                if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
-                    Mine m = (Mine)o;
-                    minezone = m.getMineZone();
-                    for (Vector2 zone : minezone){
-                        allMinezone.add(zone);
+                if (o != null){
+                    if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
+                        Mine m = (Mine)o;
+                        minezone = m.getMineZone();
+                        for (Vector2 zone : minezone){
+                            allMinezone.add(zone);
+                        }
                     }
                 }
             }
