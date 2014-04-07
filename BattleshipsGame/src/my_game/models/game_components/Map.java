@@ -1006,9 +1006,8 @@ public class Map implements java.io.Serializable {
     	mine.setActive(true);
     	setObjectAt(position, mine);
     	for(Vector2 temp: zone) {
-            if (!isSelf(mineLayer,temp)){
-                setObjectAt(temp, new MineZone(true, temp, mine));
-            }
+            setObjectAt(temp, new MineZone(true, temp, mine));
+
     	}
     	
     	return mine;
