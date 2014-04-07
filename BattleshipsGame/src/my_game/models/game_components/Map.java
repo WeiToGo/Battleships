@@ -847,14 +847,29 @@ public class Map implements java.io.Serializable {
     }
    
     public boolean isMineZone(Vector2 p){
-        boolean isMineZone = false;
-        GameObject o = this.getObjectAt(p);  
-        if (o == null){
-            return false;
-        }        
-        if (o.getObjectType().compareTo(GameObject.GameObjectType.MineZone) == 0){
-            isMineZone = true;
+        Vector2 v;
+        Vector2[] minezone;
+        ArrayList<Vector2> allMinezone = new ArrayList<Vector2>();
+        for (int i = 0; i < WIDTH; i++){
+            for (int j = 0; j < HEIGHT; j++){
+                v = new Vector2(i,j);
+                GameObject o = getObjectAt(v);
+                if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
+                    Mine m = (Mine)o;
+                    minezone = m.getMineZone();
+                    for (Vector2 zone : minezone){
+                        allMinezone.add(zone);
+                    }
+                }
+            }
         }
+        boolean isMineZone = false;
+        for (Vector2 mz: allMinezone){
+            if (mz.equals(p)){
+                isMineZone = true;
+            }            
+        }
+
         return isMineZone;
     }    
 
@@ -991,7 +1006,9 @@ public class Map implements java.io.Serializable {
     	mine.setActive(true);
     	setObjectAt(position, mine);
     	for(Vector2 temp: zone) {
-            setObjectAt(temp, new MineZone(true, temp, mine));
+            if (!isSelf(mineLayer,temp)){
+                setObjectAt(temp, new MineZone(true, temp, mine));
+            }
     	}
     	
     	return mine;
