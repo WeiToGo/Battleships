@@ -323,8 +323,10 @@ public abstract class Ship implements java.io.Serializable {
      */   
         for (i = xStart; i <= xEnd; i++){
             for (j = yStart; j <= yEnd; j++){
-                Vector2 p = new Vector2(i,j);
-                positions.add(p);
+                if (i >= 0 && i < 30 && j >= 0 && j < 30){
+                    Vector2 p = new Vector2(i,j);
+                    positions.add(p);
+                }
             }
         }
         
