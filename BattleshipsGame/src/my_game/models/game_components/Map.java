@@ -1298,9 +1298,7 @@ public class Map implements java.io.Serializable {
                     sb.append("B");                    
                 } else if(grid[x][y] instanceof Mine) {
                     sb.append("M");
-                } else if(grid[x][y] instanceof MineZone) {
-                    sb.append("Z");
-                } 
+                }
             }
             sb.append("\n");
         }
