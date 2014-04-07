@@ -1065,7 +1065,7 @@ public class Map implements java.io.Serializable {
             Vector2[] possibleZone =  {new Vector2(x, y-1), new Vector2(x, y+1), new Vector2(x-1, y), new Vector2(x+1, y)};
             for(Vector2 pos: possibleZone){
             	GameObject possibleMine = getObjectAt(pos);
-            	if(temp.getClass() == new Mine().getClass()){
+            	if(possibleMine != null && possibleMine.getClass() == new Mine().getClass()){
             		mine = (Mine)possibleMine;
             	}
             }
