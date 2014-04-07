@@ -1004,13 +1004,41 @@ public class Map implements java.io.Serializable {
     		return null;
     	
     	mine.setActive(true);
-    	setObjectAt(position, mine);
-    	for(Vector2 temp: zone) {
-            setObjectAt(temp, new MineZone(true, temp, mine));
-
+    	setObjectAt(position, mine);  	
+    	return mine;
+    }
+    
+    public Vector2[] getFilteredMineDropZone(Ship mineLayer){
+    	ArrayList<Vector2> zone = new ArrayList<Vector2>();
+    	
+    	if(mineLayer.getClass() != new MineLayer(10000).getClass())
+    		return null;
+    	
+    	for(Vector2 pos: ((MineLayer)mineLayer).getMineDropPickupZone()) {
+    		if(getObjectAt(pos) == null){
+        		zone.add(pos);
+        		continue;
+    		}	
+        	
+    		Mine mine = new Mine();
+        	mine.setPosition(pos);
+        	int count = 0;
+        	
+        	for(Vector2 temp: mine.getMineZone()) {
+                if(getObjectAt(temp) != null)              
+                        count++;
+        	}
+        	
+        	if(count <= 1)
+        		zone.add(pos);
     	}
     	
-    	return mine;
+    	Vector2[] result = new Vector2[zone.size()];
+    	for(int i = 0; i < zone.size(); i++){
+    		result[i] = zone.get(i);
+    	}
+    	
+    	return result;
     }
     
     public void touchMine(Vector2 m, ShipUnit[] damagedUnits){
@@ -1028,8 +1056,18 @@ public class Map implements java.io.Serializable {
         	setObjectAt(mz, null);
             }
         }
-        else{ //temp is a MineZone
-            Mine mine = ((MineZone)temp).getMine();
+        else{ //temp is a MineZone,which is not a GameObject
+            int x = m.x;
+            int y = m.y;
+            Mine mine = null;
+            Vector2[] possibleZone =  {new Vector2(x, y-1), new Vector2(x, y+1), new Vector2(x-1, y), new Vector2(x+1, y)};
+            for(Vector2 pos: possibleZone){
+            	GameObject possibleMine = getObjectAt(pos);
+            	if(temp.getClass() == new Mine().getClass()){
+            		mine = (Mine)possibleMine;
+            	}
+            }
+            
             mine.setDestoryed(true);
             setObjectAt(m, null);
             Vector2 realMine = mine.getPosition();
@@ -1273,9 +1311,7 @@ public class Map implements java.io.Serializable {
                     sb.append("B");                    
                 } else if(grid[x][y] instanceof Mine) {
                     sb.append("M");
-                } else if(grid[x][y] instanceof MineZone) {
-                    sb.append("Z");
-                } 
+                }
             }
             sb.append("\n");
         }
