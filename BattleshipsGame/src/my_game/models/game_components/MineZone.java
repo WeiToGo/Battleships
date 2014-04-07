@@ -2,7 +2,7 @@ package my_game.models.game_components;
 
 import my_game.util.Vector2;
 
-public class MineZone extends GameObject{
+public class MineZone {
 	private boolean active;
 	private Vector2 position;
 	private Mine mine;
@@ -31,7 +31,6 @@ public class MineZone extends GameObject{
 		this.active = active;
 		this.position = position;
 		this.mine = mine;
-                this.type = GameObjectType.MineZone;
 	}
 	
 }

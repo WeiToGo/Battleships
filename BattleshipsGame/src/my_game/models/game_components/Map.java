@@ -990,9 +990,7 @@ public class Map implements java.io.Serializable {
     	
     	mine.setActive(true);
     	setObjectAt(position, mine);
-    	for(Vector2 temp: zone) {
-            setObjectAt(temp, new MineZone(true, temp, mine));
-    	}
+    	
     	
     	return mine;
     }
@@ -1045,8 +1043,18 @@ public class Map implements java.io.Serializable {
         	setObjectAt(mz, null);
             }
         }
-        else{ //temp is a MineZone
-            Mine mine = ((MineZone)temp).getMine();
+        else{ //temp is a MineZone,which is not a GameObject
+            int x = m.x;
+            int y = m.y;
+            Mine mine = null;
+            Vector2[] possibleZone =  {new Vector2(x, y-1), new Vector2(x, y+1), new Vector2(x-1, y), new Vector2(x+1, y)};
+            for(Vector2 pos: possibleZone){
+            	GameObject possibleMine = getObjectAt(pos);
+            	if(temp.getClass() == new Mine().getClass()){
+            		mine = (Mine)possibleMine;
+            	}
+            }
+            
             mine.setDestoryed(true);
             setObjectAt(m, null);
             Vector2 realMine = mine.getPosition();
