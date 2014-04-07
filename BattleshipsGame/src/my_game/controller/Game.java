@@ -5,26 +5,28 @@
 package my_game.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.gui.GameGUI;
 import my_game.gui.GameGUI.Action;
+import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
-import my_game.models.game_components.CoralReef;
 import my_game.models.game_components.GameState.GamePhase;
 import my_game.models.game_components.Map;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
-import my_game.networking.NetworkEntity;
 import my_game.models.player_components.Player;
+import my_game.models.ships_impl.MineLayer;
 import my_game.networking.NetEntityListener;
-import my_game.util.Vector2;
+import my_game.networking.NetworkEntity;
 import my_game.util.GameException;
 import my_game.util.Misc;
 import my_game.util.Positions;
 import my_game.util.TurnPositions;
+import my_game.util.Vector2;
 
     
 /**
@@ -226,6 +228,10 @@ public class Game implements GameGUI.GameGuiListener {
             //enable the buttons only if in the player turns phase
             if(gameState.getPhase().equals(GamePhase.PlayerTurns) && gameState.getCurrentPlayer().equals(player)) {
                 gui.setActionButtonsEnabled(true);
+                if(!ship.getShipType().equals(Ship.ShipType.MineLayer)) {
+                    //this is not a mine layer so disable the mine button
+                    gui.mineActivated = false;
+                }
             } else {
                 //this is not the player turns phase which means there could be a thread
                 //waiting for a ship to be selected, notify all such threads
@@ -300,11 +306,11 @@ public class Game implements GameGUI.GameGuiListener {
                         });
                         t.start();
                         break;
-                    case Attack:
+                    case CannonAttack:
                         interruptPreviousActions();
                         t = new Thread(new Runnable() {
                             public void run() {
-                                attackAction(selectedShip);
+                                cannonAttackAction(selectedShip);
                             }
                         });
                         t.start();
@@ -312,6 +318,18 @@ public class Game implements GameGUI.GameGuiListener {
                     case EndTurn:
                         interruptPreviousActions();
                         endTurn();
+                        break;
+                    case Mine:
+                        interruptPreviousActions();
+                        t = new Thread(new Runnable() {
+                            public void run() {
+                                if(gui.mineActivated) {
+                                    layMine(selectedShip);
+                                }
+                            }
+                        });
+                        t.start();
+                        break;
                     default:
                         Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Unknown action encountered."));
                         break;
@@ -477,11 +495,11 @@ public class Game implements GameGUI.GameGuiListener {
         if(playerWithTurn.equals(player)) {
             //this player's turn
             hasTurn = true;
-            actionTakenThisTurn = false;
             activateEndTurnButton();
         } else {
             hasTurn = false;
         }
+        actionTakenThisTurn = false;
     }
     
     private void endTurn() {
@@ -560,12 +578,9 @@ public class Game implements GameGUI.GameGuiListener {
         }      
     }
             
-    private void attackAction(Ship s) {
+    private void cannonAttackAction(Ship s) {
         //need to be called on the map object.
         weaponHighlight = s.getCannonPositions();
-        for(Vector2 v: weaponHighlight) {
-            Misc.log(v.toString());
-        }
 
         // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
         gui.highlightPositions(weaponHighlight);
@@ -584,7 +599,7 @@ public class Game implements GameGUI.GameGuiListener {
                         }
                     }
 
-                    GameObject targetHit = gameState.getMap().cannonAttack(s, input);
+                    GameObject targetHit = gameState.cannonAttack(s, input);
                     if(targetHit != null && found) {
                         Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
                         //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
@@ -594,6 +609,8 @@ public class Game implements GameGUI.GameGuiListener {
                         clearGUI();
                         actionTakenThisTurn = true;
                         endTurn();
+                    } else if(!found) {
+                        clearGUI();
                     } else {
                         Misc.log("No hit.");
                         clearGUI();
@@ -628,8 +645,50 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
-    public void layMine(Vector2 pos){
-    	//map.layMine(Ship mineLayer, Vector2 position)
+    public void layMine(Ship s){
+    	MineLayer miner = (MineLayer) s;
+        Vector2[] mineZone = miner.getMineDropPickupZone();
+        
+        gui.highlightPositions(new ArrayList<Vector2> (Arrays.asList(mineZone)));
+        synchronized(this) {
+            try {
+                awaitingInput = true;
+                this.wait();
+                awaitingInput = false;
+                if(input != null) {
+                    //check if the result is acceptable
+                    boolean found = false;
+                    for(Vector2 v: mineZone) {
+                        if(v.equals(input)) {
+                            found = true;
+                        }
+                    }
+                    
+                    if(!found) {
+                        clearGUI();
+                        return;
+                    }
+                    //now if the player clicked on a mine, it should be picked.
+                    //if there was no mine, a new one should be placed
+                    if(gameState.getMap().isMine(input)) {
+                        //pickup mine
+                        Message m = new Message("Mine picked up.", Message.MessageType.Game, this.player);
+                        gameState.addMessage(m);
+                        gameState.pickupMine(miner, input);
+                    } else {
+                        Message m = new Message("Mine layed.", Message.MessageType.Game, this.player);
+                        gameState.addMessage(m);
+                        gameState.layMine(s, input);
+                    }
+                    gui.drawGameState(gameState);
+                    clearGUI();
+                    actionTakenThisTurn = true;
+                    endTurn();
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     public void fireCannon(GameObject unit){

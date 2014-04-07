@@ -4,7 +4,10 @@
  */
 package my_game.gui;
 
+import com.jme3.asset.AssetManager;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import my_game.models.game_components.CannonDescription;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.MoveDescription;
 import my_game.util.Misc;
@@ -29,6 +32,22 @@ public class Animator {
     float alpha;
     MoveDescription move;
     
+    /* Cannon animation variables. */
+    CannonDescription cannon;
+    Spatial cannonSpatial;
+    float currentHeight;
+    float distance;
+    
+    AssetManager as;
+    Node field;
+    
+
+    Animator(AssetManager assetManager, Node field) {
+        as = assetManager;
+        cannonSpatial = as.loadModel("/Models/Cannon/Cannon.j3o");
+        cannonSpatial.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+        this.field = field;
+    }
     
     void prepareNewAnimation() {
         phase = AnimationPhase.Preparing;
@@ -50,7 +69,7 @@ public class Animator {
         move = (MoveDescription) updateState.previousAction;
         path = new Vector2(move.newPositions[0]);
         path.sub(move.oldPositions[0]);
-        //scale the path by 3 to fit the scale of the remaining things on screen
+        //scale the path to fit the scale of the remaining things on screen
         path.x = path.x * 2;
         path.y = path.y * 2;
         //get a reference to all the spatials in order to be able to manipulate them directly
@@ -59,13 +78,6 @@ public class Animator {
         alpha = 0;
         //change the phase as ready to animate
         phase = AnimationPhase.Animating;
-    }
-    
-    /**
-     * @return True if the animation is currently in progress, otherwise false.
-     */
-    boolean isAnimating() {
-        return phase.equals(AnimationPhase.Animating);
     }
     
     /**
@@ -106,5 +118,48 @@ public class Animator {
                         (2 * (oldy - 15) + 1) + (path.y * alpha));
             }
         }
+    }
+    
+    void startCannonAnimation(GameState updateState, Spatial[][] grid) {
+        cannon = (CannonDescription) updateState.previousAction;
+        path = new Vector2(move.newPositions[0]);
+        path.sub(move.oldPositions[0]);
+        //scale the path to fit the scale of the remaining things on screen
+        path.x = path.x * 2;
+        path.y = path.y * 2;
+        //get a reference to all the spatials in order to be able to manipulate them directly
+        objectGridRef = grid;
+        
+        alpha = 0;
+        distance = path.getLength();
+        //add the cannon spatial to the scene
+        field.attachChild(cannonSpatial);
+        //change the phase as ready to animate
+        phase = AnimationPhase.Animating;
+    }
+    
+    void nextCannonFrame() {
+        if(alpha >= 0) {
+            //TODO add explosion if target hit
+            field.detachChild(cannonSpatial);
+            phase = AnimationPhase.Done;
+        } else {
+            //take alpha to the next step
+            alpha += STEP;
+            if(alpha > 1) {
+                alpha = 1;
+            }
+            //set position of the cannon
+            float param = alpha * distance;
+            cannonSpatial.setLocalTranslation((2 * (cannon.origin.x - 15) + 1) + (path.x * alpha), 3/*2 * (1 - (param * (param - distance)))*/,    //for the height, use quadratic formula to get parabola
+                        (2 * (cannon.origin.y - 15) + 1) + (path.y * alpha));
+        }
+    }
+        
+    /**
+     * @return True if the animation is currently in progress, otherwise false.
+     */
+    boolean isAnimating() {
+        return phase.equals(AnimationPhase.Animating);
     }
 }

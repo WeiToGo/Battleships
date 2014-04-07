@@ -36,4 +36,8 @@ public class Vector2 implements java.io.Serializable {
     public String toString() {
         return x + "," + y;
     }
+
+    public float getLength() {
+        return (float) Math.sqrt((x*x) + (y*y));
+    }
 }

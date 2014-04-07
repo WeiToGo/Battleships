@@ -555,6 +555,32 @@ public class GameState implements java.io.Serializable {
             return false;
         }
     }
+
+    public void pickupMine(MineLayer miner, Vector2 input) {
+        map.pickupMine(miner, input);
+    }
+
+    public GameObject layMine(Ship s, Vector2 input) {
+        return map.layMine(s, input);
+    }
+    
+    public GameObject cannonAttack(Ship s, Vector2 target) {
+        GameObject hit = map.cannonAttack(s, target);
+        if(hit != null) {
+            previousAction = new CannonDescription(target, s.getPosition(), true);
+        } else {
+            previousAction = new CannonDescription(target, s.getPosition(), false);
+        }
+        return hit;
+    }
+    
+    public boolean isSeenBySonar(Vector2 position, Player p) {
+        if(p.equals(player[0])) {
+            return map.getSonarVisibility(0)[position.x][position.y];
+        } else {
+            return map.getSonarVisibility(1)[position.x][position.y];
+        }
+    }
     
     @Override
     public String toString() {

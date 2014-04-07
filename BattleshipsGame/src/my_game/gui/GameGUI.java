@@ -39,6 +39,7 @@ import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.util.GameException;
+import my_game.util.Misc;
 import my_game.util.Positions;
 import my_game.util.ShipDirection;
 import my_game.util.TurnPositions;
@@ -52,8 +53,7 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication implements ActionListener {    
 
     public enum Action {
-        Move, Turn, Attack, EndTurn
-    };
+        Move, Turn, EndTurn, CannonAttack, Mine};
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE = 0, BLOCK = 1, BOW = 2, RED = 3, BLUE = 4, NEW = 5, DAMAGED = 6, DESTROYED = 7;
@@ -73,15 +73,15 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     boolean[][] visibility;
     
     Spatial grid, highlight, shade, blueShipBlock, blueShipBow, 
-            redShipBlock, redShipBow, blueBase, redBase, rock;
+            redShipBlock, redShipBow, blueBase, redBase, rock, mine;
     
     /** Interface buttons and other pictures. */
-    Picture blackBar, moveButton, turnButton, shootCannonButton, endTurnButton;
+    Picture blackBar, moveButton, turnButton, shootCannonButton, mineButton, endTurnButton;
     
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    public boolean moveActivated, turnActivated, shootCannonActivated, endTurnActivated;
+    public boolean moveActivated, turnActivated, shootCannonActivated, mineActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid, radarGrid;
@@ -117,7 +117,6 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param p The player who is running the instance of this GUI.
      */
     public GameGUI(int width, int height, GameGuiListener g, Player p) {
-        animation = new Animator();
         objectsGrid = new Spatial[width][height];
         radarGrid = new Spatial[width][height];
         highlightsGrid = new Spatial[width][height];
@@ -136,6 +135,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         loadShip();
         loadBase();
         loadRock();
+        loadMine();
         loadRadar();
         loadHUD();
         loadHighlight();
@@ -167,6 +167,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         //report to the guiListener that init. is complete so he can now send requests to the gui
         guiListener.initializeComplete();
+        animation = new Animator(assetManager, field);
     }
 
     @Override
@@ -203,6 +204,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackEnabled.png", true);
         } else {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
+        }
+        if(mineActivated) {
+            this.mineButton.setImage(assetManager, "/Interface/mineEnabled.png", true);
+        } else {
+            this.mineButton.setImage(assetManager, "/Interface/mineDisabled.png", true);
         }
         if(endTurnActivated) {
             this.endTurnButton.setImage(assetManager, "/Interface/endTurnEnabled.png", true);
@@ -296,6 +302,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         rock.setMaterial(assetManager.loadMaterial("Materials/rockMaterial.j3m"));
     }
     
+    private void loadMine() {
+        mine = assetManager.loadModel("/Models/mine/mine.j3o");
+        mine.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+    }
+    
     private void loadRadar() {
         shade = assetManager.loadModel("Models/ShaderBlock/Cube.mesh.xml"); 
         shade.setMaterial(assetManager.loadMaterial("Materials/shade.j3m"));
@@ -348,13 +359,25 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         shootCannonButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(shootCannonButton);
         //**************************
+        //init. mine button
+        mineButton = new Picture("MineButton");
+        mineButton.setImage(assetManager, "/Interface/mineDisabled.png", true);
+        
+        mineButton.setWidth(width);
+        mineButton.setHeight(height);
+        mineButton.setPosition(4 * resolutionAdjustedGap +  3 * width , resolutionAdjustedY);
+        
+        mineButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(mineButton);
+        //**************************
+        //**************************
         //init. end turn button
         endTurnButton = new Picture("EndTurnButton");
         endTurnButton.setImage(assetManager, "/Interface/endTurnDisabled.png", true);
         
         endTurnButton.setWidth(width);
         endTurnButton.setHeight(height);
-        endTurnButton.setPosition(4 * resolutionAdjustedGap +  3 * width , resolutionAdjustedY);
+        endTurnButton.setPosition(5 * resolutionAdjustedGap +  4 * width , resolutionAdjustedY);
         
         endTurnButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(endTurnButton);
@@ -455,6 +478,15 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                 this.highlightsGrid[x][y] = highlightInstance;
             }
         }
+    }
+    
+    private void drawMine(int x, int y) {
+        Spatial mineInstance = mine.clone();
+        // x-axis columns; y-axis rows
+        mineInstance.setLocalTranslation(2 * (x - 15) + 1, 0, 2 * (y - 15) + 1);
+        
+        field.attachChild(mineInstance);
+        this.objectsGrid[x][y] = mineInstance;
     }
     
     private void drawShipPart(int x, int y, ShipDirection dir, int type, int colour, int damage) {
@@ -643,6 +675,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     //now we are ready to animate the movement of the ship
                     animation.startMoveAnimation(updateState, objectsGrid);
                     break;
+                case CannonAttack:
+                    animation.startCannonAnimation(updateState, objectsGrid);
+                    break;
                 default:
                     Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, new GameException("Unknown or unimplemented action taken."));
                     break;
@@ -653,6 +688,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                 case Move:
                     //move the ship a little bit towards the destination
                     animation.nextMoveFrame();
+                    break;
+                case CannonAttack:
+                    animation.nextCannonFrame();
                     break;
                 default:
                     Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, new GameException("Unknown or unimplemented action taken."));
@@ -751,6 +789,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                    drawRadarShade(x, y);
                    //the radar shade at this coordinate should be invisible
                    radarGrid[x][y].setCullHint(CullHint.Always);
+                   if(gameState.getMap().isMine(position)) {
+                       //check if within sonar range
+                       if(!gameState.isSeenBySonar(position, player)) {
+                           objectsGrid[x][y].setCullHint(CullHint.Always);
+                       }
+                   }
                 } else {
                     //this cell is not visible by this player
                     drawRadarShade(x, y);
@@ -803,8 +847,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     drawBasePart(position.x, position.y, m.isBlue(b.getBase()) ? BLUE : RED, damage);
                     break;
                 case CoralReef:
-                    CoralUnit c = (CoralUnit) o;
+                    //CoralUnit c = (CoralUnit) o;
                     drawCoral(position.x, position.y);
+                case Mine:
+                    drawMine(position.x, position.y);
                 default:
                     //do nothing just yet
                     break;
@@ -914,9 +960,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                             guiListener.onButtonPressed(Action.Turn);
                             break;
                         case 2:
-                            guiListener.onButtonPressed(Action.Attack);
+                            guiListener.onButtonPressed(Action.CannonAttack);
                             break;
                         case 3:
+                            guiListener.onButtonPressed(Action.Mine);
+                            break;
+                        case 4:
                             guiListener.onButtonPressed(Action.EndTurn);
                             break;
                         default:
@@ -935,6 +984,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.moveActivated = active;
         this.shootCannonActivated = active;
         this.turnActivated = active;
+        this.mineActivated = active;
     }
     
     /**

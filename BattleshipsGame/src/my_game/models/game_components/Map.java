@@ -1091,6 +1091,42 @@ public class Map implements java.io.Serializable {
         return null;
     }
     
+    /**
+     * Returns the sonar visibility array for the player with the specified index.
+     * @param playerIndex
+     * @return 
+     */
+    public boolean[][] getSonarVisibility(int playerIndex) {
+        boolean[][] map = new boolean[WIDTH][HEIGHT];
+        switch(playerIndex) {
+            case 0:
+                for(Ship s: player0Ships) {
+                    if(s.getShipType().equals((Ship.ShipType.MineLayer))) {
+                        //add the mine layer's radar range as sonar range
+                        for(Vector2 v: s.getRadarPositions()) {
+                            map[v.x][v.y] = true;
+                        }
+                    }
+                }
+                return map;
+            case 1:
+                for(Ship s: player1Ships) {
+                    if(s.getShipType().equals((Ship.ShipType.MineLayer))) {
+                        //add the mine layer's radar range as sonar range
+                        for(Vector2 v: s.getRadarPositions()) {
+                            map[v.x][v.y] = true;
+                        }
+                    }
+                }
+                return map;
+            default:
+                Logger.getLogger(Map.class.getName()).log(Level.SEVERE, null,                         
+                        new GameException("Unknown player index: " + playerIndex));
+                break;
+        }
+        return null;
+    }
+    
     public static boolean[][] copyArray(boolean[][] array) {
         boolean[][] newArray = new boolean[array.length][array[0].length];
         for(int x = 0; x < newArray.length; x++) {
