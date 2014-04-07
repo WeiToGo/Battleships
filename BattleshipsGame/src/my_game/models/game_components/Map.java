@@ -1051,7 +1051,7 @@ public class Map implements java.io.Serializable {
             s.setDamage(1);
         }
         
-        if(temp.getClass() == new Mine().getClass()){
+        if(temp!= null && temp.getClass() == new Mine().getClass()){
             ((Mine)temp).setDestoryed(true);
             setObjectAt(m, null);
             for(Vector2 mz: ((Mine)temp).getMineZone()){
