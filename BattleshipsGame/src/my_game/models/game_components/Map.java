@@ -997,6 +997,39 @@ public class Map implements java.io.Serializable {
     	return mine;
     }
     
+    public Vector2[] getFilteredMineDropZone(Ship mineLayer){
+    	ArrayList<Vector2> zone = new ArrayList<Vector2>();
+    	
+    	if(mineLayer.getClass() != new MineLayer(10000).getClass())
+    		return null;
+    	
+    	for(Vector2 pos: ((MineLayer)mineLayer).getMineDropPickupZone()) {
+    		if(getObjectAt(pos) == null){
+        		zone.add(pos);
+        		continue;
+    		}	
+        	
+    		Mine mine = new Mine();
+        	mine.setPosition(pos);
+        	int count = 0;
+        	
+        	for(Vector2 temp: mine.getMineZone()) {
+                if(getObjectAt(temp) != null)              
+                        count++;
+        	}
+        	
+        	if(count <= 1)
+        		zone.add(pos);
+    	}
+    	
+    	Vector2[] result = new Vector2[zone.size()];
+    	for(int i = 0; i < zone.size(); i++){
+    		result[i] = zone.get(i);
+    	}
+    	
+    	return result;
+    }
+    
     public void touchMine(Vector2 m, ShipUnit[] damagedUnits){
         GameObject temp = getObjectAt(m);
         //assume we can get the actual mine which is at the center of this mineZone,
