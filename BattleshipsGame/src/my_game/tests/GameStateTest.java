@@ -109,14 +109,14 @@ public class GameStateTest {
         Ship s = p0ships[8]; 
         map.layMine(s, new Vector2(8,11));
         System.out.println(map.toString());       
-        Ship s2 = p0ships[1]; 
+        Ship s2 = p0ships[3]; 
         Positions p = map.prepareMoveShip(s2);
         ArrayList<Vector2>  target = p.getForward();     
         Vector2 v = target.get(target.size()-3); 
         System.out.println(" move to " + v.x + " " + v.y);        
         map.moveShip(s2,v,p);
         System.out.println(map.toString());          
-       
+    /*   
         System.out.println("***********************************");    
         Ship s3 = p0ships[6]; 
         p = map.prepareMoveShip(s3);
@@ -125,9 +125,9 @@ public class GameStateTest {
         map.moveShip(s3,v,p);
         System.out.println(" move to " + v.x + " " + v.y);
         System.out.println(map.toString());  
-       
+    */   
         /**   TEST turn  */
-     /*   
+        
         TurnPositions pTurn = map.prepareTurnShip(s2);
         ArrayList<Vector2> left = pTurn.getLeft();
         ArrayList<Vector2> right = pTurn.getRight();
@@ -151,7 +151,7 @@ public class GameStateTest {
             System.out.println("TURN BLOCKED");
         }
   
-        System.out.println("***********************************");          
+  /*      System.out.println("***********************************");          
         p = map.prepareMoveShip(s);
         target = p.getForward();
         if (target != null){
