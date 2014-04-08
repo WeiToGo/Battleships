@@ -414,7 +414,7 @@ public class GameState implements java.io.Serializable {
         int shipSize = s.getSize();
         ArrayList<Vector2> positions = new ArrayList<Vector2>();
         int i;
-        if(p.x == 0){
+        if(p.x == 0){ // blue side
             if (p.y <= 9 && p.y >= 5){
                 for (i = 10-shipSize; i < 10; i++){
                     Vector2 v = new Vector2(p.x,i);
@@ -428,7 +428,7 @@ public class GameState implements java.io.Serializable {
                     positions.add(v);                
                 }
             }
-        }else if (p.x == 29){
+        }else if (p.x == 29){ //red side
             if (p.y <= 9 && p.y >= 5){
                 for (i = 10-shipSize; i < 10; i++){
                     Vector2 v = new Vector2(p.x,i);
@@ -456,6 +456,7 @@ public class GameState implements java.io.Serializable {
             }
         }else{
             validTarget = false;
+            map.updateRadarVisibilityArrays(); 
         }
         
         if (validTarget){        
@@ -470,7 +471,11 @@ public class GameState implements java.io.Serializable {
                 s.moveTo(positions);
                 map.updateRadarVisibilityArrays();
                 return true;
-            }      
+            }else{
+                map.updateRadarVisibilityArrays();                
+            }    
+        }else{
+            map.updateRadarVisibilityArrays(); 
         }
         //the target was invalid and no movement occured
         return false;
