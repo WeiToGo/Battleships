@@ -647,7 +647,7 @@ public class Game implements GameGUI.GameGuiListener {
     
     public void layMine(Ship s){
     	MineLayer miner = (MineLayer) s;
-        Vector2[] mineZone = miner.getMineDropPickupZone();
+        Vector2[] mineZone = gameState.getMap().getFilteredMineDropZone(s);
         
         gui.highlightPositions(new ArrayList<Vector2> (Arrays.asList(mineZone)));
         synchronized(this) {

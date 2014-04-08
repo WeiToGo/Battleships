@@ -702,7 +702,24 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             gameState = new GameState(updateState);
             this.visibility = updateState.getRadarVisibility(player);
             updateRadar(gameState);
+            updateShips(gameState);
             return true;
+        }
+    }
+    
+    /** Redraws all ships and bases. */
+    private void updateShips(GameState gs) {
+        for(int x = 0; x < objectsGrid.length; x++) {
+            for(int y = 0; y < objectsGrid[0].length; y++) {
+                if(objectsGrid[x][y] != null) {
+                    field.detachChild(objectsGrid[x][y]);
+                    objectsGrid[x][y] = null;
+                }
+                drawMapObject(new Vector2(x, y), gs.getMap());
+                if(objectsGrid[x][y] != null && !visibility[x][y]) {
+                    objectsGrid[x][y].setCullHint(CullHint.Always);
+                }
+            }
         }
     }
     
