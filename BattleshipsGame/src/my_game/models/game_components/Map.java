@@ -1017,22 +1017,20 @@ public class Map implements java.io.Serializable {
     		return null;
     	
     	for(Vector2 pos: ((MineLayer)mineLayer).getMineDropPickupZone()) {
-    		if(getObjectAt(pos) == null){
-        		zone.add(pos);
-        		continue;
-    		}	
+    		if(getObjectAt(pos) != null)
+        		continue;	
         	
-    		Mine mine = new Mine();
-        	mine.setPosition(pos);
-        	int count = 0;
+    	Mine mine = new Mine();
+        mine.setPosition(pos);
+        int count = 0;
         	
-        	for(Vector2 temp: mine.getMineZone()) {
-                if(getObjectAt(temp) != null)              
-                        count++;
-        	}
+       	for(Vector2 temp: mine.getMineZone()) {
+       		if(getObjectAt(temp) != null)              
+       		count++;
+        }
         	
-        	if(count <= 1)
-        		zone.add(pos);
+        if(count <= 1)
+        	zone.add(pos);
     	}
     	
     	Vector2[] result = new Vector2[zone.size()];
