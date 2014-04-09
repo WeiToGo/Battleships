@@ -515,10 +515,15 @@ public class GameState implements java.io.Serializable {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public void loadGame(String gameFile) throws FileNotFoundException, IOException{
+    public GameState loadGame(String gameFile) throws FileNotFoundException, IOException {
         FileInputStream in = new FileInputStream(gameFile);
-        ObjectInputStream s = new ObjectInputStream(in);
-    //    this = (GameState)s.readObject();
+        ObjectInputStream s = new ObjectInputStream(in); 
+        GameState loadedGame = null; 
+        try { 
+            loadedGame=(GameState)s.readObject();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block e.printStackTrace();
+        } s.close(); return loadedGame;
     }
     
     /**
