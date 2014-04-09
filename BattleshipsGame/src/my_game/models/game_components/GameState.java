@@ -152,11 +152,11 @@ public class GameState implements java.io.Serializable {
     
     /* TEST ONLY */
     public Ship[] getShipsP0(){
-        return map.player0Ships;
+        return (Ship[]) map.player0Ships.toArray();
     }
     
     public Ship[] getShipsP1(){
-        return map.player1Ships;
+        return (Ship[]) map.player1Ships.toArray();
     }    
     /******END TEST *******************/
     
@@ -193,6 +193,30 @@ public class GameState implements java.io.Serializable {
         }
         
         return ships;
+    }
+    
+    /**
+     * Removes from the map ships which are sunk.
+     */
+    public void sinkShips() {
+        for(Ship s: map.player0Ships) {
+            if(s.getSize() <= 0) {
+                sinkShip(s);
+                map.player0Ships.remove(s);
+            }
+        }
+        for(Ship s: map.player1Ships) {
+            if(s.getSize() <= 0) {
+                sinkShip(s);
+                map.player1Ships.remove(s);
+            }
+        }
+    }
+    
+    private void sinkShip(Ship s) {
+        for(ShipUnit su: s.getShipUnits()) {
+            map.setObjectAt(su.getPosition(), null);
+        }
     }
     
     public boolean[][] getRadarVisibility(Player p) {
@@ -557,16 +581,14 @@ public class GameState implements java.io.Serializable {
         //find out which player is the invariable player
         if(invariablePlayer.equals(this.player[0])) {
             //place player[1]'s ships from otherState into this GameState
-            for(int i = 0; i < map.player1Ships.length; i++) {
-                map.player1Ships[i] = otherState.map.player1Ships[i];
-            }
+            map.player1Ships.clear();
+            map.player1Ships.addAll(otherState.map.player1Ships);
             //now copy the respective player's half of the map grid to this state's map grid
             map.setGrid(otherState.map, 15, 0, 29, 29);
         } else if(invariablePlayer.equals(this.player[1])) {
             //place player[0]'s ships from otherState into this GameState
-            for(int i = 0; i < map.player0Ships.length; i++) {
-                map.player0Ships[i] = otherState.map.player0Ships[i];
-            }
+            map.player0Ships.clear();
+            map.player1Ships.addAll(otherState.map.player0Ships);
             //now copy the respective player's half of the map grid to this state's map grid
             map.setGrid(otherState.map, 0, 0, 15, 29);
         } else {

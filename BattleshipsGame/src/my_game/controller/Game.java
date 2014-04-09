@@ -634,6 +634,13 @@ public class Game implements GameGUI.GameGuiListener {
     }
     
     private void endTurn() {
+        //do a sinked ship test
+        gameState.sinkShips();
+        if(playAnimation) {
+            gui.updateGameState(gameState);
+        } else {
+            gui.drawGameState(gameState);
+        }
         //set turn to next player
         gameState.nextTurn();
         if(!playAnimation) {
@@ -673,7 +680,6 @@ public class Game implements GameGUI.GameGuiListener {
                     //clear up the gui
                     clearGUI();
                     //draw the movement animation by calling the update method in gui
-                    gui.updateGameState(gameState);
                     playAnimation = true;
                     
                     if(s.getShipType().equals(Ship.ShipType.KamikazeBoat) && kamikaze) {
@@ -707,7 +713,6 @@ public class Game implements GameGUI.GameGuiListener {
 
                 if(input != null && gameState.getMap().turnShip(s, input, turnHighlight)) {
                     //action successfully executed
-                    gui.drawGameState(gameState);   //draw updated gameState
                     Message m = new Message("Ship turned to new position " + input + ".", Message.MessageType.Game, player);
                     gameState.addMessage(m);
                     //clear up the gui
@@ -812,7 +817,6 @@ public class Game implements GameGUI.GameGuiListener {
                     Message m = new Message("Torpedo fired.", Message.MessageType.Game, this.player);
                     gameState.addMessage(m);
                     gameState.layMine(s, input);
-                    gui.drawGameState(gameState);
                     clearGUI();
                     playAnimation = false;
                     endTurn();
@@ -884,7 +888,6 @@ public class Game implements GameGUI.GameGuiListener {
                         gameState.addMessage(m);
                         gameState.layMine(s, input);
                     }
-                    gui.drawGameState(gameState);
                     clearGUI();
                     playAnimation = false;
                     endTurn();
