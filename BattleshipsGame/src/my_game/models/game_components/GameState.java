@@ -484,10 +484,20 @@ public class GameState implements java.io.Serializable {
     }    
     
     /**
+     * this method should be called by Game after each turn to make sure the game
+     * is ended immediately when a player is defeated.
      * @return True if the game is over, otherwise false.
      */
-    public boolean gameOver() {
-        return this.phase.equals(GamePhase.GameOver);
+    public boolean isGameOver() {
+        if (this.phase.equals(GamePhase.GameOver)){
+            return true;
+        }else{
+            if(map.isEndGame()){
+                setGamePhase(GamePhase.GameOver);
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

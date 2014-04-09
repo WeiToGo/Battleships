@@ -1085,6 +1085,43 @@ public class Map implements java.io.Serializable {
     }
     
     /**
+     * loops through all ship units of both players, and return false as soon
+     * as it finds a ship unit that is not destroyed. called by GameState after 
+     * each turn.
+     * @return 
+     */
+    public boolean isEndGame(){
+        boolean gameOver = false;
+        boolean defeatedP0 = true;
+        boolean defeatedP1 = true;
+        for (Ship s0: player0Ships){
+            ShipUnit[] shipUnits = s0.getShipUnits();
+            for (ShipUnit su: shipUnits){
+                if (!su.isDestroyed()){
+                    defeatedP0 = false;
+                    break;
+                }
+            }
+        }
+        if (defeatedP0){
+            gameOver = true;;
+        }else{
+            for (Ship s1: player1Ships){
+                ShipUnit[] shipUnits = s1.getShipUnits();
+                for (ShipUnit su: shipUnits){
+                    if (!su.isDestroyed()){
+                        defeatedP1 = false;
+                        break;
+                    }
+                }
+            }
+            if (defeatedP1){
+                gameOver = true;
+            }
+        }
+        return gameOver;
+    }
+    /**
      * Checks whether the specified ship belongs to the blue player (player on the
      * west side of the map, a.k.a. player0). If it does, returns true, otherwise
      * returns false.
