@@ -23,7 +23,7 @@ public class tempTest {
 	    ShipDirection sd = ShipDirection.West;
 	    
 		RadarBoat rb = new RadarBoat(1, positions, sd);
-		ShipUnit[] su = {new ShipUnit(), new MidUnit(), new ShipUnit()};
+		ShipUnit[] su = {new ShipUnit(rb), new MidUnit(rb), new ShipUnit(rb)};
 		rb.setShipUnits(su);
 		
 		/*
