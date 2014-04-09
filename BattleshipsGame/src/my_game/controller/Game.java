@@ -20,6 +20,7 @@ import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
+import my_game.models.ships_impl.KamikazeBoat;
 import my_game.models.ships_impl.MineLayer;
 import my_game.models.ships_impl.RadarBoat;
 import my_game.networking.NetEntityListener;
@@ -319,6 +320,9 @@ public class Game implements GameGUI.GameGuiListener {
             if(!s.getShipType().equals(Ship.ShipType.RadarBoat)) {
                 gui.longRadarActivated = false;
             }
+            if(!s.getShipType().equals(Ship.ShipType.KamikazeBoat)) {
+                gui.suicideActivated = false;
+            }
         }
     }
     
@@ -462,6 +466,17 @@ public class Game implements GameGUI.GameGuiListener {
                         });
                         t.start();
                         break;
+                    case Suicide:
+                    interruptPreviousActions();
+                    t = new Thread(new Runnable() {
+                        public void run() {
+                            if(gui.suicideActivated) {
+                                suicideAttack(selectedShip);
+                            }
+                        }
+                    });
+                    t.start();
+                    break;
                     case EndTurn:
                         interruptPreviousActions();
                         endTurn();
@@ -721,6 +736,10 @@ public class Game implements GameGUI.GameGuiListener {
                         moveAction(s);
                     } else {
                         kamikaze = true;
+                        if(suicideActivated) {
+                            suicideActivated = false;
+                            gameState.getMap().kamAttack(s);
+                        }
                         endTurn();
                     }
                     
@@ -928,6 +947,14 @@ public class Game implements GameGUI.GameGuiListener {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private boolean suicideActivated = false;
+
+    private void suicideAttack(Ship selectedShip) {
+        suicideActivated = true;
+        ((KamikazeBoat) selectedShip).activateAttack();
+        moveAction(selectedShip);
     }
 
     private void repair(Ship selectedShip) {
