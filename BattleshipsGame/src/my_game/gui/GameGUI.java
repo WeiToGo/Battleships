@@ -742,9 +742,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     field.detachChild(objectsGrid[x][y]);
                     objectsGrid[x][y] = null;
                 }
-                drawMapObject(new Vector2(x, y), gs.getMap());
-                if(objectsGrid[x][y] != null && !visibility[x][y]) {
-                    objectsGrid[x][y].setCullHint(CullHint.Always);
+                Vector2 position = new Vector2(x, y);
+                if(!gameState.getMap().isCoral(position)) {
+                    drawMapObject(position, gs.getMap());
+                    if(objectsGrid[x][y] != null && !visibility[x][y]) {
+                        objectsGrid[x][y].setCullHint(CullHint.Always);
+                    }
                 }
             }
         }
