@@ -86,7 +86,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    public boolean moveActivated, turnActivated, shootCannonActivated, torpedoActivated, mineActivated, endTurnActivated;
+    public boolean moveActivated, turnActivated, cannonActivated, torpedoActivated, mineActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid, radarGrid;
@@ -210,7 +210,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         } else {
             this.turnButton.setImage(assetManager, "/Interface/turnDisabled.png", true);
         }
-        if(shootCannonActivated) {
+        if(cannonActivated) {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackEnabled.png", true);
         } else {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
@@ -1060,7 +1060,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      */
     public void setActionButtonsEnabled(boolean active) {
         this.moveActivated = active;
-        this.shootCannonActivated = active;
+        this.cannonActivated = active;
         this.turnActivated = active;
         this.mineActivated = active;
         this.torpedoActivated = active;
