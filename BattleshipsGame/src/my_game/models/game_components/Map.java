@@ -1122,8 +1122,14 @@ public class Map implements java.io.Serializable {
     		return null;
     	
     	for(Vector2 pos: ((MineLayer)mineLayer).getMineDropPickupZone()) {
-    		if(getObjectAt(pos) != null)
-        		continue;	
+            GameObject o = getObjectAt(pos);
+    		if(o != null){
+                    if (o.getObjectType().equals(GameObject.GameObjectType.Mine)){
+                        zone.add(pos);
+                    }else{
+                        continue;
+                    }
+                }	
         	
     	Mine mine = new Mine();
         mine.setPosition(pos);
