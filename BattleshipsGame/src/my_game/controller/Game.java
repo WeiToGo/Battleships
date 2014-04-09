@@ -739,7 +739,6 @@ public class Game implements GameGUI.GameGuiListener {
                         Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
                         //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
                         gameState.addMessage(m);
-                        gui.drawGameState(gameState);
                         //clear up the gui
                         clearGUI();
                         playAnimation = false;

@@ -126,8 +126,8 @@ public class Animator {
     
     void startCannonAnimation(GameState updateState, Spatial[][] grid) {
         cannon = (CannonDescription) updateState.previousAction;
-        path = new Vector2(move.newPositions[0]);
-        path.sub(move.oldPositions[0]);
+        path = new Vector2(cannon.target);
+        path.sub(cannon.origin);
         //scale the path to fit the scale of the remaining things on screen
         path.x = path.x * 2;
         path.y = path.y * 2;
@@ -143,20 +143,24 @@ public class Animator {
     }
     
     void nextCannonFrame() {
-        if(alpha >= 0) {
-            //TODO add explosion if target hit
-            field.detachChild(cannonSpatial);
-            phase = AnimationPhase.Done;
-        } else {
-            //take alpha to the next step
-            alpha += STEP;
-            if(alpha > 1) {
-                alpha = 1;
+        try {
+            if(alpha >= 1) {
+                //TODO add explosion if target hit
+                field.detachChild(cannonSpatial);
+                phase = AnimationPhase.Done;
+            } else {
+                //take alpha to the next step
+                alpha += STEP;
+                if(alpha > 1) {
+                    alpha = 1;
+                }
+                //set position of the cannon
+                float param = alpha * distance;
+                cannonSpatial.setLocalTranslation((2 * (cannon.origin.x - 15) + 1) + (path.x * alpha), 2 * (1 - (param * (param - distance))),    //for the height, use quadratic formula to get parabola
+                            (2 * (cannon.origin.y - 15) + 1) + (path.y * alpha));
             }
-            //set position of the cannon
-            float param = alpha * distance;
-            cannonSpatial.setLocalTranslation((2 * (cannon.origin.x - 15) + 1) + (path.x * alpha), 3/*2 * (1 - (param * (param - distance)))*/,    //for the height, use quadratic formula to get parabola
-                        (2 * (cannon.origin.y - 15) + 1) + (path.y * alpha));
+        } catch(NullPointerException e) {
+            alpha = 1;
         }
     }
         

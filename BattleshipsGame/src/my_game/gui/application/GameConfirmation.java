@@ -24,6 +24,7 @@ import my_game.models.game_components.GameState;
 import my_game.networking.NetEntityListener;
 import my_game.networking.server.GameServer;
 import my_game.util.GameException;
+import my_game.util.Misc;
 
 
 public class GameConfirmation
@@ -88,8 +89,10 @@ public class GameConfirmation
                         Main.getServer().removeNetListener(serverListener);
                         try {
                             //now create a new Game
+                            GameState gs = GameState.loadGame(f.getName());
+                            Misc.log(gs.toString());
                             Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
-                                    GameState.loadGame(f.getName()), Main.getServer(), Game.PlayerType.Host);
+                                    gs, Main.getServer(), Game.PlayerType.Host);
                             //TODO Close this window.
                             Stage previousStage=Main.getStage();
                             previousStage.close();

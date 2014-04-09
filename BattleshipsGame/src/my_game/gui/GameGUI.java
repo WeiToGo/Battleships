@@ -688,7 +688,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param updateState The GameState which is one action ahead of the current GameState in the GUI.
      */
     public void updateGameState(GameState updateState) {
-        this.updateState = updateState;
+        this.updateState = new GameState(updateState);
         this.updateStateUpdated = true;
         animation.prepareNewAnimation();
     }
