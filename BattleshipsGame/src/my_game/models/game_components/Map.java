@@ -406,6 +406,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[0];
                                 damagedUnits[1] = shipUnits[1];
+                                s.hitUpdate();
+                                s.hitUpdate();                                
                                 touchMine(mine, damagedUnits);
                                 forwardmoves.add(v);
                                 break;                                  
@@ -417,6 +419,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[0];
                                 damagedUnits[1] = shipUnits[1];
+                                s.hitUpdate();
+                                s.hitUpdate();
                                 touchMine(mine, damagedUnits);
                                 forwardmoves.add(v);
                                 break;  
@@ -436,9 +440,6 @@ public class Map implements java.io.Serializable {
                             i--;
                        }
                     }
-                    for (Vector2 v: moves){
-                        System.out.println(" VALID moves " + v.x + " " + v.y);
-                    }
                     break;
                 case B:
                     for (Vector2 v : moves) {
@@ -457,6 +458,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[shipUnits.length-2];
                                 damagedUnits[1] = shipUnits[shipUnits.length-1];
+                                s.hitUpdate();
+                                s.hitUpdate();
                                 touchMine(mine, damagedUnits);         
                                 return null; 
                             }
@@ -476,6 +479,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
+                                s.hitUpdate();
+                                s.hitUpdate();
                                 touchMine(mine, damagedUnits);   
                                 return null;
                             }
@@ -487,6 +492,8 @@ public class Map implements java.io.Serializable {
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
                                 touchMine(mine, damagedUnits);                                   
+                                s.hitUpdate();
+                                s.hitUpdate();
                                 return null;
                             }
                         }else{
@@ -507,6 +514,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
+                                s.hitUpdate();
+                                s.hitUpdate();
                                 touchMine(mine, damagedUnits);
                                 return null;
                             }
@@ -517,6 +526,8 @@ public class Map implements java.io.Serializable {
                                 mine = v;
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
+                                s.hitUpdate();
+                                s.hitUpdate();                     
                                 touchMine(mine, damagedUnits);   
                                 return null;
                             }
@@ -752,6 +763,8 @@ public class Map implements java.io.Serializable {
                 if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
                     mine = v;
                     damagedUnits = getDamagedUnits(mine,s);
+                    s.hitUpdate();
+                    s.hitUpdate();                    
                     touchMine(mine, damagedUnits);
                     canTurn = false;
                     break;
@@ -779,6 +792,8 @@ public class Map implements java.io.Serializable {
                     }
                     damagedUnits[0] = s1;
                     damagedUnits[1] = s2;
+                    s.hitUpdate();
+                    s.hitUpdate();                    
                     touchMine(mine, damagedUnits);
                     canTurn = false;
                     break;

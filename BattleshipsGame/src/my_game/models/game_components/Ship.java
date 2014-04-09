@@ -200,8 +200,10 @@ public abstract class Ship implements java.io.Serializable {
      * This method should be called after each attack on the ship.
      */
     public void hitUpdate(){
-        currentSize--;    
-        setCurrentSpeed(currentSpeed - speed/size);
+        if (currentSize > 0){
+            currentSize--;    
+            setCurrentSpeed(currentSpeed - speed/size);
+        }
     }
     public ArrayList<Vector2> getRadarPositions(){
         Range r = this.getRadarRange();
