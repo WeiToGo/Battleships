@@ -18,4 +18,8 @@ public class MidUnit extends ShipUnit {
 		this.unitArmour = ship.getArmour();
 		this.type = GameObjectType.MidUnit;
 	}
+
+	public MidUnit() {
+		super();
+	}
 }
