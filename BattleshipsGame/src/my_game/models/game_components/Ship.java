@@ -210,7 +210,7 @@ public abstract class Ship implements java.io.Serializable {
 				}
 			}
 
-			setCurrentSpeed(speed * (currentSize / size));
+			setCurrentSpeed(speed * currentSize / size);
 		}
 	}
 

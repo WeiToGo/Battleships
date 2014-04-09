@@ -21,13 +21,15 @@ public class tempTest {
 	    
 		RadarBoat rb = new RadarBoat(1, positions, sd);
 		
-		System.out.println(rb.getRadarPositions());
-		System.out.println(rb.getRadarRange().toString());
+		System.out.println("size: " + rb.getCurrentSize());
+		System.out.println("speed: " + rb.getCurrentSpeed());
 		
-		rb.turnOnLongRangeRadar();;
+		rb.getShipUnits()[0].setDamage(10);
 		
-		System.out.println(rb.getRadarPositions());
-		System.out.println(rb.getRadarRange().toString());
+		rb.hitUpdate();
+		
+		System.out.println("size: " + rb.getCurrentSize());
+		System.out.println("speed: " + rb.getCurrentSpeed());
 
 	}
 
