@@ -59,7 +59,7 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication implements ActionListener {    
 
     public enum Action {
-        Move, Turn, EndTurn, CannonAttack, Mine, TorpedoAttack, Repair};
+        Move, Turn, EndTurn, CannonAttack, Mine, TorpedoAttack, Repair, LongRadar};
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE = 0, BLOCK = 1, BOW = 2, RED = 3, BLUE = 4, NEW = 5, DAMAGED = 6, DESTROYED = 7;
@@ -78,16 +78,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     /** This array contains the radar visibility for each coordinate from the last update. */
     boolean[][] visibility;
     
-    Spatial grid, highlight, shade, blueShipBlock, blueShipBow, 
-            redShipBlock, redShipBow, blueBase, redBase, rock, mine;
+    Spatial grid, highlight, shade, blueShipBlock, blueRadarBlock, blueShipBow, 
+            redShipBlock, redRadarBlock, redShipBow, blueBase, redBase, rock, mine;
     
     /** Interface buttons and other pictures. */
-    Picture blackBar, moveButton, turnButton, shootCannonButton, torpedoButton, mineButton, repairButton, endTurnButton;
+    Picture blackBar, moveButton, turnButton, shootCannonButton, torpedoButton, mineButton, repairButton, longRadar, endTurnButton;
     
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    public boolean moveActivated, turnActivated, cannonActivated, torpedoActivated, mineActivated, repairActivated, endTurnActivated;
+    public boolean moveActivated, turnActivated, cannonActivated, torpedoActivated, mineActivated, repairActivated, longRadarActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid, radarGrid;
@@ -216,6 +216,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         } else {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
         }
+        if(longRadarActivated) {
+            this.longRadar.setImage(assetManager, "/Interface/longRadarEnabled.png", true);
+        } else {
+            this.longRadar.setImage(assetManager, "/Interface/longRadarDisabled.png", true);
+        }
         if(torpedoActivated) {
             this.torpedoButton.setImage(assetManager, "/Interface/torpedoEnabled.png", true);
         } else {
@@ -293,6 +298,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         blueShipBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
         blueShipBlock.setLocalScale(0.95f, 1, 1);
         
+        blueRadarBlock = assetManager.loadModel("/Models/RadarShipBlock/RadarShipBlock.j3o");
+        blueRadarBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+        blueRadarBlock.setLocalScale(0.95f, 1, 1);
+        
         blueShipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
         blueShipBow.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
         blueShipBow.setLocalScale(0.95f, 1, 1);
@@ -301,6 +310,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         redShipBlock = assetManager.loadModel("/Models/ShipBlocks/ShipBlock.j3o");
         redShipBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
         redShipBlock.setLocalScale(0.95f, 1, 1);
+        
+        redRadarBlock = assetManager.loadModel("/Models/RadarShipBlock/RadarShipBlock.j3o");
+        redRadarBlock.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+        redRadarBlock.setLocalScale(0.95f, 1, 1);
         
         redShipBow = assetManager.loadModel("/Models/ShipBlocks/ShipBow.j3o");
         redShipBow.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
@@ -414,6 +427,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         repairButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(repairButton);
         //**************************
+        //init. end turn button
+        longRadar = new Picture("LongRadarButton");
+        longRadar.setImage(assetManager, "/Interface/longRadarDisabled.png", true);
+        
+        longRadar.setWidth(width);
+        longRadar.setHeight(height);
+        longRadar.setPosition(7 * resolutionAdjustedGap +  6 * width , resolutionAdjustedY);
+        
+        longRadar.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(longRadar);
         //**************************
         //init. end turn button
         endTurnButton = new Picture("EndTurnButton");
@@ -421,7 +444,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         endTurnButton.setWidth(width);
         endTurnButton.setHeight(height);
-        endTurnButton.setPosition(7 * resolutionAdjustedGap +  6 * width , resolutionAdjustedY);
+        endTurnButton.setPosition(8 * resolutionAdjustedGap +  7 * width , resolutionAdjustedY);
         
         endTurnButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(endTurnButton);
@@ -1036,6 +1059,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                             guiListener.onButtonPressed(Action.Repair);
                             break;
                         case 6:
+                            guiListener.onButtonPressed(Action.LongRadar);
+                            break;
+                        case 7:
                             guiListener.onButtonPressed(Action.EndTurn);
                             break;
                         default:
@@ -1090,6 +1116,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.mineActivated = active;
         this.torpedoActivated = active;
         this.repairActivated = active;
+        this.longRadarActivated = active;
     }
     
     /**

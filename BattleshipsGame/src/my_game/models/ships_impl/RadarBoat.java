@@ -84,5 +84,13 @@ public class RadarBoat extends Ship {
            setRadarRange(shortRange);
         }
     }
+
+    public void toggleRadar() {
+        if(longRangeActive) {
+            turnOffLongRangeRadar();
+        } else {
+            turnOnLongRangeRadar();
+        }
+    }
  
 }
