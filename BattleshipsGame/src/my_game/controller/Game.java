@@ -43,12 +43,14 @@ public class Game implements GameGUI.GameGuiListener {
     
     /** The Player who is running this instance of the Game controller. */
     private final Player player;
+    private int playerIndex;
     /** The opponent of the player who is running this instance of the Game controller. */
     private final Player opponent;
     /** Network object used for communication with the opponent. */
     private final NetworkEntity net;
     /** The game state contains a full description of the game that is currently being played. */
     private GameState gameState, receivedGameState;
+    
     private boolean receivedNewGamestate = false;
     
     /** The player type is a flag indicating whether the player running the instance
@@ -72,7 +74,7 @@ public class Game implements GameGUI.GameGuiListener {
     private Vector2 input;
     
     public Game(Player player, Player opponent, CoralReef reef, NetworkEntity net, Game.PlayerType playerType, String name) {
-        this(player, opponent, reef, net, playerType, name, 0);
+        this(player, opponent, reef, net, playerType, name, -1);
     }
     
     /**
@@ -107,6 +109,7 @@ public class Game implements GameGUI.GameGuiListener {
             }
             //init game state
             gameState = new GameState(new Player[] {player, opponent}, reef, firstPlayer, name);
+            this.playerIndex = 0;
             
             //TODO if the line below is commented, uncomment for proper behaviour
             sendGameState();
@@ -131,11 +134,79 @@ public class Game implements GameGUI.GameGuiListener {
             }
             System.out.println("Client received a game state.");
             this.gameState = receivedGameState;
+            this.playerIndex = 1;
             receivedNewGamestate = false;
             
             startGame();
         }
     } 
+    
+    /**
+     * Use this constructor with loaded games.
+     * @param player
+     * @param opponent
+     * @param loadedGame
+     * @param net
+     * @param playerType
+     */
+    public Game(Player player, Player opponent, GameState loadedGame, NetworkEntity net, 
+            Game.PlayerType playerType) {
+         //init local fields
+        this.player = player;
+        this.opponent = opponent;
+        this.net = net;
+        this.playerType = playerType;
+        
+        if(playerType == Game.PlayerType.Host) {
+            sListener = new ServerListener();
+            cListener = null;
+            
+            
+            this.gameState = loadedGame;
+            net.addNetListener(sListener);
+            if(gameState.getPlayer(0).equals(this.player)) {
+                this.playerIndex = 0;
+            } else if(gameState.getPlayer(1).equals(this.player)) {
+                this.playerIndex = 1;
+            } else {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Could not find player in provided game state."));
+            }
+            
+            sendGameState();
+            startGame();
+        } else {
+            //add a listener to the client
+            sListener = null;
+            cListener = new ClientListener();
+            
+            net.addNetListener(cListener);
+            
+            System.out.println("Client will now wait to receive game state.");
+            //You are a client. Wait to receive a game state from server
+            synchronized(player) {
+                while(!receivedNewGamestate) {
+                    try {
+                        player.wait();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            System.out.println("Client received a game state.");
+            this.gameState = receivedGameState;
+            receivedNewGamestate = false;
+            
+            if(gameState.getPlayer(0).getUsername().equals(player.getUsername())) {
+                this.playerIndex = 0;
+            } else if(gameState.getPlayer(1).getUsername().equals(player.getUsername())) {
+                this.playerIndex = 1;
+            } else {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Could not find player in provided game state."));
+            }
+            
+            startGame();
+        }
+    }
     
     /**
      * A listener for the server, if this player is a host.
@@ -160,7 +231,7 @@ public class Game implements GameGUI.GameGuiListener {
                 receivedGameState = new GameState(gs);
                 if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    receivedGameState.setPlayer(0, player);
+                    receivedGameState.setPlayer(playerIndex, player);
                     receivedNewGamestate = true;
                 }
                 player.notifyAll();
@@ -191,7 +262,7 @@ public class Game implements GameGUI.GameGuiListener {
                 receivedGameState = new GameState(gs);
                 if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    receivedGameState.setPlayer(1, player);
+                    receivedGameState.setPlayer(playerIndex, player);
                     receivedNewGamestate = true;
                 }
                 player.notifyAll();
@@ -425,22 +496,25 @@ public class Game implements GameGUI.GameGuiListener {
         }
         gui.drawGameState(this.gameState);
         enemyShipSelectionAllowed = false;
-        //positioning phase
-        positionShips();
+        if(gameState.getPhase().equals(GamePhase.New)) {
+            //positioning phase
+            positionShips();
+        }
         
-        gameState.setGamePhase(GamePhase.PlayerTurns);
-        while(!gameState.gameOver()) {
-            startTurn();
-            waitForGameState();
-            //TODO for now we are simply assigning the game state as it is received
-            // but in future check for consistency and consider the server's game
-            //state as the primary one
-            gameState = receivedGameState;
-            receivedNewGamestate = false;
-            if(gameState.previousAction == null) {
-                gui.drawGameState(gameState);
-            } else {
-                gui.updateGameState(gameState);
+        if(gameState.getPhase().equals(GamePhase.PlayerTurns)) {
+            while(!gameState.gameOver()) {
+                startTurn();
+                waitForGameState();
+                //TODO for now we are simply assigning the game state as it is received
+                // but in future check for consistency and consider the server's game
+                //state as the primary one
+                gameState = receivedGameState;
+                receivedNewGamestate = false;
+                if(gameState.previousAction == null) {
+                    gui.drawGameState(gameState);
+                } else {
+                    gui.updateGameState(gameState);
+                }
             }
         }
     }
@@ -483,6 +557,8 @@ public class Game implements GameGUI.GameGuiListener {
                     e.printStackTrace();
                 }
             }
+            
+            gameState.setGamePhase(GamePhase.PlayerTurns);
         }
         
         if(playerType.equals(PlayerType.Client)) {
@@ -535,6 +611,9 @@ public class Game implements GameGUI.GameGuiListener {
      * prepares the gui for the player's turn.
      */
     private void startTurn() {
+        if(gameState.gameOver()) {
+            gameOver();
+        }
         Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
         if(playerWithTurn.equals(player)) {
             //this player's turn
