@@ -41,6 +41,7 @@ import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameObject.GameObjectType;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.Map;
+import my_game.models.game_components.MidUnit;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
@@ -904,6 +905,18 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             GameObject o = m.getObjectAt(position);
 
             switch(o.getObjectType()) {
+                case MidUnit:
+                    MidUnit mu = (MidUnit) o;
+                    int damage1 = 0;
+                    if(mu.isHealthy()) {
+                        damage1 = NEW;
+                    } else if(mu.isDestroyed()) {
+                        damage1 = DESTROYED;
+                    } else {
+                        damage1 = DAMAGED;
+                    }
+                    drawMidShipPart(position.x, position.y, mu.getShip().getDirection(), m.isBlue(mu.getShip()) ? BLUE : RED, damage1);
+                    break;
                 case Ship:
                     ShipUnit s = (ShipUnit) o;
                     int damage = 0;
@@ -1162,6 +1175,62 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      */
     public boolean isVisible(int x, int y) {
         return visibility[x][y];
+    }
+    
+        private void drawMidShipPart(int x, int y, ShipDirection dir, int colour, int damage) {
+        Spatial shipPartInstance = blueRadarBlock.clone();
+        
+        switch(colour) {
+            case RED:
+                if(damage == NEW) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialRed.j3m"));
+                } else if(damage == DAMAGED) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialRed.j3m"));
+                } else {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialRed.j3m"));
+                }
+                break;
+            case BLUE:
+                if(damage == NEW) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/baseMaterialBlue.j3m"));
+                } else if(damage == DAMAGED) {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/damagedMaterialBlue.j3m"));
+                } else {
+                    shipPartInstance.setMaterial(assetManager.loadMaterial("/Materials/destroyedMaterialBlue.j3m"));
+                }
+                break;
+            default:
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, 
+                        new GameException("Unexpected colour!"));
+                break;
+        }
+        
+        //position the ship unit within the grid
+        
+        shipPartInstance.setLocalTranslation(2 * (x - 15) + 1, 1, 2 * (y - 15) + 1);
+        
+        //set the rotation of the ship relative to its direction
+        Quaternion rotation = Quaternion.IDENTITY;
+        switch(dir) {
+            case West:
+                rotation = new Quaternion(new float[] {0f, (float) Math.PI / 2, 0f});
+                break;
+            case South:
+                rotation = new Quaternion(new float[] {0f, (float) Math.PI, 0f});
+                break;
+            case East:
+                rotation = new Quaternion(new float[] {0f, (float) (3 * Math.PI) / 2, 0f});
+                break;
+            case North:
+                break;
+            default:
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null,                         
+                        new GameException("Unexpected direction of the ship found."));
+                break;
+        }
+        shipPartInstance.setLocalRotation(rotation);
+        field.attachChild(shipPartInstance);
+        this.objectsGrid[x][y] = shipPartInstance;
     }
    
 }

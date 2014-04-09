@@ -10,6 +10,7 @@ package my_game.models.game_components;
  */
 public class MidUnit extends ShipUnit{
         public MidUnit(Ship s) {
-		super();
+		super(s);
+                this.type = GameObjectType.MidUnit;
 	}
 }
