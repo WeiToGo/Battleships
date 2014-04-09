@@ -19,7 +19,7 @@ import my_game.util.Range;
  */
 public class MineLayer extends Ship {
     
-	private int mineNum;
+	private int mineNum = 5;
     
     public MineLayer(int pid, ArrayList<Vector2> position, ShipDirection direction){
         super(pid);

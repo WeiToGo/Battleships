@@ -399,19 +399,27 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             break;
                         }
-                        if (isMine(v) || isMineZone(v)) {
-                            System.out.println(" MINE HERE");
-                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
-                                System.out.println(" NOT ML ");
+                        if (isMine(v)){
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                break;
+                            }else{
+                                mine = v;
+                                damagedUnits[0] = shipUnits[0];
+                                damagedUnits[1] = shipUnits[1];
+                                touchMine(mine, damagedUnits);
+                                forwardmoves.add(v);
+                                break;                                  
+                            }
+                        }else if (isMineZone(v)) {
+                            if (s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                forwardmoves.add(v);
+                            }else{
                                 mine = v;
                                 damagedUnits[0] = shipUnits[0];
                                 damagedUnits[1] = shipUnits[1];
                                 touchMine(mine, damagedUnits);
                                 forwardmoves.add(v);
                                 break;  
-                            }else{
-                                System.out.println(" MINELAYER MOVE ");
-                                break;
                             }
                         }else{
                             forwardmoves.add(v);
@@ -419,14 +427,15 @@ public class Map implements java.io.Serializable {
                     }
                     
                     moves.clear();
-                    i = forwardmoves.size()-1;
-                    int k = shipSize;
-                    while(k > 0){
-                        moves.add(forwardmoves.get(i));
-                        k--;
-                        i--;
+                    if (forwardmoves.size() > 0){
+                        i = forwardmoves.size()-1;
+                        int k = shipSize;
+                        while(k > 0){
+                            moves.add(forwardmoves.get(i));
+                            k--;
+                            i--;
+                       }
                     }
-                    
                     for (Vector2 v: moves){
                         System.out.println(" VALID moves " + v.x + " " + v.y);
                     }
@@ -436,14 +445,22 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v) || isMineZone(v)) {
-                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                        if (isMine(v)){
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return null;
+                            }// can;t move backward into a mine.
+ 
+                        }else if (isMineZone(v)) {
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return moves;
+                            }else{    
                                 mine = v;
                                 damagedUnits[0] = shipUnits[shipUnits.length-2];
                                 damagedUnits[1] = shipUnits[shipUnits.length-1];
-                                touchMine(mine, damagedUnits);                          
+                                touchMine(mine, damagedUnits);         
+                                return null; 
                             }
-                            return null;  
+                             
                         }
                     }
                 case L:
@@ -452,14 +469,26 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v) || isMineZone(v)) {
-                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                        if (isMine(v)) {
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return null;
+                            }else{    
                                 mine = v;
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
-                                touchMine(mine, damagedUnits);                         
+                                touchMine(mine, damagedUnits);   
+                                return null;
                             }
-                            return null;  
+                        }else if (isMineZone(v)){
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return moves;
+                            }else{
+                                mine = v;
+                                damagedUnits[0] = shipUnits[count];
+                                damagedUnits[1] = shipUnits[count+1];
+                                touchMine(mine, damagedUnits);                                   
+                                return null;
+                            }
                         }else{
                            count++;
                         }
@@ -471,15 +500,27 @@ public class Map implements java.io.Serializable {
                         if (isHiddenObstacle(s, v)) {
                             return null;
                         }
-                        if (isMine(v) || isMineZone(v)) {
-                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                        if (isMine(v)) {
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return null;
+                            }else{
                                 mine = v;
                                 damagedUnits[0] = shipUnits[count];
                                 damagedUnits[1] = shipUnits[count+1];
                                 touchMine(mine, damagedUnits);
+                                return null;
                             }
-                            return null;                            
-                        }else{
+                        }else if (isMineZone(v)){
+                            if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                                return moves;
+                            }else{                            
+                                mine = v;
+                                damagedUnits[0] = shipUnits[count];
+                                damagedUnits[1] = shipUnits[count+1];
+                                touchMine(mine, damagedUnits);   
+                                return null;
+                            }
+                         }else{
                            count++;
                         }
                     }
@@ -1100,9 +1141,10 @@ public class Map implements java.io.Serializable {
         if(temp!= null && temp.getClass() == new Mine().getClass()){
             ((Mine)temp).setDestoryed(true);
             setObjectAt(m, null);
-            for(Vector2 mz: ((Mine)temp).getMineZone()){
+         /*   for(Vector2 mz: ((Mine)temp).getMineZone()){
         	setObjectAt(mz, null);
             }
+       */
         }
         else{ //temp is a MineZone,which is not a GameObject
             int x = m.x;
@@ -1120,10 +1162,10 @@ public class Map implements java.io.Serializable {
             setObjectAt(m, null);
             Vector2 realMine = mine.getPosition();
             setObjectAt(realMine, null);
-            for(Vector2 mz: mine.getMineZone()){
+        /*    for(Vector2 mz: mine.getMineZone()){
         	setObjectAt(mz, null);
             }
-        }
+    */    }
     }
     
     public void pickupMine(MineLayer mineLayer, Vector2 pos) {
