@@ -75,7 +75,7 @@ public class Player implements java.io.Serializable {
         }
 
         Player p = (Player) obj;
-        return (this.id == p.id && this.username == p.username);
+        return (this.id == p.id && this.username.equals(p.username));
     }
     
     @Override

@@ -58,119 +58,121 @@ public class GameConfirmation
     
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        
-        background.fitHeightProperty().bind(pane.heightProperty());
-        background.fitWidthProperty().bind(pane.widthProperty());
-        
-        startGameButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //TODO if both players accept launch game and close window, else generate new map
-                if(Main.isServer) {
-                    Main.getServer().sendVote(true);
-                } else {
-                    Main.getClient().sendVote(true);
-                }
-                
-                while(!otherPlayerHasVoted) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                if(otherPlayerVote) {
-                    //both players voted yes, start game
-                    File f = Main.getFile();
+                            
+        File f = Main.getFile();
 
+        try {
+            final GameState gs;
+            if(Main.isServer) {
+                gs = GameState.loadGame(f.getName());
+                Misc.log(gs.toString());
+                reef = new CoralReef(gs);
+                map.setText(reef.toString());
+            } else {
+                gs = null;
+            }
+            background.fitHeightProperty().bind(pane.heightProperty());
+            background.fitWidthProperty().bind(pane.widthProperty());
+
+            startGameButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    //TODO if both players accept launch game and close window, else generate new map
                     if(Main.isServer) {
-                        System.out.println("Server will now start game.");
-                        //first remove the listener from the server
-                        Main.getServer().removeNetListener(serverListener);
+                        Main.getServer().sendVote(true);
+                    } else {
+                        Main.getClient().sendVote(true);
+                    }
+
+                    while(!otherPlayerHasVoted) {
                         try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    if(otherPlayerVote) {
+                        //both players voted yes, start game
+
+                        if(Main.isServer) {
+                            System.out.println("Server will now start game.");
+                            //first remove the listener from the server
+                            Main.getServer().removeNetListener(serverListener);
                             //now create a new Game
-                            GameState gs = GameState.loadGame(f.getName());
-                            Misc.log(gs.toString());
+
                             Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
                                     gs, Main.getServer(), Game.PlayerType.Host);
                             //TODO Close this window.
                             Stage previousStage=Main.getStage();
                             previousStage.close();
-                        } catch (FileNotFoundException ex) {
-                            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (IOException ex) {
-                            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+                        } else {
+                            System.out.println("Client will now start game.");
+                            Main.getClient().removeNetListener(clientListener);
+
+                                //now create a new Game
+                                Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
+                                        null, Main.getClient(), Game.PlayerType.Client);
+                                //TODO Close this window.
+                                Stage previousStage=Main.getStage();
+                                previousStage.close();
+
                         }
-                    } else {
-                        System.out.println("Client will now start game.");
-                        Main.getClient().removeNetListener(clientListener);
-       
-                            //now create a new Game
-                            Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
-                                    null, Main.getClient(), Game.PlayerType.Client);
-                            //TODO Close this window.
-                            Stage previousStage=Main.getStage();
-                            previousStage.close();
-        
                     }
-                } else {
+                }
+            });
+
+            returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    //non javafx stuff
+                    //close server/client on return
                     if(Main.isServer) {
-                        sendNewReef();
+                        Main.getServer().stopServer();
+                        Main.setServer(null);
                     } else {
-                        //prepare for yet another vote as a client
-                        otherPlayerHasVoted = false;
+                        Main.getClient().stopClient();
+                        Main.setClient(null);
                     }
+                    //****************
+
+                    Stage primaryStage = new Stage();
+                    AnchorPane page = null;
+                    try {
+                        page = (AnchorPane) FXMLLoader.load(Main.class.getResource("CreateGame.fxml"));
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+                    Stage previousStage = Main.getStage();
+                    previousStage.close();
+                    Scene scene = new Scene(page);
+                    primaryStage.setScene(scene);
+                    primaryStage.setTitle("Battleship");
+                    primaryStage.show();
+                    Main.setStage(primaryStage);
                 }
+            });
+
+            if(Main.isServer) {
+                //Start a server
+                GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", true); 
+                //TODO allow to choose server name
+                Main.setServer(s);
+
+                //Create the CoralReef and display it in the TextArea
+                //reef = new CoralReef();
+                //map.setText(reef.toString());
+
+                Main.getServer().addNetListener(serverListener);
+            } else {
+                //it is a client connecting
+                Main.getClient().addNetListener(clientListener);
             }
-        });
-
-        returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //non javafx stuff
-                //close server/client on return
-                if(Main.isServer) {
-                    Main.getServer().stopServer();
-                    Main.setServer(null);
-                } else {
-                    Main.getClient().stopClient();
-                    Main.setClient(null);
-                }
-                //****************
-                
-                Stage primaryStage = new Stage();
-                AnchorPane page = null;
-                try {
-                    page = (AnchorPane) FXMLLoader.load(Main.class.getResource("CreateGame.fxml"));
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                Stage previousStage = Main.getStage();
-                previousStage.close();
-                Scene scene = new Scene(page);
-                primaryStage.setScene(scene);
-                primaryStage.setTitle("Battleship");
-                primaryStage.show();
-                Main.setStage(primaryStage);
-            }
-        });
-
-        if(Main.isServer) {
-            //Start a server
-            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", true); 
-            //TODO allow to choose server name
-            Main.setServer(s);
-
-            //Create the CoralReef and display it in the TextArea
-            //reef = new CoralReef();
-            //map.setText(reef.toString());
-            
-            Main.getServer().addNetListener(serverListener);
-        } else {
-            //it is a client connecting
-            Main.getClient().addNetListener(clientListener);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -178,14 +180,14 @@ public class GameConfirmation
      * Generates a new reef on the server side and sends it to the clients
      * through the server. This method should not be called if the system is
      * running as a client.
-     */
+     *//*
     private void sendNewReef() {
         reef.generateNewReef();
         map.setText(reef.toString());
         Main.getServer().sendVote(false);
         Main.getServer().sendCoralReefToListeners(reef);
         otherPlayerHasVoted = false;
-    }
+    }*/
     
     
     class ServerListener implements NetEntityListener {

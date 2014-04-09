@@ -159,9 +159,14 @@ public class GameServer implements NetworkEntity {
         //on the sockets.
     }
 
+    private boolean alreadySet = false;
+    
     public void setOpponent(Player p) {
         System.out.println("Player connected to server: " + p);
-        this.connectedPlayer = p;
+        if(!alreadySet) {
+            this.connectedPlayer = p;
+            alreadySet = true;
+        }
     }
 
     public void sendGameStateToListeners(GameState gs) {
@@ -285,6 +290,7 @@ public class GameServer implements NetworkEntity {
                         //handle packet
                         packetHandler.handlePacket(data);
                     }
+                    alreadySet = false;
                     connectedPlayer = null;
                     //end of thread
                 } catch (IOException ignore) {}

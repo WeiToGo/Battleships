@@ -159,15 +159,16 @@ public class Game implements GameGUI.GameGuiListener {
         this.playerType = playerType;
         
         if(playerType == Game.PlayerType.Host) {
+            playerIndex = -1;
             sListener = new ServerListener();
             cListener = null;
             
             
             this.gameState = loadedGame;
             net.addNetListener(sListener);
-            if(gameState.getPlayer(0).equals(this.player)) {
+            if(gameState.getPlayer(0).getID() == player.getID()) {
                 this.playerIndex = 0;
-            } else if(gameState.getPlayer(1).equals(this.player)) {
+            } else if(gameState.getPlayer(1).getID() == player.getID()) {
                 this.playerIndex = 1;
             } else {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Could not find player in provided game state."));
@@ -176,6 +177,7 @@ public class Game implements GameGUI.GameGuiListener {
             sendGameState();
             startGame();
         } else {
+            playerIndex = -1;
             //add a listener to the client
             sListener = null;
             cListener = new ClientListener();
@@ -205,6 +207,8 @@ public class Game implements GameGUI.GameGuiListener {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, new GameException("Could not find player in provided game state."));
             }
             
+            gameState.setPlayer(playerIndex, player);
+            
             startGame();
         }
     }
@@ -232,7 +236,8 @@ public class Game implements GameGUI.GameGuiListener {
                 receivedGameState = new GameState(gs);
                 if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    receivedGameState.setPlayer(playerIndex, player);
+                    if(playerIndex >= 0)
+                        receivedGameState.setPlayer(playerIndex, player);
                     receivedNewGamestate = true;
                 }
                 player.notifyAll();
@@ -263,7 +268,8 @@ public class Game implements GameGUI.GameGuiListener {
                 receivedGameState = new GameState(gs);
                 if(receivedGameState != null) {
                     //replace the partial information about this player in the gamestate with the full info
-                    receivedGameState.setPlayer(playerIndex, player);
+                    if(playerIndex >= 0)
+                        receivedGameState.setPlayer(playerIndex, player);
                     receivedNewGamestate = true;
                 }
                 player.notifyAll();
@@ -484,6 +490,7 @@ public class Game implements GameGUI.GameGuiListener {
      * Initialises the gui and sets up the game.
      */
     private void startGame() {
+        
         //init and display GUI
         gui = new GameGUI(30, 30, this, this.player);
         gui.start();
@@ -615,6 +622,7 @@ public class Game implements GameGUI.GameGuiListener {
             gameOver();
         }
         Player playerWithTurn = gameState.getPlayer(gameState.getPlayerTurn());
+        Misc.log("Turn to: " + playerWithTurn + " this player is: " + player);
         if(playerWithTurn.equals(player)) {
             //this player's turn
             hasTurn = true;
