@@ -213,7 +213,16 @@ public abstract class Ship implements java.io.Serializable {
         ArrayList<Vector2> visible = getRangePositions(r);
         return visible;
     }    
-    
+    // repair one destroyed square at once. It's called by Game.
+    public void getRepaired(){
+        ShipUnit[] shipUnits = this.getShipUnits();
+        for (ShipUnit su: shipUnits){
+            if (su.isDestroyed()){
+                su.setDamageLevel(0);
+                break;
+            }
+        }
+    }
     /**
      * 
      * @param target = the target GameObject 

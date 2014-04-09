@@ -57,9 +57,12 @@ public class ShipUnit extends GameObject implements java.io.Serializable {
     }
     
     public void setDamage(int damage){
-            this.damageLevel = this.damageLevel + damage;
+        this.damageLevel = this.damageLevel + damage;
     }
     
+    public void setDamageLevel(int level){
+        this.damageLevel = level;
+    }
     public boolean isHealthy() {
     	return damageLevel == 0;
     }
