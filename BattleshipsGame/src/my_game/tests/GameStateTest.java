@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import my_game.models.ships_impl.RadarBoat;
 import my_game.util.Positions;
 import my_game.util.Moves;
 import my_game.util.Range;
@@ -108,7 +109,19 @@ public class GameStateTest {
    */    
        
    
-        Ship s = p0ships[8]; 
+        Ship s = p0ships[9]; 
+        RadarBoat rb = (RadarBoat)s;
+        ArrayList<Vector2> radar = s.getRadarPositions();
+        for (Vector2 v: radar){
+            System.out.println(" radar " + v.x + " " + v.y); 
+        }
+  /*      rb.toggleRadar();
+        radar = s.getRadarPositions();
+        for (Vector2 v: radar){
+            System.out.println(" radar after" + v.x + " " + v.y); 
+        }
+        
+        
         map.layMine(s, new Vector2(8,11));
         System.out.println(map.toString());       
         Ship s2 = p0ships[3]; 
@@ -118,7 +131,7 @@ public class GameStateTest {
         System.out.println(" move to " + v.x + " " + v.y);        
         map.moveShip(s2,v,p);
         System.out.println(map.toString());      
-        
+   */     
      //   System.out.println(" docked s3 " + map.isDocked(s2));
     //    System.out.println(" docked s8 " + map.isDocked(s));
         
@@ -133,7 +146,7 @@ public class GameStateTest {
         System.out.println(map.toString());  
     */   
         /**   TEST turn  */
-        
+    /*    
         TurnPositions pTurn = map.prepareTurnShip(s2);
         ArrayList<Vector2> left = pTurn.getLeft();
         ArrayList<Vector2> right = pTurn.getRight();
@@ -157,7 +170,7 @@ public class GameStateTest {
             System.out.println("TURN BLOCKED");
         }
   
-  /*      System.out.println("***********************************");          
+        System.out.println("***********************************");          
         p = map.prepareMoveShip(s);
         target = p.getForward();
         if (target != null){

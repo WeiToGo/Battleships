@@ -200,6 +200,7 @@ public abstract class Ship implements java.io.Serializable {
      * This method should be called after each attack on the ship.
      */
     public void hitUpdate(){
+        System.out.println(" HITUPDATE ");
         if (currentSize > 0){
             ShipUnit[] shipUnits = this.getShipUnits();
             for (ShipUnit su: shipUnits){
@@ -207,12 +208,13 @@ public abstract class Ship implements java.io.Serializable {
                     currentSize--; 
                 }
             } 
-            
+            System.out.println(" CURRENT SIZE " + currentSize);
         setCurrentSpeed(speed * (currentSize / size));
         }
     }
     public ArrayList<Vector2> getRadarPositions(){
         Range r = this.getRadarRange();
+      //  System.out.println("radar " + r);
         ArrayList<Vector2> visible = getRangePositions(r);
         return visible;
     }
@@ -242,19 +244,19 @@ public abstract class Ship implements java.io.Serializable {
             return null;
         }
     	if (target.getClass() == new ShipUnit().getClass()){
-			ShipUnit su = ((ShipUnit)target);
-                        su.setDamage(getCannonDamage());
-                        objectHit = su;
-			if (((ShipUnit)target).isDestroyed()){
-				((ShipUnit)target).getShip().hitUpdate();
-			}
-		}
+            ShipUnit su = ((ShipUnit)target);
+            su.setDamage(getCannonDamage());
+            objectHit = su;            
+        //    if (((ShipUnit)target).isDestroyed()){
+		((ShipUnit)target).getShip().hitUpdate();
+       //     }
+	}
 		
-		if (target.getClass() == new BaseUnit().getClass()){
-                    BaseUnit bu = ((BaseUnit)target);
-			bu.setDamage();
-                        objectHit = bu;
-		}
+	if (target.getClass() == new BaseUnit().getClass()){
+            BaseUnit bu = ((BaseUnit)target);
+            bu.setDamage();
+            objectHit = bu;
+        }
 		
 		if (target.getClass() == new Mine().getClass()){
                     Mine m = ((Mine)target);
