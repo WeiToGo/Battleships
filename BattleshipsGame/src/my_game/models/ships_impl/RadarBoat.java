@@ -25,7 +25,9 @@ import my_game.util.Range;
 public class RadarBoat extends Ship {
     private int cannonDamage;
     private boolean longRangeActive;
+    private Range shortRange;
     private Range longRange;
+ //   private Range longRange;
     
     public RadarBoat(int pid) {
 		super(pid);
@@ -46,12 +48,12 @@ public class RadarBoat extends Ship {
         Range cr = new Range(new Vector2(-3,-1), new Vector2(1,-1), 
             new Vector2(1,1), new Vector2(-3,1));   
         setCannonRange(cr);
-        Range rr = new Range(new Vector2(-1,-1), new Vector2(4,-1), 
+        shortRange = new Range(new Vector2(-1,-1), new Vector2(4,-1), 
               new Vector2(4,1), new Vector2(-1,1));       
-        setRadarRange(rr);
-        Range lrr = new Range(new Vector2(-1,-1), new Vector2(10,-1), 
+        setRadarRange(shortRange);
+        longRange = new Range(new Vector2(-1,-1), new Vector2(10,-1), 
               new Vector2(10,1), new Vector2(-1,1));       
-        setLongRadarRange(lrr); 
+    //    setLongRadarRange(lrr); 
         
                 
         ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
@@ -71,6 +73,7 @@ public class RadarBoat extends Ship {
         if (!longRangeActive){
              this.setSpeed(0);
              longRangeActive = true;
+             setRadarRange(longRange);
         }
     }
     
@@ -78,6 +81,7 @@ public class RadarBoat extends Ship {
         if(longRangeActive){
            this.setSpeed(3);
            longRangeActive = false;
+           setRadarRange(shortRange);
         }
     }
  
