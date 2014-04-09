@@ -1333,7 +1333,7 @@ public class Map implements java.io.Serializable {
     	Vector2 pos = null; 
     	for (Vector2 vec : torpedoRange){
     		target = getObjectAt(vec);
-    		if(target.getClass() == null)
+    		if(target == null)
     			continue;
     		
     		if(target.getClass() == new ShipUnit().getClass() ||
@@ -1342,6 +1342,10 @@ public class Map implements java.io.Serializable {
     			pos = vec;
     			break;
     		}	
+    	}
+    	
+    	if(target == null){
+    		return;
     	}
     	
     	if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
