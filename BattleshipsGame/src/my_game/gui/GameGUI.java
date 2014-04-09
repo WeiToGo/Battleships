@@ -167,9 +167,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
         
+        inputManager.deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT);
+        
         inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("ESC", new KeyTrigger(KeyInput.KEY_ESCAPE));
         inputManager.addListener(this, new String[]{"CLICK", "ESC"});
+
         
         
         //report to the guiListener that init. is complete so he can now send requests to the gui
@@ -952,7 +955,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     }
     
     public void onAction(String name, boolean isPressed, float tpf) {
-        if(name == "CLICK" && isPressed) {
+        if(name.equals("CLICK") && isPressed) {
             // Convert screen click to 3d position
             Vector2f click2d = inputManager.getCursorPosition();
             if(click2d.y > getBarHeight()) {
@@ -1017,8 +1020,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     }
                 }
             }
-        } else {
-            
+        } else if(name.equals("ESC")) {
+            escapeMenu();
         }
     }
 
