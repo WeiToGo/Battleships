@@ -168,10 +168,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         inputManager.setCursorVisible(true);
         
         inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addListener(this, new String[]{"CLICK"});
-        
         inputManager.addMapping("ESC", new KeyTrigger(KeyInput.KEY_ESCAPE));
-        inputManager.addListener(new EscapeMenuListener(), new String[]{"ESC"});
+        inputManager.addListener(this, new String[]{"CLICK", "ESC"});
         
         
         //report to the guiListener that init. is complete so he can now send requests to the gui
