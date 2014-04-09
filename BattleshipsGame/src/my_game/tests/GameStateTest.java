@@ -48,7 +48,9 @@ public class GameStateTest {
         System.out.println(map.toString());
         Ship[] p0ships = gs.getShipsP0();
         Ship[] p1ships = gs.getShipsP1();
-        Vector2 newPosition;       
+        Vector2 newPosition;     
+        
+        
         /* TEST positionShip */
   /*  
         System.out.println( "reposition ship[10] at (0,20). ");
@@ -115,7 +117,11 @@ public class GameStateTest {
         Vector2 v = target.get(target.size()-3); 
         System.out.println(" move to " + v.x + " " + v.y);        
         map.moveShip(s2,v,p);
-        System.out.println(map.toString());          
+        System.out.println(map.toString());      
+        
+        System.out.println(" docked s3 " + map.isDocked(s2));
+        System.out.println(" docked s8 " + map.isDocked(s));
+        
     /*   
         System.out.println("***********************************");    
         Ship s3 = p0ships[6]; 

@@ -50,7 +50,7 @@ public class RadarBoat extends Ship {
         setRadarRange(rr);
         Range lrr = new Range(new Vector2(-1,-1), new Vector2(10,-1), 
               new Vector2(10,1), new Vector2(-1,1));       
-        setLongRadarRange(rr); 
+        setLongRadarRange(lrr); 
         
                 
         ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
@@ -65,5 +65,18 @@ public class RadarBoat extends Ship {
         this.longRange = r;
     }    
  
+    public void turnOnLongRangeRadar(){
+        if (!longRangeActive){
+             this.setSpeed(0);
+             longRangeActive = true;
+        }
+    }
+    
+    public void turnOffLongRangeRadar(){
+        if(longRangeActive){
+           this.setSpeed(3);
+           longRangeActive = false;
+        }
+    }
  
 }
