@@ -57,7 +57,7 @@ public class GameServer implements NetworkEntity {
     private final String serverName;
     
     private ArrayList<NetEntityListener> listeners;
-    /** A reference to the main thread is necessary to stop it in case the server
+    /** A reference to the main thread is necessary to stopNet it in case the server
      * is stopped while it is waiting for a client to connect. */
     private Thread mainThread;
     
@@ -227,6 +227,11 @@ public class GameServer implements NetworkEntity {
      */
     public String getName() {
         return this.serverName;
+    }
+
+    public void stopNet() {
+        this.stopServer();
+        //TODO notify client to disconnect
     }
     
     /**
