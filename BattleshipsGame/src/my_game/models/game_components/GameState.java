@@ -488,7 +488,7 @@ public class GameState implements java.io.Serializable {
      * is ended immediately when a player is defeated.
      * @return True if the game is over, otherwise false.
      */
-    public boolean isGameOver() {
+    public boolean gameOver() {
         if (this.phase.equals(GamePhase.GameOver)){
             return true;
         }else{
