@@ -167,9 +167,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         rtsCam.setMaxSpeed(RtsCam.Degree.SIDE, 50, 0.5f);
         inputManager.setCursorVisible(true);
         
+        inputManager.deleteMapping(SimpleApplication.INPUT_MAPPING_EXIT);
+        
         inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("ESC", new KeyTrigger(KeyInput.KEY_ESCAPE));
         inputManager.addListener(this, new String[]{"CLICK", "ESC"});
+
         
         
         //report to the guiListener that init. is complete so he can now send requests to the gui
