@@ -156,7 +156,7 @@ public class GameConfirm
 
         if(Main.isServer) {
             //Start a server
-            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName");  //TODO allow to choose server name
+            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", false);  //TODO allow to choose server name
             Main.setServer(s);
 
             //Create the CoralReef and display it in the TextArea

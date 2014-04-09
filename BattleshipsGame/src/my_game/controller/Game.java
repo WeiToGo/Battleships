@@ -557,8 +557,6 @@ public class Game implements GameGUI.GameGuiListener {
                     e.printStackTrace();
                 }
             }
-            
-            gameState.setGamePhase(GamePhase.PlayerTurns);
         }
         
         if(playerType.equals(PlayerType.Client)) {
@@ -583,6 +581,7 @@ public class Game implements GameGUI.GameGuiListener {
         
         //redraw game state
         gui.drawGameState(gameState);
+        gameState.setGamePhase(GamePhase.PlayerTurns);
     }
     
     /**
