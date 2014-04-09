@@ -391,6 +391,7 @@ public class Map implements java.io.Serializable {
         }else{
             switch (p.getMoveDirection()) {
                 case F:
+                    System.out.println(" FORWARD ");
                     // stores all valid positions between ship bow to target.
                     ArrayList<Vector2> forwardmoves = new ArrayList<Vector2>();
                     //need to generate new positions if needed.
@@ -399,7 +400,9 @@ public class Map implements java.io.Serializable {
                             break;
                         }
                         if (isMine(v) || isMineZone(v)) {
+                            System.out.println(" MINE HERE");
                             if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                                System.out.println(" NOT ML ");
                                 mine = v;
                                 damagedUnits[0] = shipUnits[0];
                                 damagedUnits[1] = shipUnits[1];
@@ -407,6 +410,7 @@ public class Map implements java.io.Serializable {
                                 forwardmoves.add(v);
                                 break;  
                             }else{
+                                System.out.println(" MINELAYER MOVE ");
                                 break;
                             }
                         }else{
@@ -423,6 +427,9 @@ public class Map implements java.io.Serializable {
                         i--;
                     }
                     
+                    for (Vector2 v: moves){
+                        System.out.println(" VALID moves " + v.x + " " + v.y);
+                    }
                     break;
                 case B:
                     for (Vector2 v : moves) {
@@ -528,7 +535,7 @@ public class Map implements java.io.Serializable {
             for (int i = 0; i < left.size(); i++) {
                 if (!isSelf(ship, left.get(i))) {
                     if (isVisibleObstacle(ship, left.get(i))) {
-                        canMoveLeft = false;
+                        canMoveLeft = false;                            
                     }
                 }
             }
@@ -716,23 +723,24 @@ public class Map implements java.io.Serializable {
                 break; // don't turn if there is an obstacle.
             }else if (isMineZone(v)){
                 if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
-                mine = v;
-                ShipUnit s1,s2;
-                if (count == s.getSize()-1){
-                    s1 = s.getShipUnits()[count-1];
-                    s2 = s.getShipUnits()[count];
-                }else{
-                    s1 = s.getShipUnits()[count];
-                    s2 = s.getShipUnits()[count+1];
-                }
-                damagedUnits[0] = s1;
-                damagedUnits[1] = s2;
-                touchMine(mine, damagedUnits);
-                canTurn = false;
-                break;
-                }else{ // minelayer
+                    mine = v;
+                    ShipUnit s1,s2;
+                    if (count == s.getSize()-1){
+                        s1 = s.getShipUnits()[count-1];
+                        s2 = s.getShipUnits()[count];
+                    }else{
+                        s1 = s.getShipUnits()[count];
+                        s2 = s.getShipUnits()[count+1];
+                    }
+                    damagedUnits[0] = s1;
+                    damagedUnits[1] = s2;
+                    touchMine(mine, damagedUnits);
                     canTurn = false;
                     break;
+                }else{ // minelayer
+                //    canTurn = true;
+                //    break;
+                    System.out.println ("can STILL turn");
                 }
             }else{
                 //if there is nothing, increment count
@@ -827,7 +835,6 @@ public class Map implements java.io.Serializable {
             }
         }else if (o.getObjectType().compareTo(GameObject.GameObjectType.Mine) == 0){
             if (s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
-                System.out.println("MINELAYER");
                 ArrayList<Vector2> visible = s.getRadarPositions();
                 for (Vector2 v: visible){
                     if (v.equals(p)){

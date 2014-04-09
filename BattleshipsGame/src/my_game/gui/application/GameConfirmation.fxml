@@ -14,7 +14,7 @@
   <children>
     <ImageView id="Dark blue sea" fx:id="background" fitHeight="477.0" fitWidth="617.0" layoutX="0.0" layoutY="0.0" pickOnBounds="true">
       <image>
-        <Image url="@./Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
     <Label layoutX="366.0" layoutY="14.0" prefHeight="48.0" prefWidth="237.0" text="Game Confirmation" textFill="#00ccb4">
@@ -47,7 +47,7 @@
         <URL value="@application.css" />
       </stylesheets>
     </Button>
-    <Button fx:id="acceptGameButton" layoutX="408.0" layoutY="156.0" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Accept">
+    <Button id="acceptGameButton" fx:id="startGameButton" layoutX="401.0" layoutY="199.0" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Start">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
@@ -62,21 +62,15 @@
         <URL value="@application.css" />
       </stylesheets>
     </Button>
-    <Button fx:id="declineGameButton" layoutX="408.0" layoutY="248.0" mnemonicParsing="false" prefHeight="38.999900000002526" prefWidth="153.0" text="Decline">
-      <effect>
-        <Lighting surfaceScale="5.0">
-          <bumpInput>
-            <Shadow />
-          </bumpInput>
-          <light>
-            <javafx.scene.effect.Light.Distant azimuth="-135.0" />
-          </light>
-        </Lighting>
-      </effect>
+    <TextArea fx:id="map" editable="false" layoutX="36.0" layoutY="62.0" prefHeight="299.0" prefWidth="272.5" wrapText="true">
       <stylesheets>
         <URL value="@application.css" />
       </stylesheets>
-    </Button>
-    <TextArea fx:id="map" editable="false" layoutX="36.0" layoutY="62.0" prefHeight="299.0" prefWidth="272.5" wrapText="true" />
+    </TextArea>
+    <TextArea fx:id="playerStatus" layoutX="366.0" layoutY="361.0" prefHeight="37.0" prefWidth="223.0" wrapText="true">
+      <stylesheets>
+        <URL value="@application.css" />
+      </stylesheets>
+    </TextArea>
   </children>
 </AnchorPane>

@@ -1,5 +1,6 @@
 package my_game.gui.application;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,10 @@ public class Main extends Application {
         /** If the player joins a game, this client object will be referenced
          * from all other classes using the client to communicate. */
         private static GameClient client;
+        
+        private static File f;
+        
+        public static String status;
         
         public static boolean isServer;
         
@@ -86,5 +91,13 @@ public class Main extends Application {
     
     public static void setClient(GameClient c) {
         client = c;
+    }
+    
+    public static File getFile() {
+        return f;
+    }
+    
+    public static void setFile(File file) {
+        f = file;
     }
 }

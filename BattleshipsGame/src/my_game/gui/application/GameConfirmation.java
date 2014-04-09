@@ -1,5 +1,7 @@
 package my_game.gui.application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,10 +30,7 @@ public class GameConfirmation
     implements Initializable {
 
     @FXML //  fx:id="myButton"
-    private Button acceptGameButton; // Value injected by FXMLLoader
-    
-    @FXML //  fx:id="myButton"
-    private Button declineGameButton; // Value injected by FXMLLoader
+    private Button startGameButton; // Value injected by FXMLLoader
     
     @FXML //  fx:id="myButton"
     private Button returnGameButton; // Value injected by FXMLLoader
@@ -44,6 +43,9 @@ public class GameConfirmation
     
     @FXML //  fx:id="myButton"
     private AnchorPane pane; // Value injected by FXMLLoader
+
+    @FXML //  fx:id="myButton"
+    private TextArea playerStatus; // Value injected by FXMLLoader
     
     /** The coral reef used for generating the playing map. */
     private CoralReef reef;
@@ -58,8 +60,8 @@ public class GameConfirmation
         
         background.fitHeightProperty().bind(pane.heightProperty());
         background.fitWidthProperty().bind(pane.widthProperty());
-
-        acceptGameButton.setOnAction(new EventHandler<ActionEvent>() {
+        
+        startGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 //TODO if both players accept launch game and close window, else generate new map
@@ -73,26 +75,40 @@ public class GameConfirmation
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 if(otherPlayerVote) {
                     //both players voted yes, start game
+                    File f = Main.getFile();
+
                     if(Main.isServer) {
                         System.out.println("Server will now start game.");
                         //first remove the listener from the server
                         Main.getServer().removeNetListener(serverListener);
-                        //now create a new Game
-                        Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
-                                reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName());
-                        //TODO Close this window.
+                        try {
+                            //now create a new Game
+                            Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
+                                    GameState.loadGame(f.getName()), Main.getServer(), Game.PlayerType.Host);
+                            //TODO Close this window.
+                            Stage previousStage=Main.getStage();
+                            previousStage.close();
+                        } catch (FileNotFoundException ex) {
+                            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     } else {
                         System.out.println("Client will now start game.");
                         Main.getClient().removeNetListener(clientListener);
-                        //now create a new Game
-                        Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
-                                reef, Main.getClient(), Game.PlayerType.Client, "");
-                        //TODO Close this window.
+       
+                            //now create a new Game
+                            Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
+                                    null, Main.getClient(), Game.PlayerType.Client);
+                            //TODO Close this window.
+                            Stage previousStage=Main.getStage();
+                            previousStage.close();
+        
                     }
                 } else {
                     if(Main.isServer) {
@@ -105,22 +121,20 @@ public class GameConfirmation
             }
         });
 
-        declineGameButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(Main.isServer) {
-                    sendNewReef();
-                } else {
-                    //send decline to server
-                    Main.getClient().sendVote(false);
-                    otherPlayerHasVoted = false;
-                }
-            }
-        });
-
         returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                //non javafx stuff
+                //close server/client on return
+                if(Main.isServer) {
+                    Main.getServer().stopServer();
+                    Main.setServer(null);
+                } else {
+                    Main.getClient().stopClient();
+                    Main.setClient(null);
+                }
+                //****************
+                
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
                 try {
@@ -142,12 +156,13 @@ public class GameConfirmation
 
         if(Main.isServer) {
             //Start a server
-            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", false);  //TODO allow to choose server name
+            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName",false); 
+            //TODO allow to choose server name
             Main.setServer(s);
 
             //Create the CoralReef and display it in the TextArea
-            reef = new CoralReef();
-            map.setText(reef.toString());
+            //reef = new CoralReef();
+            //map.setText(reef.toString());
             
             Main.getServer().addNetListener(serverListener);
         } else {
@@ -175,21 +190,29 @@ public class GameConfirmation
         public void onConnected() {
             System.out.println("Sending coral reef to client.");
             Main.getServer().sendCoralReefToListeners(reef);
+            playerStatus.setText("A player has connected");
         }
 
         public void onReefReceive(CoralReef reef) {
             //Server is not supposed to receive this, something went wrong
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
         }
 
         public void onVoteReceive(boolean vote) {
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
+            if(vote==true){
+                playerStatus.setText("Player 2 is ready");
+            }
+            
+            else{
+                playerStatus.setText("Player 2 has declined the map");
+            }
         }
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
         
     }
@@ -208,11 +231,18 @@ public class GameConfirmation
         public void onVoteReceive(boolean vote) {
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
+            if(vote==true){
+                playerStatus.setText("Player 1 is ready");
+            }
+            
+            else{
+                playerStatus.setText("Player 1 has declined the map");
+            }
         }
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
     }
 }

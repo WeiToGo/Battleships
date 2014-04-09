@@ -89,6 +89,8 @@ public class GameConfirm
                         Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
                                 reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName(), 0);
                         //TODO Close this window.
+                            Stage previousStage=Main.getStage();
+                            previousStage.close();
                     } else {
                         System.out.println("Client will now start game.");
                         Main.getClient().removeNetListener(clientListener);
@@ -96,6 +98,8 @@ public class GameConfirm
                         Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
                                 reef, Main.getClient(), Game.PlayerType.Client, "", 0);
                         //TODO Close this window.
+                            Stage previousStage=Main.getStage();
+                            previousStage.close();
                     }
                 } else {
                     if(Main.isServer) {
@@ -156,7 +160,8 @@ public class GameConfirm
 
         if(Main.isServer) {
             //Start a server
-            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", false);  //TODO allow to choose server name
+            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", false); 
+            //TODO allow to choose server name
             Main.setServer(s);
 
             //Create the CoralReef and display it in the TextArea

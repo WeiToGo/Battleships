@@ -53,6 +53,7 @@ public class CreateGame
     newGameButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
+            Main.status="new";
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
@@ -76,10 +77,11 @@ public class CreateGame
     loadGameButton.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
+            Main.status="load";
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirm.fxml"));
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirmation.fxml"));
         	} catch (IOException e) {
         		// TODO Auto-generated catch block
         		e.printStackTrace();
@@ -91,7 +93,8 @@ public class CreateGame
         	chooser.setFileFilter(filter);
         	int returnVal = chooser.showOpenDialog(null);
         	if(returnVal == JFileChooser.APPROVE_OPTION) {
-        		
+        	
+                Main.setFile(chooser.getSelectedFile());
             	Stage previousStage=Main.getStage();
             	previousStage.close();
             	Scene scene = new Scene(page);

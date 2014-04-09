@@ -92,16 +92,31 @@ public class JoinGame
                 if(server != null) {
                     serverLookupThread.interrupt();
                     Main.getClient().connect(server.ipAddress);
+                    
                 }
                     
                 
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
+                
+                if(server.isLoaded){
                 try {
-                    page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirm.fxml"));
-                } catch (IOException e) {
+                    page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirmation.fxml"));
+                } 
+                catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                }
+                }
+                
+                else{
+                   try {
+                    page = (AnchorPane) FXMLLoader.load(Main.class.getResource("GameConfirm.fxml"));
+                } 
+                catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } 
                 }
                 
                 if (true) {

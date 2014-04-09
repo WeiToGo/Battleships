@@ -784,7 +784,7 @@ public abstract class Ship implements java.io.Serializable {
             if (xPivot-size+1 >= 0){
                 //left 90.
                 for (i = xPivot-size+1; i <= xPivot; i++){
-                    Vector2 p = new Vector2(i,yPivot);
+                    Vector2 p = new Vector2(i,yPivot);                    
                     left.add(p);
                 }
                 d = ShipDirection.West;
@@ -1002,6 +1002,7 @@ public abstract class Ship implements java.io.Serializable {
             if (yPivot-size+1 >= 0){
                 for (i = yPivot-size+1; i <= yPivot; i++){
                     Vector2 p = new Vector2(xPivot, i);
+                    System.out.println("CAN TURN " + p.x + " " + p.y);
                     left.add(p);
                 }
                 d = ShipDirection.North;
@@ -1012,6 +1013,7 @@ public abstract class Ship implements java.io.Serializable {
                 for (i = yPivot-1; i >= yPivot-size+1; i--){
                     for (j = xPivot+1; j <= xPivot+size-1-k; j++){
                         Vector2 p = new Vector2(j,i);
+                        System.out.println("TURN path " + p.x + " " + p.y);
                         lPath.add(p);                        
                     }
                     k++;

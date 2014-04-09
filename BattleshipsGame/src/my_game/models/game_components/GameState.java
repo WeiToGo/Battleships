@@ -525,7 +525,7 @@ public class GameState implements java.io.Serializable {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public GameState loadGame(String gameFile) throws FileNotFoundException, IOException {
+    public static GameState loadGame(String gameFile) throws FileNotFoundException, IOException {
         FileInputStream in = new FileInputStream(gameFile);
         ObjectInputStream s = new ObjectInputStream(in); 
         GameState loadedGame = null; 
