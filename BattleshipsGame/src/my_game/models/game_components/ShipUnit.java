@@ -14,7 +14,7 @@ public class ShipUnit extends GameObject implements java.io.Serializable {
     public int damageLevel;
     public int unitArmour;
     private Vector2 position;
-    private Ship ship;
+    protected Ship ship;
     
     public ShipUnit() {
 		super();
@@ -57,11 +57,16 @@ public class ShipUnit extends GameObject implements java.io.Serializable {
     }
     
     public void setDamage(int damage){
+        System.out.print("DAMAGED ");
         this.damageLevel = this.damageLevel + damage;
+        if (unitArmour <= damageLevel){
+        	
+        }
     }
     
     public void setDamageLevel(int level){
         this.damageLevel = level;
+        
     }
     public boolean isHealthy() {
     	return damageLevel == 0;
