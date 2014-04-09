@@ -4,6 +4,7 @@
 */
 package my_game.models.game_components;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,8 +38,8 @@ public class Map implements java.io.Serializable {
     protected GameObject[][] grid = new GameObject[WIDTH][HEIGHT];
     /** 2D array giving the radar visibility for every grid cell of the map. */
     boolean[][] player0Visibility, player1Visibility;   //TODO implement
-    protected Ship[] player0Ships;
-    protected Ship[] player1Ships;
+    protected ArrayList<Ship> player0Ships;
+    protected ArrayList<Ship> player1Ships;
     protected Base p0Base;
     protected Base p1Base;
     private ArrayList<Vector2> dockingZone = new ArrayList<Vector2>();
@@ -56,15 +57,11 @@ public class Map implements java.io.Serializable {
             }
         }
         //copy other fields
-        this.player0Ships = new Ship[m.player0Ships.length];
-        this.player1Ships = new Ship[m.player1Ships.length];
+        this.player0Ships = new ArrayList<Ship>();
+        this.player1Ships = new ArrayList<Ship>();
         //copy ships
-        for(int i = 0; i < player0Ships.length; i++) {
-            player0Ships[i] = m.player0Ships[i];
-        }
-        for(int i = 0; i < player1Ships.length; i++) {
-            player1Ships[i] = m.player1Ships[i];
-        }
+        player0Ships.addAll(m.player0Ships);
+        player1Ships.addAll(m.player1Ships);
         //copy bases
         this.p0Base = m.p0Base;
         this.p1Base = m.p1Base;
@@ -92,11 +89,16 @@ public class Map implements java.io.Serializable {
         }
         
         //init players' ships
-        this.player0Ships = new Ship[player0Ships.length];
-        this.player1Ships = new Ship[player1Ships.length];
+        this.player0Ships = new ArrayList<Ship>();
+        this.player1Ships = new ArrayList<Ship>();
         // copy the arrays by value to local arrays
-        System.arraycopy(player0Ships, 0, this.player0Ships, 0, player0Ships.length);
-        System.arraycopy(player1Ships, 0, this.player1Ships, 0, player1Ships.length);
+        for(Ship s: player0Ships) {
+            this.player0Ships.add(s);
+        }
+        for(Ship s: player1Ships) {
+            this.player1Ships.add(s);
+        }
+        
         //Position ships on the map grid as well.
         initShips(player0Ships);
         initShips(player1Ships);
@@ -1291,14 +1293,16 @@ public class Map implements java.io.Serializable {
      * @return 
      */
     public boolean isBlue(Ship s) {
+        return player0Ships.contains(s);/*
         //player0 is blue
         boolean found = false;
+        for(Ship)
         for(int i = 0; i < player0Ships.length && !found; i++) {
             if(player0Ships[i] == s) {
                 found = true;
             }
         }
-        return found;
+        return found;*/
     }
     
     /**
@@ -1568,7 +1572,7 @@ public class Map implements java.io.Serializable {
      * @param playerShips
      * @return 
      */
-    public static boolean[][] generateRadarVisibility(Ship[] playerShips) {
+    public static boolean[][] generateRadarVisibility(ArrayList<Ship> playerShips) {
         boolean[][] array = new boolean[WIDTH][HEIGHT];
         
         for(Ship s: playerShips) {

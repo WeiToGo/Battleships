@@ -1042,14 +1042,16 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             System.out.println(fileName.getText());
             if(option!=null){ 
                 try { 
-                    this.gameState.saveGame(option);
+                    if(this.gameState.saveGame(option)) {
+                        this.guiListener.endGame(); 
+                        this.stop(); 
+                    }
                 } catch (
                     IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 } //TODO stop the game
-                this.guiListener.endGame(); 
-                this.stop(); 
+                
             } else{
                 JOptionPane.showConfirmDialog(null,"Save Failed"); 
             }
