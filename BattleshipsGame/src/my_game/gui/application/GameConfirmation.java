@@ -156,7 +156,7 @@ public class GameConfirmation
 
         if(Main.isServer) {
             //Start a server
-            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName",false); 
+            GameServer s = new GameServer(Main.getPlayer(), "DefaultServerName", true); 
             //TODO allow to choose server name
             Main.setServer(s);
 
