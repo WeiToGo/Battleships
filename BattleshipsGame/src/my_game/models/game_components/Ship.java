@@ -208,7 +208,7 @@ public abstract class Ship implements java.io.Serializable {
                 }
             } 
             
-            setCurrentSpeed(speed * (currentSize / size));
+        setCurrentSpeed(speed * (currentSize / size));
         }
     }
     public ArrayList<Vector2> getRadarPositions(){
