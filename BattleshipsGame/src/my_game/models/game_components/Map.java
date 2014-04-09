@@ -1525,4 +1525,13 @@ public class Map implements java.io.Serializable {
             }
         }
     }
+
+    public boolean isCoral(Vector2 position) {
+        GameObject o = grid[position.x][position.y];
+        if(o == null) {
+            return false;
+        } else {
+            return o.getObjectType().equals(GameObject.GameObjectType.CoralReef);
+        }
+    }
 }
