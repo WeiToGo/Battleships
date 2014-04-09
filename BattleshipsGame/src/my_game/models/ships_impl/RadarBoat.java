@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
+import my_game.models.game_components.MidUnit;
 import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
@@ -57,6 +58,7 @@ public class RadarBoat extends Ship {
         for (int i = 0; i < getSize(); i++){
             tempShipUnits[i] = new ShipUnit(this);
         }
+        tempShipUnits[1] = new MidUnit(this);
         setShipUnits(tempShipUnits);
         moveTo(position);        
      }
