@@ -4,6 +4,8 @@
  */
 package my_game.models.game_components;
 
+import my_game.util.Vector2;
+
 /**
  * A zone of predefined size containing
  * obstacles generated at runtime randomly.
@@ -23,6 +25,17 @@ public class CoralReef {
     public CoralReef() {
         reef = new boolean[WIDTH][HEIGHT];
         reef = randomizeObstaclePositions(reef);
+    }
+
+    public CoralReef(GameState gs) {
+        reef = new boolean[WIDTH][HEIGHT];
+        for(int x = 0; x < WIDTH; x++) {
+            for(int y = 0; y < HEIGHT; y++) {
+                if(gs.getMap().isCoral(new Vector2(x + 10, y + 3))) {
+                    reef[x][y] = true;
+                }
+            }
+        }
     }
     
     @Override
