@@ -1300,6 +1300,10 @@ public class Map implements java.io.Serializable {
     		}	
     	}
     	
+    	if(target == null){
+    		return;
+    	}
+    	
     	if(attacker.getClass() == new TorpedoBoat(10000).getClass()){
     		((TorpedoBoat) attacker).fireTorpedo(target);
     	}
