@@ -25,6 +25,7 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.Spatial.CullHint;
+import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
 import java.io.IOException;
 import java.util.ArrayList;

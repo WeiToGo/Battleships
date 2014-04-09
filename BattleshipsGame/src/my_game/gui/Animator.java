@@ -84,39 +84,43 @@ public class Animator {
      * Advance to the next frame.
      */
     void nextMoveFrame() {
-        if(alpha >= 1) {
-            //interpolation is done
-            //move all spatials from the old positions to their new ones as the animation is done
-            Spatial[] tmp = new Spatial[move.newPositions.length];
-            for(int i = 0; i < move.newPositions.length; i++) {
-                //backup all Spatials in the tmp array and set their entries in the objects grid to null
-                int oldx = move.oldPositions[i].x;
-                int oldy = move.oldPositions[i].y;
-                tmp[i] = objectGridRef[oldx][oldy];
-                objectGridRef[oldx][oldy] = null;
+        try {
+            if(alpha >= 1) {
+                //interpolation is done
+                //move all spatials from the old positions to their new ones as the animation is done
+                Spatial[] tmp = new Spatial[move.newPositions.length];
+                for(int i = 0; i < move.newPositions.length; i++) {
+                    //backup all Spatials in the tmp array and set their entries in the objects grid to null
+                    int oldx = move.oldPositions[i].x;
+                    int oldy = move.oldPositions[i].y;
+                    tmp[i] = objectGridRef[oldx][oldy];
+                    objectGridRef[oldx][oldy] = null;
+                }
+
+                for(int i = 0; i < move.newPositions.length; i++) {
+                    //retrieve the objects from the temporary array and set them to their new positions
+                    int newx = move.newPositions[i].x;
+                    int newy = move.newPositions[i].y;
+
+                    objectGridRef[newx][newy] = tmp[i];
+                }
+                phase = AnimationPhase.Done;
+            } else {
+                //take alpha to the next step
+                alpha += STEP;
+                if(alpha > 1) {
+                    alpha = 1;
+                }
+                //move every ship unit
+                for(int i = 0; i < move.newPositions.length; i++) {
+                    int oldx = move.oldPositions[i].x;
+                    int oldy = move.oldPositions[i].y;
+                    objectGridRef[oldx][oldy].setLocalTranslation((2 * (oldx - 15) + 1) + (path.x * alpha), 1,
+                            (2 * (oldy - 15) + 1) + (path.y * alpha));
+                }
             }
-            
-            for(int i = 0; i < move.newPositions.length; i++) {
-                //retrieve the objects from the temporary array and set them to their new positions
-                int newx = move.newPositions[i].x;
-                int newy = move.newPositions[i].y;
-                
-                objectGridRef[newx][newy] = tmp[i];
-            }
-            phase = AnimationPhase.Done;
-        } else {
-            //take alpha to the next step
-            alpha += STEP;
-            if(alpha > 1) {
-                alpha = 1;
-            }
-            //move every ship unit
-            for(int i = 0; i < move.newPositions.length; i++) {
-                int oldx = move.oldPositions[i].x;
-                int oldy = move.oldPositions[i].y;
-                objectGridRef[oldx][oldy].setLocalTranslation((2 * (oldx - 15) + 1) + (path.x * alpha), 1,
-                        (2 * (oldy - 15) + 1) + (path.y * alpha));
-            }
+        } catch(NullPointerException e) {
+            alpha = 1;
         }
     }
     

@@ -15,6 +15,7 @@ import my_game.models.game_components.GameObject;
 import my_game.models.game_components.GameState;
 import my_game.models.game_components.GameState.GamePhase;
 import my_game.models.game_components.Map;
+import my_game.models.game_components.MoveDescription;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
@@ -641,6 +642,8 @@ public class Game implements GameGUI.GameGuiListener {
         hasTurn = false;
         //TODO insert other stuff to do at the end of a turn
     }
+    /** Used to keep track of how many time the kamikaze moved. */
+    private boolean kamikaze = true;
     
     public void moveAction(Ship s){
         //gather the available move positions for the specified ship
@@ -664,7 +667,17 @@ public class Game implements GameGUI.GameGuiListener {
                     //draw the movement animation by calling the update method in gui
                     gui.updateGameState(gameState);
                     playAnimation = true;
-                    endTurn();
+                    
+                    if(s.getShipType().equals(Ship.ShipType.KamikazeBoat) && kamikaze) {
+                        kamikaze = false;
+                        gui.setActionButtonsEnabled(false);
+                        sendGameState();
+                        moveAction(s);
+                    } else {
+                        kamikaze = true;
+                        endTurn();
+                    }
+                    
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
