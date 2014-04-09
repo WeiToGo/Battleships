@@ -220,11 +220,20 @@ public class Game implements GameGUI.GameGuiListener {
     private void enableButtons(Ship s) {
         if(gameState.getCurrentPlayer().equals(player)) {
             gui.setActionButtonsEnabled(true);
-            if(!s.getShipType().equals(Ship.ShipType.MineLayer)) {
+            //if(!s.getShipType().equals(Ship.ShipType.MineLayer)) {
                 //this is not a mine layer so disable the mine button
+            //    gui.mineActivated = false;
+           // }
+            ArrayList<String> weapons = s.getWeapons();
+            if(!weapons.contains("mine")) {
                 gui.mineActivated = false;
             }
-            //TODO add checks for ship weapons and disable weapons which the ship does not have.
+            if(!weapons.contains("torpedo")) {
+                gui.torpedoActivated = false;
+            }
+            if(!weapons.contains("cannon")) {
+                gui.cannonActivated = false;
+            }
         }
     }
     
@@ -325,7 +334,9 @@ public class Game implements GameGUI.GameGuiListener {
                         interruptPreviousActions();
                         t = new Thread(new Runnable() {
                             public void run() {
-                                cannonAttackAction(selectedShip);
+                                if(gui.cannonActivated) {
+                                    cannonAttackAction(selectedShip);
+                                }
                             }
                         });
                         t.start();
@@ -334,7 +345,9 @@ public class Game implements GameGUI.GameGuiListener {
                         interruptPreviousActions();
                         t = new Thread(new Runnable() {
                             public void run() {
-                                torpedoAttackAction(selectedShip);
+                                if(gui.torpedoActivated) {
+                                    torpedoAttackAction(selectedShip);
+                                }
                             }
                         });
                         t.start();
@@ -656,11 +669,25 @@ public class Game implements GameGUI.GameGuiListener {
     
     
     private void torpedoAttackAction(Ship s) {
-        //need to be called on the map object.
+        //get the direction of the ship
+        Vector2 direction = new Vector2(s.getPosition());
+        direction.sub(s.getShipUnits()[1].getPosition());   //by subtracting a ship unit's position from the bow position we get a vector in the direction of the ship
+        //normalize direction
+        if(direction.x != 0) {
+            direction.x = direction.x / Math.abs(direction.x);
+        }
+        if(direction.y != 0) {
+            direction.y = direction.y / Math.abs(direction.y);
+        }
         
-
-        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
-        gui.highlightPositions(weaponHighlight);
+        ArrayList<Vector2> highlight = new ArrayList<Vector2>();
+        Vector2 bow = s.getPosition();
+        for(int i = 0; i < 10; i++) {
+            highlight.add(new Vector2(bow.x + ((i + 1) * direction.x), bow.y + ((i + 1) * direction.y)));
+            Misc.log(highlight.get(i).toString());
+        }
+        // pass these positions to GUI
+        gui.highlightPositions(highlight);
        
         synchronized(this) {
             try {
@@ -670,29 +697,27 @@ public class Game implements GameGUI.GameGuiListener {
                 if(input != null) {
                     //check if the result is acceptable
                     boolean found = false;
-                    for(Vector2 v: weaponHighlight) {
+                    for(Vector2 v: highlight) {
                         if(v.equals(input)) {
                             found = true;
                         }
                     }
-
-                    GameObject targetHit = gameState.cannonAttack(s, input);
-                    if(targetHit != null && found) {
-                        Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
-                        //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
-                        gameState.addMessage(m);
-                        gui.drawGameState(gameState);
-                        //clear up the gui
+                    
+                    if(!found) {
+                        Misc.log("Not found.");
                         clearGUI();
-                        actionTakenThisTurn = true;
-                        endTurn();
-                    } else if(!found) {
-                        clearGUI();
-                    } else {
-                        Misc.log("No hit.");
-                        clearGUI();
-                        endTurn();
+                        return;
                     }
+                    Misc.log("Proceding to shoot torpedo.");
+                    gameState.getMap().torpedoAttack(s, input);
+                    
+                    Message m = new Message("Torpedo fired.", Message.MessageType.Game, this.player);
+                    gameState.addMessage(m);
+                    gameState.layMine(s, input);
+                    gui.drawGameState(gameState);
+                    clearGUI();
+                    actionTakenThisTurn = true;
+                    endTurn();
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
