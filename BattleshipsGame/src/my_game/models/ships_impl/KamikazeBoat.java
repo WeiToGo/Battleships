@@ -43,7 +43,7 @@ public class KamikazeBoat extends Ship{
         Range er = new Range(new Vector2(-1,-1), new Vector2(1,-1), 
               new Vector2(1,1), new Vector2(-1,1));       
         setCannonRange(er); //name to cannonrange so I can use method in Ship.
-        
+        setExplosionRange(er);
         ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
         for (int i = 0; i < getSize(); i++){
             tempShipUnits[i] = new ShipUnit(this);
@@ -52,7 +52,7 @@ public class KamikazeBoat extends Ship{
         moveTo(position);  
     }
 
-    public void setExplosionRange(Range r){
+    private void setExplosionRange(Range r){
         this.explosionRange = r;
     }
     public Range getExplosionRange() {

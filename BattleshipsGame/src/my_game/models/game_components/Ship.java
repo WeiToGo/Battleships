@@ -417,7 +417,7 @@ public abstract class Ship implements java.io.Serializable {
                    moves.add(allMoves.get(i));
                 }              
             }
-        }       
+        }  
         return moves;
     }
     
