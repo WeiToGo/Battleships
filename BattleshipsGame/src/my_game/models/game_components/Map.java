@@ -749,11 +749,13 @@ public class Map implements java.io.Serializable {
             /*don't need to check for mine because turning always touches a mine 
                 zone first. */
             }else if (isMineZone(v)){
-                mine = v;
-                damagedUnits = getDamagedUnits(mine,s);
-                touchMine(mine, damagedUnits);
-                canTurn = false;
-                break;
+                if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                    mine = v;
+                    damagedUnits = getDamagedUnits(mine,s);
+                    touchMine(mine, damagedUnits);
+                    canTurn = false;
+                    break;
+                }
             }
         }
         //keep a count of cleared positions.
@@ -763,7 +765,9 @@ public class Map implements java.io.Serializable {
                 canTurn = false;
                 break; // don't turn if there is an obstacle.
             }else if (isMineZone(v)){
-                if(s.getShipType().compareTo(Ship.ShipType.MineLayer) != 0){
+                if(s.getShipType().compareTo(Ship.ShipType.MineLayer) == 0){
+                    // can turn
+                }else{
                     mine = v;
                     ShipUnit s1,s2;
                     if (count == s.getSize()-1){
@@ -778,10 +782,6 @@ public class Map implements java.io.Serializable {
                     touchMine(mine, damagedUnits);
                     canTurn = false;
                     break;
-                }else{ // minelayer
-                //    canTurn = true;
-                //    break;
-                    System.out.println ("can STILL turn");
                 }
             }else{
                 //if there is nothing, increment count
