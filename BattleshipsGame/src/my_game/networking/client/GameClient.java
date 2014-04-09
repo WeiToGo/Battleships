@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -347,6 +348,10 @@ public class GameClient extends Thread implements NetworkEntity {
      */
     public void sendData(byte[] data) throws IOException {
         //send packet
-        out.write(data);
+        try {
+         out.write(data);
+        } catch(SocketException e) {
+            this.stopNet();
+        }
     }
 }

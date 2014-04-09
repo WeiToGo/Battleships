@@ -25,6 +25,7 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.Spatial.CullHint;
+import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -687,7 +688,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
      * @param updateState The GameState which is one action ahead of the current GameState in the GUI.
      */
     public void updateGameState(GameState updateState) {
-        this.updateState = updateState;
+        this.updateState = new GameState(updateState);
         this.updateStateUpdated = true;
         animation.prepareNewAnimation();
     }
