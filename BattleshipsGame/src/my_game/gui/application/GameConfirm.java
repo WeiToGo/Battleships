@@ -22,6 +22,7 @@ import my_game.models.game_components.GameState;
 import my_game.networking.NetEntityListener;
 import my_game.networking.server.GameServer;
 import my_game.util.GameException;
+import my_game.util.Misc;
 
 
 public class GameConfirm
@@ -86,6 +87,8 @@ public class GameConfirm
                         //first remove the listener from the server
                         Main.getServer().removeNetListener(serverListener);
                         //now create a new Game
+                        Misc.log("Will create game with opponent: " + Main.getServer().getConnectedPlayer());
+                        
                         Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
                                 reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName(), 0);
                         //TODO Close this window.
@@ -190,9 +193,9 @@ public class GameConfirm
     
     
     class ServerListener implements NetEntityListener {
-
+        
         public void onConnected() {
-            System.out.println("Sending coral reef to client.");
+            System.out.println("Sending coral reef to client: " + Main.getServer().getConnectedPlayer());
             Main.getServer().sendCoralReefToListeners(reef);
             playerStatus.setText("A player has connected");
         }

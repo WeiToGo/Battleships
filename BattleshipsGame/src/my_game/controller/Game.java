@@ -490,6 +490,7 @@ public class Game implements GameGUI.GameGuiListener {
      * Initialises the gui and sets up the game.
      */
     private void startGame() {
+        
         //init and display GUI
         gui = new GameGUI(30, 30, this, this.player);
         gui.start();
