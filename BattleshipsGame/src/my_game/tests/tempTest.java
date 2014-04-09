@@ -24,7 +24,7 @@ public class tempTest {
 		System.out.println("size: " + rb.getCurrentSize());
 		System.out.println("speed: " + rb.getCurrentSpeed());
 		
-		rb.getShipUnits()[0].setDamage(10);
+		rb.getShipUnits()[1].setDamage(10);
 		
 		rb.hitUpdate();
 		
