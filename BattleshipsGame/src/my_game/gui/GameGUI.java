@@ -6,8 +6,10 @@ package my_game.gui;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.font.BitmapText;
+import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
@@ -24,11 +26,14 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.Spatial.CullHint;
 import com.jme3.ui.Picture;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
@@ -53,7 +58,7 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication implements ActionListener {    
 
     public enum Action {
-        Move, Turn, EndTurn, CannonAttack, Mine};
+        Move, Turn, EndTurn, CannonAttack, Mine, TorpedoAttack};
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE = 0, BLOCK = 1, BOW = 2, RED = 3, BLUE = 4, NEW = 5, DAMAGED = 6, DESTROYED = 7;
@@ -76,12 +81,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             redShipBlock, redShipBow, blueBase, redBase, rock, mine;
     
     /** Interface buttons and other pictures. */
-    Picture blackBar, moveButton, turnButton, shootCannonButton, mineButton, endTurnButton;
+    Picture blackBar, moveButton, turnButton, shootCannonButton, torpedoButton, mineButton, endTurnButton;
     
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    public boolean moveActivated, turnActivated, shootCannonActivated, mineActivated, endTurnActivated;
+    public boolean moveActivated, turnActivated, shootCannonActivated, torpedoActivated, mineActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid, radarGrid;
@@ -165,6 +170,10 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         inputManager.addMapping("CLICK", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addListener(this, new String[]{"CLICK"});
         
+        inputManager.addMapping("ESC", new KeyTrigger(KeyInput.KEY_ESCAPE));
+        inputManager.addListener(new EscapeMenuListener(), new String[]{"ESC"});
+        
+        
         //report to the guiListener that init. is complete so he can now send requests to the gui
         guiListener.initializeComplete();
         animation = new Animator(assetManager, field);
@@ -204,6 +213,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackEnabled.png", true);
         } else {
             this.shootCannonButton.setImage(assetManager, "/Interface/attackDisabled.png", true);
+        }
+        if(torpedoActivated) {
+            this.torpedoButton.setImage(assetManager, "/Interface/torpedoEnabled.png", true);
+        } else {
+            this.torpedoButton.setImage(assetManager, "/Interface/torpedoDisabled.png", true);
         }
         if(mineActivated) {
             this.mineButton.setImage(assetManager, "/Interface/mineEnabled.png", true);
@@ -359,13 +373,25 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         shootCannonButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(shootCannonButton);
         //**************************
+        //init. torpedo button
+        torpedoButton = new Picture("TorpedoButton");
+        torpedoButton.setImage(assetManager, "/Interface/torpedoDisabled.png", true);
+        
+        torpedoButton.setWidth(width);
+        torpedoButton.setHeight(height);
+        torpedoButton.setPosition(4 * resolutionAdjustedGap +  3 * width , resolutionAdjustedY);
+        
+        torpedoButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(torpedoButton);
+        //**************************
+        //**************************
         //init. mine button
         mineButton = new Picture("MineButton");
         mineButton.setImage(assetManager, "/Interface/mineDisabled.png", true);
         
         mineButton.setWidth(width);
         mineButton.setHeight(height);
-        mineButton.setPosition(4 * resolutionAdjustedGap +  3 * width , resolutionAdjustedY);
+        mineButton.setPosition(5 * resolutionAdjustedGap +  4 * width , resolutionAdjustedY);
         
         mineButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(mineButton);
@@ -377,7 +403,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         endTurnButton.setWidth(width);
         endTurnButton.setHeight(height);
-        endTurnButton.setPosition(5 * resolutionAdjustedGap +  4 * width , resolutionAdjustedY);
+        endTurnButton.setPosition(6 * resolutionAdjustedGap +  5 * width , resolutionAdjustedY);
         
         endTurnButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(endTurnButton);
@@ -980,9 +1006,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                             guiListener.onButtonPressed(Action.CannonAttack);
                             break;
                         case 3:
-                            guiListener.onButtonPressed(Action.Mine);
+                            guiListener.onButtonPressed(Action.TorpedoAttack);
                             break;
                         case 4:
+                            guiListener.onButtonPressed(Action.Mine);
+                            break;
+                        case 5:
                             guiListener.onButtonPressed(Action.EndTurn);
                             break;
                         default:
@@ -990,9 +1019,35 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     }
                 }
             }
+        } else {
+            
         }
     }
 
+    public void escapeMenu(){
+    	if (JOptionPane.showConfirmDialog(null, "Would you like to save the game and quit?", "",
+    			JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+    		// yes option
+    	    JTextField fileName = new JTextField();
+    	    Object[] message = {"File name", fileName.getText()};//send text of filename
+    	    String option = JOptionPane.showInputDialog(null, message, "Add New", JOptionPane.OK_CANCEL_OPTION);
+    	    System.out.println(fileName.getText());
+    	    
+    	    if(option!=null){
+        		try {
+        			this.gameState.saveGame(option);
+        		} 
+        		catch (IOException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+    	    }
+            //TODO stop the game
+            this.guiListener.endGame();
+            this.stop();
+    	}
+    }
+    
     /**
      * Enables and disables the action buttons of the game gui.
      * @param active 
@@ -1002,6 +1057,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.shootCannonActivated = active;
         this.turnActivated = active;
         this.mineActivated = active;
+        this.torpedoActivated = active;
     }
     
     /**
@@ -1036,6 +1092,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
          * @param action
          */
         public void onButtonPressed(Action action);
+        
+        public void endGame();
     }
     
     /**

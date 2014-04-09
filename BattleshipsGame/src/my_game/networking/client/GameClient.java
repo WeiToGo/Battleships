@@ -259,6 +259,11 @@ public class GameClient extends Thread implements NetworkEntity {
     public void invalidPacket() {
         invalidReceived = true;
     }
+
+    public void stopNet() {
+        this.stopClient();
+        //TODO notify server for disconnect.
+    }
         
     private class ClientThread implements Runnable {
         public void run() {
@@ -336,7 +341,7 @@ public class GameClient extends Thread implements NetworkEntity {
         //we are done and it has been requested that the client turns off
         closeClient();
     }
-
+    
     /**
      * @param data Data to send to the server.
      */

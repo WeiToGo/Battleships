@@ -210,6 +210,24 @@ public class Game implements GameGUI.GameGuiListener {
         }
     }
     
+    /**
+     * Enables the buttons of the gui according to the ship passed as parameter.
+     * For example, if it is not the player's turn, no buttons will be enabled.
+     * If it is the player's turn, the 'End Turn' button will be activated along with all
+     * buttons corresponding to weapons carried by the ship 's'.
+     * @param s 
+     */
+    private void enableButtons(Ship s) {
+        if(gameState.getCurrentPlayer().equals(player)) {
+            gui.setActionButtonsEnabled(true);
+            if(!s.getShipType().equals(Ship.ShipType.MineLayer)) {
+                //this is not a mine layer so disable the mine button
+                gui.mineActivated = false;
+            }
+            //TODO add checks for ship weapons and disable weapons which the ship does not have.
+        }
+    }
+    
     @Override
     public void onMouseClick(int x, int y) {
         //if it's the player's turn and there is a ship under the mouse cursor, select the ship
@@ -226,12 +244,9 @@ public class Game implements GameGUI.GameGuiListener {
             //highlight the selected ship in the gui
             gui.highlightPositions(Map.getShipPositions(selectedShip));
             //enable the buttons only if in the player turns phase
-            if(gameState.getPhase().equals(GamePhase.PlayerTurns) && gameState.getCurrentPlayer().equals(player)) {
-                gui.setActionButtonsEnabled(true);
-                if(!ship.getShipType().equals(Ship.ShipType.MineLayer)) {
-                    //this is not a mine layer so disable the mine button
-                    gui.mineActivated = false;
-                }
+            enableButtons(selectedShip);
+            if(gameState.getPhase().equals(GamePhase.PlayerTurns)) {
+                enableButtons(ship);
             } else {
                 //this is not the player turns phase which means there could be a thread
                 //waiting for a ship to be selected, notify all such threads
@@ -315,6 +330,15 @@ public class Game implements GameGUI.GameGuiListener {
                         });
                         t.start();
                         break;
+                    case TorpedoAttack:
+                        interruptPreviousActions();
+                        t = new Thread(new Runnable() {
+                            public void run() {
+                                torpedoAttackAction(selectedShip);
+                            }
+                        });
+                        t.start();
+                        break;
                     case EndTurn:
                         interruptPreviousActions();
                         endTurn();
@@ -339,6 +363,13 @@ public class Game implements GameGUI.GameGuiListener {
                     endTurn();
             }
         }
+    }
+    
+    /**
+     * Called by GUI in case the player wants to stopNet the game.
+     */
+    public void endGame() {
+        net.stopNet();
     }
     
     /**
@@ -622,6 +653,53 @@ public class Game implements GameGUI.GameGuiListener {
             }
         }
     }
+    
+    
+    private void torpedoAttackAction(Ship s) {
+        //need to be called on the map object.
+        
+
+        // TO DO: pass these positions to GUI and get user's selection in Vector2 newPosition)
+        gui.highlightPositions(weaponHighlight);
+       
+        synchronized(this) {
+            try {
+                awaitingInput = true;
+                this.wait();
+                awaitingInput = false;
+                if(input != null) {
+                    //check if the result is acceptable
+                    boolean found = false;
+                    for(Vector2 v: weaponHighlight) {
+                        if(v.equals(input)) {
+                            found = true;
+                        }
+                    }
+
+                    GameObject targetHit = gameState.cannonAttack(s, input);
+                    if(targetHit != null && found) {
+                        Message m = new Message("Cannon impact at coordinates: " + gameState.getMap().objectCoordinates(targetHit), Message.MessageType.Game, null);
+                        //Message m = new Message("Cannon impact at : " + ((ShipUnit) targetHit).unitArmour + " " + ((ShipUnit) targetHit).damageLevel, Message.MessageType.Game, null);
+                        gameState.addMessage(m);
+                        gui.drawGameState(gameState);
+                        //clear up the gui
+                        clearGUI();
+                        actionTakenThisTurn = true;
+                        endTurn();
+                    } else if(!found) {
+                        clearGUI();
+                    } else {
+                        Misc.log("No hit.");
+                        clearGUI();
+                        endTurn();
+                    }
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     
     /**
      * A small helper method that clears the gui at the end of an action.

@@ -67,4 +67,6 @@ public interface NetworkEntity {
         public void removeNetListener(NetEntityListener l);
 
     public void invalidPacket();
+
+    public void stopNet();
 }
