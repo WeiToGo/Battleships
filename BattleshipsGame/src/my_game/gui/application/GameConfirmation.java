@@ -98,23 +98,26 @@ public class GameConfirmation
                             System.out.println("Server will now start game.");
                             //first remove the listener from the server
                             Main.getServer().removeNetListener(serverListener);
-                            //now create a new Game
-
-                            Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
-                                    gs, Main.getServer(), Game.PlayerType.Host);
+                            
                             //TODO Close this window.
                             Stage previousStage=Main.getStage();
                             previousStage.close();
+
+                            //now create a new Game
+                            Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
+                                    gs, Main.getServer(), Game.PlayerType.Host);
+
                         } else {
                             System.out.println("Client will now start game.");
                             Main.getClient().removeNetListener(clientListener);
+                            
+                                //TODO Close this window.
+                                Stage previousStage=Main.getStage();
+                                previousStage.close();
 
                                 //now create a new Game
                                 Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
                                         null, Main.getClient(), Game.PlayerType.Client);
-                                //TODO Close this window.
-                                Stage previousStage=Main.getStage();
-                                previousStage.close();
 
                         }
                     }

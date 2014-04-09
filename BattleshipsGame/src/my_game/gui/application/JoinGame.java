@@ -140,10 +140,10 @@ public class JoinGame
             @Override
             public void handle(ActionEvent event) {
                 //non javafx client stopping stuff
-                if(Main.getClient() != null) {
+                /*if(Main.getClient() != null) {
                     Main.getClient().stopClient();
                     Main.setClient(null);
-                }
+                }*/
                 serverLookupThread.interrupt();
                 //**************************
                 Stage primaryStage = new Stage();

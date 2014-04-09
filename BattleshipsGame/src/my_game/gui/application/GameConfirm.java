@@ -89,20 +89,23 @@ public class GameConfirm
                         //now create a new Game
                         Misc.log("Will create game with opponent: " + Main.getServer().getConnectedPlayer());
                         
-                        Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
-                                reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName(), 0);
-                        //TODO Close this window.
+                            //TODO Close this window.
                             Stage previousStage=Main.getStage();
                             previousStage.close();
+                        
+                        Game g = new Game(Main.getPlayer(), Main.getServer().getConnectedPlayer(), 
+                                reef, Main.getServer(), Game.PlayerType.Host, Main.getServer().getName(), 0);
                     } else {
                         System.out.println("Client will now start game.");
                         Main.getClient().removeNetListener(clientListener);
+                        
+                            //TODO Close this window.
+                            Stage previousStage=Main.getStage();
+                            previousStage.close();
+                        
                         //now create a new Game
                         Game g = new Game(Main.getPlayer(), Main.getClient().getConnectedPlayer(), 
                                 reef, Main.getClient(), Game.PlayerType.Client, "", 0);
-                        //TODO Close this window.
-                            Stage previousStage=Main.getStage();
-                            previousStage.close();
                     }
                 } else {
                     if(Main.isServer) {

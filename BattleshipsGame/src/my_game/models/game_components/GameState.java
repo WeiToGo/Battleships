@@ -200,18 +200,36 @@ public class GameState implements java.io.Serializable {
      */
     public void sinkShips() {
         for(Ship s: map.player0Ships) {
-            if(s.getSize() <= 0) {
-                sinkShip(s);
-                map.player0Ships.remove(s);
-            }
+          //  if(s.getSize() <= 0) {
+          ShipUnit[] shipunits = s.getShipUnits();
+          boolean destroyed = true;
+          for (ShipUnit su: shipunits){
+              if (!su.isDestroyed()){
+                  destroyed = false;
+                  break;
+              }
+          }
+          if (destroyed){
+            sinkShip(s);
+            map.player0Ships.remove(s);
+          }
         }
         for(Ship s: map.player1Ships) {
-            if(s.getSize() <= 0) {
-                sinkShip(s);
-                map.player1Ships.remove(s);
-            }
-        }
-    }
+       //     if(s.getSize() <= 0) {
+          ShipUnit[] shipunits = s.getShipUnits();
+          boolean destroyed = true;
+          for (ShipUnit su: shipunits){
+              if (!su.isDestroyed()){
+                  destroyed = false;
+                  break;
+              }
+          }
+          if (destroyed){
+            sinkShip(s);
+            map.player0Ships.remove(s);
+          }
+      }
+}
     
     private void sinkShip(Ship s) {
         for(ShipUnit su: s.getShipUnits()) {

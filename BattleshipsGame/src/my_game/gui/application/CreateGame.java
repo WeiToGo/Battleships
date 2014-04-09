@@ -113,7 +113,7 @@ public class CreateGame
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("Login.fxml"));
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("UI.fxml"));
         	} catch (IOException e) {
         		// TODO Auto-generated catch block
         		e.printStackTrace();
