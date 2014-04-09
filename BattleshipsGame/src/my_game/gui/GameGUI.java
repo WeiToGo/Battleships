@@ -955,7 +955,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     }
     
     public void onAction(String name, boolean isPressed, float tpf) {
-        if(name == "CLICK" && isPressed) {
+        if(name.equals("CLICK") && isPressed) {
             // Convert screen click to 3d position
             Vector2f click2d = inputManager.getCursorPosition();
             if(click2d.y > getBarHeight()) {
@@ -1020,8 +1020,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     }
                 }
             }
-        } else {
-            
+        } else if(name.equals("ESC")) {
+            escapeMenu();
         }
     }
 
