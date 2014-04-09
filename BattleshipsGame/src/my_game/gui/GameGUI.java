@@ -728,8 +728,8 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             //DONE
             gameState = new GameState(updateState);
             this.visibility = updateState.getRadarVisibility(player);
-            updateRadar(gameState);
             updateShips(gameState);
+            updateRadar(gameState);
             return true;
         }
     }
@@ -772,7 +772,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                     //this cell should not be visible
                     GameObject o = gameState.getMap().getObjectAt(new Vector2(x, y));
                     //do not repaint or hide coral reefs
-                    if(objectsGrid[x][y] != null && !o.getObjectType().equals(GameObjectType.CoralReef)) {
+                    if(objectsGrid[x][y] != null && o != null && !o.getObjectType().equals(GameObjectType.CoralReef)) {
                         //field.detachChild(objectsGrid[x][y]);
                         objectsGrid[x][y].setCullHint(CullHint.Always);
                     }
