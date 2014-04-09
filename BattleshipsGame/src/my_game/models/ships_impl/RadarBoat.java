@@ -71,7 +71,8 @@ public class RadarBoat extends Ship {
  
     public void turnOnLongRangeRadar(){
         if (!longRangeActive){
-             this.setSpeed(0);
+             this.setCurrentSpeed(0);
+             System.out.println(" SPEED O");
              longRangeActive = true;
              setRadarRange(longRange);
         }
@@ -79,7 +80,8 @@ public class RadarBoat extends Ship {
     
     public void turnOffLongRangeRadar(){
         if(longRangeActive){
-           this.setSpeed(3);
+           this.setCurrentSpeed(3);
+            System.out.println(" SPEED 3 ");
            longRangeActive = false;
            setRadarRange(shortRange);
         }

@@ -146,6 +146,10 @@ public class Map implements java.io.Serializable {
      * @return An array of positions that are highlighted on the map.
      */
     public Positions prepareMoveShip(Ship ship){
+        if (ship.getCurrentSpeed() == 0){
+            return null;
+        }
+        
         Positions highlightedMoves = new Positions(null,null,null,null);        
         if (ship.getShipType().compareTo(Ship.ShipType.KamikazeBoat)==0){
             highlightedMoves = prepareMoveKam(ship);

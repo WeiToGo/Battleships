@@ -458,6 +458,7 @@ public class Game implements GameGUI.GameGuiListener {
                             public void run() {
                                 if(gui.longRadarActivated) {
                                     ((RadarBoat) selectedShip).toggleRadar();
+                                        gameState.getMap().updateRadarVisibilityArrays();
                                         clearGUI();
                                         playAnimation = false;
                                         endTurn();
