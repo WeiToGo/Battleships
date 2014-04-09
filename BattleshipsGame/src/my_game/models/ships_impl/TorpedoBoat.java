@@ -80,7 +80,8 @@ public class TorpedoBoat extends Ship {
 	 * @param target = the target GameObject 
 	 */
     public void fireTorpedo(GameObject target) {
-    	if (target.getClass() == new ShipUnit().getClass()){
+    	if (target.getClass() == new ShipUnit().getClass()
+                || (target.getObjectType().equals(GameObject.GameObjectType.MidUnit))){
 			Ship tempShip = ((ShipUnit)target).getShip();
 			
 			((ShipUnit)target).setDamage(getTorpedoDamage());

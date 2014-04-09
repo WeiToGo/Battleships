@@ -209,7 +209,7 @@ public abstract class Ship implements java.io.Serializable {
 					currentSize--;
 				}
 			}
-
+                        System.out.println("HITUPDATE");
 			setCurrentSpeed(speed * currentSize / size);
 		}
 	}
@@ -247,7 +247,8 @@ public abstract class Ship implements java.io.Serializable {
 		if (target == null) {
 			return null;
 		}
-		if (target.getClass() == new ShipUnit().getClass()) {
+		if ((target.getClass() == new ShipUnit().getClass())
+                        || (target.getObjectType().equals(GameObject.GameObjectType.MidUnit))) {
 			ShipUnit su = ((ShipUnit) target);
 			su.setDamage(getCannonDamage());
 			objectHit = su;
