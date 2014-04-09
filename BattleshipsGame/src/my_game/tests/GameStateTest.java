@@ -119,8 +119,8 @@ public class GameStateTest {
         map.moveShip(s2,v,p);
         System.out.println(map.toString());      
         
-        System.out.println(" docked s3 " + map.isDocked(s2));
-        System.out.println(" docked s8 " + map.isDocked(s));
+     //   System.out.println(" docked s3 " + map.isDocked(s2));
+    //    System.out.println(" docked s8 " + map.isDocked(s));
         
     /*   
         System.out.println("***********************************");    
