@@ -1023,28 +1023,33 @@ public class GameGUI extends SimpleApplication implements ActionListener {
     }
 
     public void escapeMenu(){
-    	if (JOptionPane.showConfirmDialog(null, "Would you like to save the game and quit?", "",
-    			JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-    		// yes option
-    	    JTextField fileName = new JTextField();
-    	    Object[] message = {"File name", fileName.getText()};//send text of filename
-    	    String option = JOptionPane.showInputDialog(null, message, "Add New", JOptionPane.OK_CANCEL_OPTION);
-    	    System.out.println(fileName.getText());
-    	    
-    	    if(option!=null){
-        		try {
-        			this.gameState.saveGame(option);
-        		} 
-        		catch (IOException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
-        		}
-    	    }
-            //TODO stop the game
-            this.guiListener.endGame();
-            this.stop();
-    	}
-    }
+        if (JOptionPane.showConfirmDialog(null, 
+                "Would you like to save the game and quit?", "", 
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            // yes option
+            JTextField fileName = new JTextField(); 
+            Object[] message = {"File name", fileName.getText()};
+            //send text of filename 
+            String option = JOptionPane.showInputDialog(null, message, 
+                    "Add New", JOptionPane.OK_CANCEL_OPTION); 
+            System.out.println(fileName.getText());
+            if(option!=null){ 
+                try { 
+                    this.gameState.saveGame(option);
+                } catch (
+                    IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } //TODO stop the game
+                this.guiListener.endGame(); 
+                this.stop(); 
+            } else{
+                JOptionPane.showConfirmDialog(null,"Save Failed"); 
+            }
+        }  
+    }//Chat Conversation End
+
+
     
     /**
      * Enables and disables the action buttons of the game gui.
