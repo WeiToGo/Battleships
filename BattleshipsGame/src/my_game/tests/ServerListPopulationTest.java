@@ -33,7 +33,7 @@ public class ServerListPopulationTest {
         GameClient c = null;
         try {
             //start a server on this machine
-            s = new GameServer(new Player("Player1", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 0), "Server1");
+            s = new GameServer(new Player("Player1", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 0), "Server1", false);
             c = new GameClient(new Player("Client", "", InetAddress.getLocalHost(), Constants.SERVER_PORT, 0));
         } catch (UnknownHostException ex) {
             Logger.getLogger(GameClient.class.getName()).log(Level.SEVERE, null, ex);

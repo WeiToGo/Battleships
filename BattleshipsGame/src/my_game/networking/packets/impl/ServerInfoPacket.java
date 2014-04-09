@@ -23,6 +23,7 @@ public class ServerInfoPacket extends Packet {
     public String serverName;
     public String playerName;
     public InetAddress ipAddress;
+    public boolean isLoaded;
     
     
     public ServerInfoPacket(byte[] data) throws GameException {
@@ -49,14 +50,21 @@ public class ServerInfoPacket extends Packet {
             } catch (UnknownHostException ex) {
                 Logger.getLogger(ServerInfoPacket.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //finally extract the is loaded boolean
+            if(args[3].equals("1")) {
+                isLoaded = true;
+            } else {
+                isLoaded = false;
+            }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ServerInfoPacket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public ServerInfoPacket(String serverName, String playerName, InetAddress ipAddress) {
+    public ServerInfoPacket(String serverName, String playerName, InetAddress ipAddress, boolean isLoaded) {
         super(PacketTypes.SERVERINFO.getId());
         
+        this.isLoaded = isLoaded;
         this.serverName = serverName;
         this.playerName = playerName;
         this.ipAddress = ipAddress;
@@ -66,7 +74,7 @@ public class ServerInfoPacket extends Packet {
     public byte[] getData() {
         int id = PacketTypes.SERVERINFO.getId();
         String typeId = (id > 9) ? (id + "") : ("0" + id);  //make sure the id is 2 digits
-        String ret = (typeId + serverName + "~" + playerName + "~" + ipAddress.getHostAddress() + PacketHandler.PACKET_SEPARATOR);
+        String ret = (typeId + serverName + "~" + playerName + "~" + ipAddress.getHostAddress() + "~" + (isLoaded ? "1" : "0") + PacketHandler.PACKET_SEPARATOR);
         try {
             return ret.getBytes("ISO-8859-1");
         } catch (UnsupportedEncodingException ex) {

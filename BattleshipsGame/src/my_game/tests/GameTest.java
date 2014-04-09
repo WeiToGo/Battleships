@@ -32,7 +32,7 @@ public class GameTest {
         Player player1 = new Player("player1", "", localAddress, Constants.SERVER_PORT, 0);
 
         CoralReef reef = new CoralReef();
-        GameServer server = new GameServer(player0, "testServer");
+        GameServer server = new GameServer(player0, "testServer", false);
         
         try {
             Game g = new Game(player0, player1, reef, server, Game.PlayerType.Host, "testGame");

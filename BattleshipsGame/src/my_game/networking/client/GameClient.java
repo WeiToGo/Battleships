@@ -175,7 +175,7 @@ public class GameClient extends Thread implements NetworkEntity {
                         //the packet should be a server info packet
                         ServerInfoPacket sip = new ServerInfoPacket(data);
                         //convert received packet into ServerInfo object
-                        ServerInfo si = new ServerInfo(sip.serverName, sip.playerName, sip.ipAddress);
+                        ServerInfo si = new ServerInfo(sip.serverName, sip.playerName, sip.ipAddress, sip.isLoaded);
                         synchronized(sll) {
                             sll.addServerInfo(si);
                         }

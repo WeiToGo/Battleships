@@ -1,5 +1,6 @@
 package my_game.networking.server;
 
+import com.bulletphysics.collision.dispatch.SimulationIslandManager;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -73,10 +74,12 @@ public class GameServer implements NetworkEntity {
     
     private Player connectedPlayer;
     
+    public boolean isLoaded;
 
-    public GameServer(Player hostPlayer, String serverName) {
+    public GameServer(Player hostPlayer, String serverName, boolean isLoaded) {
         this.serverHost = hostPlayer;
         this.serverName = serverName;
+        this.isLoaded = isLoaded;
 
         //init. listeners list
         listeners = new ArrayList<NetEntityListener>(1);
@@ -299,7 +302,7 @@ public class GameServer implements NetworkEntity {
                     Socket s = infoSocket.accept();
                     DataOutputStream out = new DataOutputStream(s.getOutputStream());
                     //create an info packet, send it on the s socket and close socket and stream
-                    ServerInfoPacket pkt = new ServerInfoPacket(serverName, serverHost.getUsername(), serverHost.getIP());
+                    ServerInfoPacket pkt = new ServerInfoPacket(serverName, serverHost.getUsername(), serverHost.getIP(), isLoaded);
                     sendData(pkt.getData(), out);
                     out.close();
                     s.close();

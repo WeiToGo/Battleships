@@ -17,12 +17,15 @@ public class ServerInfo {
     public String serverName;
     public String playerName;
     public InetAddress ipAddress;
+    public boolean isLoaded;
     
     public final SimpleStringProperty serverNameString;
     public final SimpleStringProperty playerNameString;
     public final SimpleStringProperty ipAddressString;
     
-    public ServerInfo(String serverName, String playerName, InetAddress ipAddress) {
+    public ServerInfo(String serverName, String playerName, InetAddress ipAddress, boolean isLoaded) {
+        this.isLoaded = isLoaded;
+        
         this.serverName = serverName;
         this.playerName = playerName;
         this.ipAddress = ipAddress;        
