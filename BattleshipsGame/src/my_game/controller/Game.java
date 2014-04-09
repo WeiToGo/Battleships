@@ -21,6 +21,7 @@ import my_game.models.game_components.ShipUnit;
 import my_game.models.player_components.Message;
 import my_game.models.player_components.Player;
 import my_game.models.ships_impl.MineLayer;
+import my_game.models.ships_impl.RadarBoat;
 import my_game.networking.NetEntityListener;
 import my_game.networking.NetworkEntity;
 import my_game.util.GameException;
@@ -315,6 +316,9 @@ public class Game implements GameGUI.GameGuiListener {
             if(!gameState.getMap().isDocked(s)) {
                 gui.repairActivated = false;
             }
+            if(!s.getShipType().equals(Ship.ShipType.RadarBoat)) {
+                gui.longRadarActivated = false;
+            }
         }
     }
     
@@ -439,6 +443,20 @@ public class Game implements GameGUI.GameGuiListener {
                             public void run() {
                                 if(gui.repairActivated) {
                                     repair(selectedShip);
+                                }
+                            }
+                        });
+                        t.start();
+                        break;
+                    case LongRadar:
+                        interruptPreviousActions();
+                        t = new Thread(new Runnable() {
+                            public void run() {
+                                if(gui.longRadarActivated) {
+                                    ((RadarBoat) selectedShip).toggleRadar();
+                                        clearGUI();
+                                        playAnimation = false;
+                                        endTurn();
                                 }
                             }
                         });
