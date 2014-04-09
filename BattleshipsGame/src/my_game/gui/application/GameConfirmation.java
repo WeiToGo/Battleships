@@ -24,7 +24,7 @@ import my_game.networking.server.GameServer;
 import my_game.util.GameException;
 
 
-public class GameConfirm
+public class GameConfirmation
     implements Initializable {
 
     @FXML //  fx:id="myButton"
@@ -44,9 +44,6 @@ public class GameConfirm
     
     @FXML //  fx:id="myButton"
     private AnchorPane pane; // Value injected by FXMLLoader
-
-    @FXML //  fx:id="myButton"
-    private TextArea playerStatus; // Value injected by FXMLLoader
     
     /** The coral reef used for generating the playing map. */
     private CoralReef reef;
@@ -76,7 +73,7 @@ public class GameConfirm
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 if(otherPlayerVote) {
@@ -124,17 +121,6 @@ public class GameConfirm
         returnGameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //non javafx stuff
-                //close server/client on return
-                if(Main.isServer) {
-                    Main.getServer().stopServer();
-                    Main.setServer(null);
-                } else {
-                    Main.getClient().stopClient();
-                    Main.setClient(null);
-                }
-                //****************
-                
                 Stage primaryStage = new Stage();
                 AnchorPane page = null;
                 try {
@@ -189,29 +175,21 @@ public class GameConfirm
         public void onConnected() {
             System.out.println("Sending coral reef to client.");
             Main.getServer().sendCoralReefToListeners(reef);
-            playerStatus.setText("A player has connected");
         }
 
         public void onReefReceive(CoralReef reef) {
             //Server is not supposed to receive this, something went wrong
-            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("CoralReef object received by server!"));
         }
 
         public void onVoteReceive(boolean vote) {
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
-            if(vote==true){
-                playerStatus.setText("Player 2 has accepted the map");
-            }
-            
-            else{
-                playerStatus.setText("Player 2 has declined the map");
-            }
         }
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
         
     }
@@ -230,18 +208,11 @@ public class GameConfirm
         public void onVoteReceive(boolean vote) {
             otherPlayerVote = vote;
             otherPlayerHasVoted = true;
-            if(vote==true){
-                playerStatus.setText("Player 1 has accepted the map");
-            }
-            
-            else{
-                playerStatus.setText("Player 1 has declined the map");
-            }
         }
 
         public void onGameStateReceive(GameState gs) {
             //this method shouldn't get called while here
-            Logger.getLogger(GameConfirm.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
+            Logger.getLogger(GameConfirmation.class.getName()).log(Level.SEVERE, null, new GameException("GameState received in GameConfirmation.java"));
         }
     }
 }

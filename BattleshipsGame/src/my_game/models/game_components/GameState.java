@@ -4,6 +4,7 @@
  */
 package my_game.models.game_components;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import my_game.gui.GameGUI.Action;
 
 import my_game.models.player_components.ChatLog;
@@ -493,12 +495,19 @@ public class GameState implements java.io.Serializable {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public void saveGame() throws FileNotFoundException, IOException{
-        FileOutputStream f = new FileOutputStream("game-saved");
-        ObjectOutput s = new ObjectOutputStream(f);
-        s.writeObject(this);
-        s.flush();        
-    }
+    public void saveGame(String filename) throws IOException{
+        File file = new File(filename+".sav"); 
+        if(file.exists() && !file.isDirectory()) {
+            JOptionPane.showConfirmDialog(null,
+                    "The filename provided already exists Save failed");
+            return;
+        }
+        FileOutputStream f = new FileOutputStream(filename+".sav");
+        ObjectOutput s = new ObjectOutputStream(f); 
+        s.writeObject(this); 
+        s.flush();
+        s.close(); 
+    }       
     
     /**
      * Load the game state from the given file.

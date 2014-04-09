@@ -87,10 +87,11 @@ public class CreateGame
         	
         	final JFileChooser chooser = new JFileChooser();
         	FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        			"JPG & GIF Images", "jpg", "gif");
+        			"Save files", "sav");
         	chooser.setFileFilter(filter);
         	int returnVal = chooser.showOpenDialog(null);
         	if(returnVal == JFileChooser.APPROVE_OPTION) {
+        		
             	Stage previousStage=Main.getStage();
             	previousStage.close();
             	Scene scene = new Scene(page);
@@ -110,7 +111,7 @@ public class CreateGame
         	Stage primaryStage=new Stage();
         	AnchorPane page=null;
         	try {
-        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("UI.fxml"));
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("Login.fxml"));
         	} catch (IOException e) {
         		// TODO Auto-generated catch block
         		e.printStackTrace();

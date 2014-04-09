@@ -15,10 +15,10 @@
   <children>
     <ImageView id="Dark blue sea" fx:id="background" fitHeight="469.0" fitWidth="616.9998779296875" layoutX="0.0" layoutY="0.0" pickOnBounds="true" preserveRatio="false">
       <image>
-        <Image url="@./Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@Dark%20blue%20sea.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
-    <Button fx:id="newGameButton" layoutY="152.0" mnemonicParsing="false" prefHeight="47.00367187500001" prefWidth="157.9998779296875" text="Create" AnchorPane.rightAnchor="43.0">
+    <Button fx:id="newGameButton" layoutY="152.0" mnemonicParsing="false" prefHeight="47.00367187500001" prefWidth="157.9998779296875" text="Create" AnchorPane.rightAnchor="229.0">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
@@ -33,7 +33,7 @@
         <URL value="@application.css" />
       </stylesheets>
     </Button>
-    <Button fx:id="loadGameButton" layoutY="271.0" mnemonicParsing="false" prefHeight="46.00367187500001" prefWidth="157.9998779296875" text="Load" AnchorPane.rightAnchor="43.0">
+    <Button fx:id="loadGameButton" layoutY="271.0" mnemonicParsing="false" prefHeight="46.00367187500001" prefWidth="157.9998779296875" text="Load" AnchorPane.rightAnchor="229.0">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>

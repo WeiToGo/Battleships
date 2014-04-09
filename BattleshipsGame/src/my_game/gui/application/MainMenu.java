@@ -26,6 +26,9 @@ public class MainMenu
     private Button joinGameButton; // Value injected by FXMLLoader
     
     @FXML //  fx:id="myButton"
+    private Button exitGameButton; // Value injected by FXMLLoader
+    
+    @FXML //  fx:id="myButton"
     private ImageView background; // Value injected by FXMLLoader
     
     @FXML //  fx:id="myButton"
@@ -84,6 +87,17 @@ public class MainMenu
         	Main.setStage(primaryStage);
         }
     });
+    
+    exitGameButton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+        	Stage previousStage=Main.getStage();
+        	previousStage.close();
+                
+
+        }
+    });
+    
 
     }
 }

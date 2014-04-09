@@ -11,7 +11,7 @@
 <?import javafx.scene.text.*?>
 <?scenebuilder-stylesheet application.css?>
 
-<AnchorPane fx:id="pane" minHeight="458.0002831054662" minWidth="605.9998779296875" prefHeight="468.0002831054662" prefWidth="605.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.Login">
+<AnchorPane fx:id="pane" minHeight="458.0002831054662" minWidth="605.9998779296875" prefHeight="468.0002831054662" prefWidth="605.9998779296875" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="my_game.gui.application.CreateUser">
   <!-- TODO Add Nodes -->
   <children>
     <ImageView id="battleship" fx:id="background" fitHeight="468.0002831054662" fitWidth="605.9998779296875" layoutX="1.0" layoutY="0.0" pickOnBounds="true">
@@ -51,7 +51,7 @@
         </Lighting>
       </effect>
     </Label>
-    <Button fx:id="loginGameButton" layoutX="263.0" layoutY="306.0" minHeight="42.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="96.0" text="Login">
+    <Button id="loginGameButton" fx:id="createGameButton" layoutX="263.0" layoutY="306.0" minHeight="42.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="96.0" text="Create">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
@@ -66,10 +66,5 @@
         <URL value="@application.css" />
       </stylesheets>
     </Button>
-    <Hyperlink fx:id="createUser" layoutX="152.0" layoutY="306.0" prefWidth="96.0" text="Create User" textFill="#00ccb4">
-      <font>
-        <Font size="15.0" />
-      </font>
-    </Hyperlink>
   </children>
 </AnchorPane>

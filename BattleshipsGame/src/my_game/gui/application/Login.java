@@ -1,9 +1,15 @@
 package my_game.gui.application;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javax.swing.JFileChooser;
@@ -20,10 +26,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import java.io.*;
 
 
 public class Login
@@ -43,6 +51,9 @@ public class Login
     
     @FXML //  fx:id="myButton"
     private TextField password; // Value injected by FXMLLoader
+    
+    @FXML //  fx:id="myButton"
+    private Hyperlink createUser; // Value injected by FXMLLoader
 
 
     @Override // This method is called by the FXMLLoader when initialization is complete
@@ -62,7 +73,7 @@ public class Login
         	// TODO Auto-generated catch block
             	e.printStackTrace();
             }
-            if(verifyLogin(username.toString() ,password.toString())){
+            if(verifyLogin(username.getText() ,password.getText())){
                 try {
                     Player player=new Player(username.getText(),password.getText(),InetAddress.getLocalHost(), Constants.SERVER_PORT, 0);
                     Main.setPlayer(player);
@@ -91,8 +102,58 @@ public class Login
          * @param password The password to mach against the password stored for the given username.
          */
         private boolean verifyLogin(String username, String password) {
-            return true;
             //TODO implement login verification
+         // Create some data objects for us to save.
+
+            String name=username+password;
+
+    		BufferedReader br = null;
+    		 
+    		try {
+     
+    			String sCurrentLine;
+     
+    			br = new BufferedReader(new FileReader("Users.txt"));
+     
+    			while ((sCurrentLine = br.readLine()) != null) {
+    				if(sCurrentLine.equals(name)){
+    					br.close();
+    					return true;
+    				}
+    			}
+     
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		} finally {
+    			try {
+    				if (br != null)br.close();
+    			} catch (IOException ex) {
+    				ex.printStackTrace();
+    			}
+    		}
+            return false;
+        }
+    });
+    
+        createUser.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+        	Stage primaryStage=new Stage();
+        	AnchorPane page=null;
+        	try {
+        		page = (AnchorPane) FXMLLoader.load(Main.class.getResource("CreateUser.fxml"));
+        	} catch (IOException e) {
+        		// TODO Auto-generated catch block
+        		e.printStackTrace();
+        	}
+        	
+        	Stage previousStage=Main.getStage();
+        	previousStage.close();
+        	Scene scene = new Scene(page);
+        	primaryStage.setScene(scene);
+        	primaryStage.setTitle("Battleship");
+        	primaryStage.show();
+        	Main.setStage(primaryStage);
         }
     });
 

@@ -15,3 +15,30 @@
     -fx-padding: 15 30 15 30;
 
 }
+
+.text-area{
+    -fx-background-color: derive(grey,-60%); 
+    -fx-background-radius: 10px;
+    -fx-text-fill: derive(#007599, 0%);
+        -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#007599, #007599),
+        linear-gradient(#2a2b2a 100%, #2a2b2a 100%, #2a2b2a 100%, #2a2b2a 100%);
+    -fx-background-insets: 0,1,4,5,6;
+    -fx-background-radius: 9,8,5,4,3;
+    -fx-padding: 5 5 5 5;
+}
+
+
+.table-view{
+    -fx-background-color: derive(grey,-60%); 
+    -fx-background-radius: 10px;
+    -fx-text-fill: derive(#007599, 0%);
+        -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#007599, #007599),
+        linear-gradient(#2a2b2a 100%, #2a2b2a 100%, #2a2b2a 100%, #2a2b2a 100%);
+    -fx-background-insets: 0,1,4,5,6;
+    -fx-background-radius: 9,8,5,4,3;
+    -fx-padding: 5 5 5 5;
+}

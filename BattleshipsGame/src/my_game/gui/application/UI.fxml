@@ -15,7 +15,7 @@
   <children>
     <ImageView id="battleship" fx:id="background" fitHeight="385.1875" fitWidth="626.1112060546875" focusTraversable="false" pickOnBounds="true" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <image>
-        <Image url="@./battleship.jpg" preserveRatio="true" smooth="true" />
+        <Image url="@battleship.jpg" preserveRatio="true" smooth="true" />
       </image>
     </ImageView>
     <Button id="newGame" fx:id="newGameButton" focusTraversable="true" layoutX="116.0" layoutY="34.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Create" visible="true">
@@ -60,7 +60,7 @@
         </Lighting>
       </effect>
     </Button>
-    <Button font="$x1" layoutX="116.0" layoutY="288.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Exit">
+    <Button fx:id="exitGameButton" font="$x1" layoutX="116.0" layoutY="288.0" mnemonicParsing="false" opacity="0.75" prefHeight="53.9974915527369" prefWidth="150.00110605469" text="Exit">
       <effect>
         <Lighting surfaceScale="5.0">
           <bumpInput>
