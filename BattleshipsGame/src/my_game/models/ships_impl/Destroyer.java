@@ -82,8 +82,18 @@ public class Destroyer extends Ship{
 	 */
     public void fireTorpedo(GameObject target) {
     	if (target.getClass() == new ShipUnit().getClass()
-                || target.getClass() == new MidUnit().getClass()){
-			Ship tempShip = ((ShipUnit)target).getShip();
+            || target.getClass() == new MidUnit().getClass()){
+			
+    		Ship tempShip = null;
+    		
+    		if(target.getClass() == new ShipUnit().getClass()){
+    			tempShip = ((ShipUnit)target).getShip();
+    		}
+    	    if(target.getClass() == new MidUnit().getClass()){
+    	    	tempShip = ((MidUnit)target).getShip();
+    	    }
+			
+			//System.out.println("lalala" + (tempShip == null));
 			
 			((ShipUnit)target).setDamage(getTorpedoDamage());
 			ShipDirection dire = tempShip.getDirection();

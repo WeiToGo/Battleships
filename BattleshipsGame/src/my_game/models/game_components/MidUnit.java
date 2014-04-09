@@ -12,6 +12,8 @@ import my_game.models.game_components.GameObject.GameObjectType;
  */
 public class MidUnit extends ShipUnit {
 	
+	protected Ship ship;
+	
 	public MidUnit(Ship ship) {
 		this.ship = ship;
 		this.damageLevel = 0;
@@ -21,5 +23,9 @@ public class MidUnit extends ShipUnit {
 
 	public MidUnit() {
 		super();
+	}
+	
+	public Ship getShip() {
+		return ship;
 	}
 }
