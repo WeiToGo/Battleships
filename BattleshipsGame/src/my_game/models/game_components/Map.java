@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import my_game.models.ships_impl.Cruiser;
 import my_game.models.ships_impl.Destroyer;
+import my_game.models.ships_impl.KamikazeBoat;
 import my_game.models.ships_impl.MineLayer;
 import my_game.models.ships_impl.RadarBoat;
 import my_game.models.ships_impl.TorpedoBoat;
@@ -1194,6 +1195,36 @@ public class Map implements java.io.Serializable {
     	Mine mine = (Mine)getObjectAt(pos);
     	mineLayer.pickupMine(mine);
     	setObjectAt(pos, null);
+    }
+    
+    /**
+     * Must pass a kamikazeboat as a parameter.
+     * @param k 
+     */
+    public void kamAttack(Ship k){
+        ArrayList<Vector2> explosion = new ArrayList<Vector2>();
+        if (k.getShipType().equals(Ship.ShipType.KamikazeBoat)){ 
+            // name to cannon so we can reuse method in Ship.  
+            explosion = k.getCannonPositions(); 
+            for (Vector2 v: explosion){
+                GameObject o = this.getObjectAt(v);
+                if (o != null){
+                    if (o.getObjectType().equals(GameObject.GameObjectType.Base)){
+                        BaseUnit bu = (BaseUnit)o;
+                        bu.setDamage();
+                    }else if (o.getObjectType().equals(GameObject.GameObjectType.Mine)){
+                        Mine m = (Mine)o;
+                        m.setDestoryed(true);
+                    }else if (o.getObjectType().equals(GameObject.GameObjectType.Ship)){
+                        ShipUnit su = (ShipUnit)o;
+                        su.setDamageLevel(2);
+                    }else{
+                        continue;
+                    }
+                }
+            }         
+        }
+        
     }
     
     /**

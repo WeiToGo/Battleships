@@ -18,6 +18,7 @@ import my_game.util.Vector2;
 public class KamikazeBoat extends Ship{
     
     private Range explosionRange;
+    private boolean activeAttack;
     
     public KamikazeBoat(int pid) {
     	super(pid);    
@@ -33,6 +34,7 @@ public class KamikazeBoat extends Ship{
         setArmour(2);
         // set to east because it needs to have a valid direction to use the range methods.
         setDirection(d);
+        activeAttack = false;
               
       //  weapons.add("cannon");
         Range rr = new Range(new Vector2(-2,-2), new Vector2(2,-2), 
@@ -40,7 +42,7 @@ public class KamikazeBoat extends Ship{
         setRadarRange(rr);
         Range er = new Range(new Vector2(-1,-1), new Vector2(1,-1), 
               new Vector2(1,1), new Vector2(-1,1));       
-        setExplosionRange(er);
+        setCannonRange(er); //name to cannonrange so I can use method in Ship.
         
         ShipUnit[] tempShipUnits = new ShipUnit[getSize()];
         for (int i = 0; i < getSize(); i++){
@@ -56,5 +58,18 @@ public class KamikazeBoat extends Ship{
     public Range getExplosionRange() {
     	return explosionRange;
     } 
+    
+    public void activateAttack(){
+        if (!activeAttack){
+            activeAttack = true;
+        }
+    }
+    
+    public void suicideAttack(){
+        if (this.getCurrentSize() > 0){
+            ShipUnit su = this.getShipUnits()[0];
+            su.setDamageLevel(2); // may not be the best way to do it.
+        }
+    }
   
 }
