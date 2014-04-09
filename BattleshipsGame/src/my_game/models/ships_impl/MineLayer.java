@@ -92,17 +92,18 @@ public class MineLayer extends Ship {
     	return mineNum > 0;
     }
     
+
     public Mine layMine(Vector2 pos) {
         Mine mine = new Mine();
     	mine.setActive(true);
         mine.setPosition(pos);
         if(mineNum > 0) {
-        	mineNum--;
+            mineNum--;
+            return mine;
+        }else{
+            return null;
         }
-        else{
-        	mine = null;
-        }
-        return mine;
+        
     } 
     
     public void pickupMine(Mine mine){

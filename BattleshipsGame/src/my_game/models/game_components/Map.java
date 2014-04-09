@@ -1090,28 +1090,29 @@ public class Map implements java.io.Serializable {
     
     public GameObject layMine(Ship mineLayer, Vector2 position) {
     	if(mineLayer.getClass() != new MineLayer(10000).getClass())
-    		return null;
-    	
-    	
+    		return null;    	
     	if(getObjectAt(position) != null)
     		return null;
     	
-    	Mine mine = new Mine();
-    	mine.setPosition(position);
-    	
-    	Vector2[] zone = mine.getMineZone();
-    	int count = 0;
-    	for(Vector2 temp: zone) {
-            if(getObjectAt(temp) != null)              
+    //	Mine mine = new Mine();
+    //	mine.setPosition(position);
+        MineLayer ml = (MineLayer)mineLayer;
+        Mine mine = ml.layMine(position);
+        if (mine != null){
+        	Vector2[] zone = mine.getMineZone();
+        	int count = 0;
+            for(Vector2 temp: zone) {
+                if(getObjectAt(temp) != null)              
                     count++;
-    	}
+            }
     	
-    	if(count > 1)
-    		return null;
-    	
-    	mine.setActive(true);
-    	setObjectAt(position, mine);  	
-    	return mine;
+            if(count > 1)
+    		return null;	
+    //	mine.setActive(true);
+            setObjectAt(position, mine);  	
+         	return mine;
+        }
+        return null;
     }
     
     public Vector2[] getFilteredMineDropZone(Ship mineLayer){
