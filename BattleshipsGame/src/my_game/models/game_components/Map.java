@@ -1414,6 +1414,8 @@ public class Map implements java.io.Serializable {
      */
     public void updateRadarVisibilityArrays() {
         player0Visibility = generateRadarVisibility(player0Ships);
+        player1Visibility = generateRadarVisibility(player1Ships);
+        
         for(BaseUnit u: this.p0Base.getBaseUnits()) {
             //make visible every grid cell around the base unit
             Vector2 pos = u.getPosition();
@@ -1422,7 +1424,7 @@ public class Map implements java.io.Serializable {
             player1Visibility[pos.x][pos.y] = true;
             
         }
-        player1Visibility = generateRadarVisibility(player1Ships);
+
         for(BaseUnit u: this.p1Base.getBaseUnits()) {
             //make visible every grid cell around the base unit
             Vector2 pos = u.getPosition();

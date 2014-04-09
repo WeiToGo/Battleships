@@ -123,6 +123,7 @@ public class Game implements GameGUI.GameGuiListener {
             
             System.out.println("Client will now wait to receive game state.");
             //You are a client. Wait to receive a game state from server
+            this.playerIndex = 1;
             synchronized(player) {
                 while(!receivedNewGamestate) {
                     try {
@@ -134,7 +135,6 @@ public class Game implements GameGUI.GameGuiListener {
             }
             System.out.println("Client received a game state.");
             this.gameState = receivedGameState;
-            this.playerIndex = 1;
             receivedNewGamestate = false;
             
             startGame();
