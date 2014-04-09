@@ -505,18 +505,19 @@ public class GameState implements java.io.Serializable {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public void saveGame(String filename) throws IOException{
+    public boolean saveGame(String filename) throws IOException{
         File file = new File(filename+".sav"); 
         if(file.exists() && !file.isDirectory()) {
-            JOptionPane.showConfirmDialog(null,
+            JOptionPane.showMessageDialog(null,
                     "The filename provided already exists Save failed");
-            return;
+            return false;
         }
         FileOutputStream f = new FileOutputStream(filename+".sav");
         ObjectOutput s = new ObjectOutputStream(f); 
         s.writeObject(this); 
         s.flush();
         s.close(); 
+        return true;
     }       
     
     /**
