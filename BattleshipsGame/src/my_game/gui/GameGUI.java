@@ -59,7 +59,7 @@ import my_game.util.Vector2;
 public class GameGUI extends SimpleApplication implements ActionListener {    
 
     public enum Action {
-        Move, Turn, EndTurn, CannonAttack, Mine, TorpedoAttack};
+        Move, Turn, EndTurn, CannonAttack, Mine, TorpedoAttack, Repair};
     
     /** Integers used to indicate to the block drawing algorithm what block type to draw. */
     private final static int BASE = 0, BLOCK = 1, BOW = 2, RED = 3, BLUE = 4, NEW = 5, DAMAGED = 6, DESTROYED = 7;
@@ -82,12 +82,12 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             redShipBlock, redShipBow, blueBase, redBase, rock, mine;
     
     /** Interface buttons and other pictures. */
-    Picture blackBar, moveButton, turnButton, shootCannonButton, torpedoButton, mineButton, endTurnButton;
+    Picture blackBar, moveButton, turnButton, shootCannonButton, torpedoButton, mineButton, repairButton, endTurnButton;
     
     /** Text showing messages and other info. */
     BitmapText chatText;
     /** Flags keeping track on the state of the three buttons. */
-    public boolean moveActivated, turnActivated, cannonActivated, torpedoActivated, mineActivated, endTurnActivated;
+    public boolean moveActivated, turnActivated, cannonActivated, torpedoActivated, mineActivated, repairActivated, endTurnActivated;
     
     /** A grid containing a Spatial at every grid position if there is a ship part there. */
     Spatial[][] objectsGrid, highlightsGrid, radarGrid;
@@ -225,6 +225,11 @@ public class GameGUI extends SimpleApplication implements ActionListener {
             this.mineButton.setImage(assetManager, "/Interface/mineEnabled.png", true);
         } else {
             this.mineButton.setImage(assetManager, "/Interface/mineDisabled.png", true);
+        }
+        if(repairActivated) {
+            this.repairButton.setImage(assetManager, "/Interface/repairEnabled.png", true);
+        } else {
+            this.repairButton.setImage(assetManager, "/Interface/repairDisabled.png", true);
         }
         if(endTurnActivated) {
             this.endTurnButton.setImage(assetManager, "/Interface/endTurnEnabled.png", true);
@@ -398,6 +403,17 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         mineButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(mineButton);
         //**************************
+        //init. end turn button
+        repairButton = new Picture("RepairButton");
+        repairButton.setImage(assetManager, "/Interface/repairDisabled.png", true);
+        
+        repairButton.setWidth(width);
+        repairButton.setHeight(height);
+        repairButton.setPosition(6 * resolutionAdjustedGap +  5 * width , resolutionAdjustedY);
+        
+        repairButton.setQueueBucket(RenderQueue.Bucket.Gui);
+        guiNode.attachChild(repairButton);
+        //**************************
         //**************************
         //init. end turn button
         endTurnButton = new Picture("EndTurnButton");
@@ -405,7 +421,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         
         endTurnButton.setWidth(width);
         endTurnButton.setHeight(height);
-        endTurnButton.setPosition(6 * resolutionAdjustedGap +  5 * width , resolutionAdjustedY);
+        endTurnButton.setPosition(7 * resolutionAdjustedGap +  6 * width , resolutionAdjustedY);
         
         endTurnButton.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(endTurnButton);
@@ -415,7 +431,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         chatText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
         chatText.setColor(ColorRGBA.White);                             // font color
         chatText.setText("");                                            // the text
-        chatText.setLocalTranslation(getButtonWidth() * 7, chatText.getLineHeight() + getButtonGap(), 0); // position
+        chatText.setLocalTranslation(getButtonWidth() * 8, chatText.getLineHeight() + getButtonGap(), 0); // position
         chatText.setQueueBucket(RenderQueue.Bucket.Gui);
         guiNode.attachChild(chatText);
         
@@ -1017,6 +1033,9 @@ public class GameGUI extends SimpleApplication implements ActionListener {
                             guiListener.onButtonPressed(Action.Mine);
                             break;
                         case 5:
+                            guiListener.onButtonPressed(Action.Repair);
+                            break;
+                        case 6:
                             guiListener.onButtonPressed(Action.EndTurn);
                             break;
                         default:
@@ -1070,6 +1089,7 @@ public class GameGUI extends SimpleApplication implements ActionListener {
         this.turnActivated = active;
         this.mineActivated = active;
         this.torpedoActivated = active;
+        this.repairActivated = active;
     }
     
     /**
