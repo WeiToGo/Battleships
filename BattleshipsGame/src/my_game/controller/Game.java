@@ -312,6 +312,9 @@ public class Game implements GameGUI.GameGuiListener {
             if(!weapons.contains("cannon")) {
                 gui.cannonActivated = false;
             }
+            if(!gameState.getMap().isDocked(s)) {
+                gui.repairActivated = false;
+            }
         }
     }
     
@@ -425,6 +428,17 @@ public class Game implements GameGUI.GameGuiListener {
                             public void run() {
                                 if(gui.torpedoActivated) {
                                     torpedoAttackAction(selectedShip);
+                                }
+                            }
+                        });
+                        t.start();
+                        break;
+                   case Repair:
+                        interruptPreviousActions();
+                        t = new Thread(new Runnable() {
+                            public void run() {
+                                if(gui.repairActivated) {
+                                    repair(selectedShip);
                                 }
                             }
                         });
@@ -896,6 +910,17 @@ public class Game implements GameGUI.GameGuiListener {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    private void repair(Ship selectedShip) {
+            //pickup mine
+            Message m = new Message("Ship repairing.", Message.MessageType.Game, this.player);
+            gameState.addMessage(m);
+            selectedShip.getRepaired();
+
+        clearGUI();
+        playAnimation = false;
+        endTurn();
     }
     
     public void fireCannon(GameObject unit){
