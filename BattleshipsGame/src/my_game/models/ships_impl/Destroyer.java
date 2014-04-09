@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import my_game.models.game_components.BaseUnit;
 import my_game.models.game_components.CoralUnit;
 import my_game.models.game_components.GameObject;
+import my_game.models.game_components.MidUnit;
 import my_game.models.game_components.Mine;
 import my_game.models.game_components.Ship;
 import my_game.models.game_components.ShipUnit;
@@ -81,7 +82,7 @@ public class Destroyer extends Ship{
 	 */
     public void fireTorpedo(GameObject target) {
     	if (target.getClass() == new ShipUnit().getClass()
-                || (target.getObjectType().equals(GameObject.GameObjectType.MidUnit))){
+                || target.getClass() == new MidUnit().getClass()){
 			Ship tempShip = ((ShipUnit)target).getShip();
 			
 			((ShipUnit)target).setDamage(getTorpedoDamage());

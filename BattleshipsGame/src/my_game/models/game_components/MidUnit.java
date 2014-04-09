@@ -17,6 +17,9 @@ public class MidUnit extends ShipUnit {
 		this.damageLevel = 0;
 		this.unitArmour = ship.getArmour();
 		this.type = GameObjectType.MidUnit;
+	}
 
+	public MidUnit() {
+		super();
 	}
 }
